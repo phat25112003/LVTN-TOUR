@@ -1,0 +1,412 @@
+/* Admin Dashboard CSS */
+:root {
+    --sidebar-width: 250px;
+    --sidebar-bg: #2c3e50;
+    --sidebar-hover: #34495e;
+    --primary-color: #3498db;
+    --card-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+body {
+    background: #f4f7fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    color: white;
+    z-index: 1000;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+/* Admin Info */
+.admin-info {
+    padding: 20px;
+    border-bottom: 1px solid #34495e;
+    text-align: center;
+}
+
+.admin-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    margin-bottom: 10px;
+}
+
+.admin-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+/* Menu */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    margin: 0;
+}
+
+.sidebar-menu a {
+    display: block;
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background: var(--sidebar-hover);
+    color: #3498db;
+}
+
+.sidebar-menu i {
+    width: 20px;
+    margin-right: 10px;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 20px;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+.main-content.sidebar-collapsed {
+    margin-left: 0;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.card-body {
+    padding: 25px;
+    text-align: center;
+}
+
+.card-icon {
+    font-size: 48px;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.card-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+    
+    .mobile-menu-toggle {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1001;
+        background: var(--sidebar-bg);
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+    }
+}
+
+.mobile-menu-toggle {
+    display: none;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+/* Alert */
+.alert {
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 20px;
+}
+
+/* Table */
+.table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+}
+
+.table th {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: linear-gradient(180deg, #004aad, #0078d4);
+    color: #fff;
+    width: 250px;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.sidebar-menu li {
+    margin-bottom: 10px;
+}
+
+.sidebar-menu a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.logout-form {
+    margin-top: auto;
+}
+
+.logout-form button {
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: 600;
+}
+
+/* ===== BẢNG QUẢN LÝ TOUR ===== */
+.table-container {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+/* Bảng chính */
+.table-custom {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+/* Header */
+.table-custom thead th {
+    background-color: #0d6efd; /* xanh nhạt Bootstrap */
+    color: #fff;
+    font-weight: 600;
+    padding: 12px;
+    text-align: center;
+}
+
+/* Ô dữ liệu */
+.table-custom td {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Hiệu ứng hover */
+.table-custom tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* Cột mô tả rút gọn */
+.description-column {
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Nút hành động */
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Nút chung */
+.btn-custom {
+    border: none;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #fff;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Nút sửa */
+.btn-edit {
+    background-color: #ffc107;
+    text-decoration: none;
+}
+.btn-edit:hover {
+    background-color: #796d6d;
+}
+
+/* Nút xóa */
+.btn-delete {
+    background-color: #dc3545;
+    text-decoration: none;
+}
+.btn-delete:hover {
+    background-color: #796d6d;
+}
+
+/* Nút xem chi tiết */
+.btn-view {
+    background-color: #221987;
+    text-decoration: none;
+}
+.btn-view:hover {
+    background-color: #796d6d;
+}
+
+/* Responsive nhỏ */
+@media (max-width: 992px) {
+    .table-custom {
+        font-size: 14px;
+    }
+    .table-custom th,
+    .table-custom td {
+        padding: 8px;
+    }
+}
+
+/* ===== TRẠNG THÁI TOUR ===== */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;          /* nhỏ gọn hơn */
+    border-radius: 12px;        /* bo tròn nhẹ */
+    font-weight: 500;
+    font-size: 0.8rem;          /* chữ nhỏ hơn */
+    color: #fff;
+    line-height: 1;
+    text-align: center;
+    min-width: 70px;
+    user-select: none;
+}
+
+/* Hoạt động (xanh lá) */
+.status-badge.active {
+    background-color: #28a745;  /* xanh Bootstrap */
+}
+
+/* Ngưng (đỏ) */
+.status-badge.inactive {
+    background-color: #dc3545;  /* đỏ Bootstrap */
+}
+
+/* Hiệu ứng hover nhẹ */
+.status-badge:hover {
+    opacity: 0.9;
+    transform: scale(1.03);
+    transition: all 0.2s ease-in-out;
+}
+
+/* ===== NÚT ĐĂNG XUẤT NHỎ GỌN ===== */
+.logout-form {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    text-align: center;
+}
+
+.logout-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background-color: #dc3545;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: #bb2d3b;
+    transform: translateY(-2px);
+}
