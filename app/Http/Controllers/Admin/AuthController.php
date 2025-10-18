@@ -59,7 +59,7 @@ class AuthController extends Controller
             'tenDangNhap' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'soDienThoai' => 'nullable|string|max:20',
-            'matKhau' => 'nullable|string|min:6|confirmed', // ✅ xác nhận mật khẩu
+            'matKhau' => 'nullable|string|min:6|confirmed', // xác nhận mật khẩu
             'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ], [
             'matKhau.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
@@ -91,14 +91,11 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::guard('admin')->logout();
-
+        Auth::guard('admin')->logout(); // Sử dụng guard admin
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Không redirect luôn
-        // Ở lại trang hiện tại (dashboard), nhưng session mất rồi
-        return back()->with('logout', true);
+        return redirect()->route('admin.login'); // Chuyển hướng đến admin.login
     }
 
 

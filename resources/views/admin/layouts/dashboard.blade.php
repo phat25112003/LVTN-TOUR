@@ -32,8 +32,8 @@
                     <i class="fa-solid fa-user"></i> Thông tin cá nhân</a>
             </li>
             <li><a href="{{ route('admin.tours.index') }}" class="{{ request()->routeIs('admin.tours.*') ? 'active' : '' }}"><i class="fa-solid fa-map-location-dot"></i> Quản lý Tour</a></li>
-            <li><a href="{{ route('admin.nguoidung.index') }}" class="{{ request()->routeIs('admin.nguoidung.index') ? 'active' : '' }}"><i class="fa-solid fa-users"></i> Người Dùng</
-            <li><a href="#"><i class="fa-solid fa-ticket"></i> Đặt chỗ</a></li>
+            <li><a href="{{ route('admin.nguoidung.index') }}" class="{{ request()->routeIs('admin.nguoidung.index') ? 'active' : '' }}"><i class="fa-solid fa-users"></i>Quản lý người dùng</a></li>
+            <li><a href="{{ route('admin.datcho.index') }}" class="{{ request()->routeIs('admin.datcho.index') ? 'active' : '' }}"><i class="fa-solid fa-ticket"></i>Quản lý đặt tour</a></li>
             <li><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Hóa đơn</a></li>
             <li><a href="#"><i class="fa-solid fa-gift"></i> Khuyến mãi</a></li>
             <li><a href="#"><i class="fa-solid fa-comments"></i> Tin nhắn</a></li>

@@ -27,7 +27,6 @@ class NguoiDungController extends Controller
         $nguoiDung->danhGia()->delete();
         $nguoiDung->datCho()->delete();
         $nguoiDung->lichSu()->delete();
-        $nguoiDung->tinNhan()->delete();
         $nguoiDung->delete();
         return redirect()->back()->with('success', 'Xóa người dùng thành công!');
     }

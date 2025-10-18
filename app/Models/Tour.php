@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -7,8 +8,20 @@ class Tour extends Model
 {
     protected $table = 'tour';
     protected $primaryKey = 'maTour';
-    protected $fillable = ['tieuDe', 'moTa', 'hinhAnh', 'soLuong', 'giaNguoiLon', 'giaTreEm', 'thoiLuong', 'diemDen', 'tinhTrang'];
     public $timestamps = false;
+    protected $fillable = [
+        'tieuDe',
+        'thoiGian',
+        'moTa',
+        'ngayBatDau',
+        'ngayKetThuc',
+        'hinhAnh',
+        'soLuong',
+        'giaNguoiLon',
+        'giaTreEm',
+        'diemDen',
+        'tinhTrang',
+    ];
 
     public function hinhAnh()
     {
@@ -34,4 +47,9 @@ class Tour extends Model
     {
         return $this->hasMany(LichSu::class, 'maTour', 'maTour');
     }
+
+    protected $casts = [
+        'ngayBatDau' => 'date:Y-m-d',
+        'ngayKetThuc' => 'date:Y-m-d',
+    ];
 }

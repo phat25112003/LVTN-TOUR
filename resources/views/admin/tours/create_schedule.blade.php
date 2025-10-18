@@ -1,31 +1,161 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>Thêm Lịch Trình</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h2>Thêm Lịch Trình cho Tour: {{ $tour->tieuDe }}</h2>
-        <form action="{{ route('admin.tours.storeSchedule', $tour->maTour) }}" method="POST">
-            @csrf
-            @for ($i = 1; $i <= $thoiLuong; $i++)
-                <div class="mb-3">
-                    <h4>Ngày {{ $i }}</h4>
-                    <div class="mb-3">
-                        <label for="huongDi{{ $i }}" class="form-label">Hướng đi</label>
-                        <input type="text" name="huongDi[{{ $i }}]" id="huongDi{{ $i }}" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="noiDung{{ $i }}" class="form-label">Nội dung chuyến đi</label>
-                        <textarea name="noiDung[{{ $i }}]" id="noiDung{{ $i }}" class="form-control" rows="3" required></textarea>
-                    </div>
+@extends('admin.layouts.dashboard')
+
+@section('content')
+<div class="schedule-wrapper">
+    <h2 class="schedule-title">Thêm Lịch Trình cho Tour: {{ $tour->tieuDe }}</h2>
+
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form action="{{ route('admin.tours.storeSchedule', $tour->maTour) }}" method="POST" class="schedule-form">
+        @csrf
+
+        @for ($i = 1; $i <= $soNgay; $i++)
+            <div class="day-block">
+                <h3>Ngày {{ $i }}</h3>
+                <div class="form-group">
+                    <label for="huongDi{{ $i }}">Hướng đi</label>
+                    <input type="text" name="huongDi[{{ $i }}]" id="huongDi{{ $i }}" required>
                 </div>
-            @endfor
-            <button type="submit" class="btn btn-success">Lưu Lịch Trình</button>
-            <a href="{{ route('admin.tours.index') }}" class="btn btn-secondary">Hủy</a>
-        </form>
-    </div>
-</body>
-</html>
+                <div class="form-group">
+                    <label for="noiDung{{ $i }}">Nội dung chuyến đi</label>
+                    <textarea name="noiDung[{{ $i }}]" id="noiDung{{ $i }}" rows="3" required></textarea>
+                </div>
+            </div>
+        @endfor
+
+        <div class="form-actions">
+            <button type="submit" class="btn-save">Lưu Lịch Trình</button>
+            <a href="{{ route('admin.tours.index') }}" class="btn-cancel">Hủy</a>
+        </div>
+    </form>
+</div>
+
+<style>
+/* ===== Khung tổng ===== */
+.schedule-wrapper {
+    background-color: #f5f7fa;
+    padding: 20px;
+    border-radius: 8px;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* ===== Tiêu đề ===== */
+.schedule-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2b9084;
+    margin-bottom: 20px;
+}
+
+/* ===== Thông báo ===== */
+.alert {
+    padding: 10px 14px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+.alert-success { background-color: #d4edda; color: #155724; }
+.alert-danger { background-color: #f8d7da; color: #721c24; }
+
+/* ===== Form ===== */
+.schedule-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.day-block {
+    background: #fdfdfd;
+    padding: 15px;
+    margin-bottom: 18px;
+    border-left: 4px solid #2b9084;
+    border-radius: 6px;
+}
+
+.day-block h3 {
+    margin-bottom: 10px;
+    color: #2b9084;
+}
+
+/* ===== Input & Textarea ===== */
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #2b9084;
+    outline: none;
+}
+
+/* ===== Nút hành động ===== */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-start;
+    margin-top: 20px;
+}
+
+.btn-save {
+    background-color: #2b9084;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-save:hover {
+    background-color: #22776b;
+}
+
+.btn-cancel {
+    background-color: #dc3545;
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.btn-cancel:hover {
+    background-color: #b02a37;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .schedule-title { font-size: 18px; }
+    .btn-save, .btn-cancel { font-size: 13px; padding: 6px 12px; }
+}
+</style>
+@endsection

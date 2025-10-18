@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\TourController;
 use App\Http\Controllers\TourPublicController;
 use App\Http\Controllers\Admin\NguoiDungController;
+use App\Http\Controllers\Admin\DatChoController; 
 
 Route::get('/', fn () => view('admin.login'));
 
@@ -46,5 +47,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('{tour}/store-schedule', 'storeSchedule')->name('storeSchedule');
         Route::get('{tour}/edit-schedule', 'editSchedule')->name('editSchedule');
         Route::post('{tour}/update-schedule', 'updateSchedule')->name('updateSchedule');
+    });
+
+    // Route cho DatChoController
+    Route::controller(DatChoController::class)->middleware('auth:admin')->prefix('datcho')->name('datcho.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('{maDatCho}/xacnhan', 'xacNhan')->name('xacnhan');
     });
 });

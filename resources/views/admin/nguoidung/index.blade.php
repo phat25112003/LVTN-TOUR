@@ -32,7 +32,8 @@
                             </div>
                         </div>
                         <div class="mt-3">
-                            <button class="btn btn-sm btn-warning" onclick="toggleStatus('{{ json_encode($nguoiDung->maNguoiDung) }}', {{ isset($nguoiDung->tinhTrang) ? $nguoiDung->tinhTrang : 0 }})">
+                            <button class="btn btn-sm btn-warning" onclick="toggleStatus('{{ json_encode($nguoiDung->maNguoiDung) }}', 
+                            {{ isset($nguoiDung->tinhTrang) ? $nguoiDung->tinhTrang : 0 }})">
                                 {{ isset($nguoiDung->tinhTrang) && $nguoiDung->tinhTrang ? 'Chặn' : 'Kích hoạt' }}
                             </button>
                             <form action="{{ route('admin.nguoidung.destroy', $nguoiDung->maNguoiDung) }}" method="POST" style="display: inline;">
