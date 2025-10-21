@@ -46,7 +46,7 @@
                 <td>
                     <div class="action-buttons">
                         <a href="{{ route('admin.tours.show', $tour->maTour) }}" class="btn-action btn-view">Xem</a>
-                        <a href="{{ route('admin.tours.edit', $tour->maTour) }}" class="btn-action btn-edit">Sửa</a>
+                        <a href="{{ route('admin.tours.edit', parameters: $tour->maTour) }}" class="btn-action btn-edit">Sửa</a>
                         <form action="{{ route('admin.tours.destroy', $tour->maTour) }}" method="POST" onsubmit="return confirm('Xóa tour này?')">
                             @csrf
                             @method('DELETE')

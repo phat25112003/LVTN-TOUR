@@ -94,11 +94,11 @@
             <label class="form-label">Thêm hình ảnh mới</label>
             <input type="file" name="hinhAnh[]" multiple class="form-control">
         </div>
-
-        <div class="d-flex justify-content-between">
-            <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
-            <button type="submit" name="updateSchedule" value="1" class="btn btn-warning">Cập nhật lịch trình</button>
-        </div>
+            <div class="form-actions">
+                <button type="submit" class="btnsuccess">Lưu Thay Đổi</button>
+                <button type="submit" name="updateSchedule" value="1" class="btnschedule">Cập nhật lịch trình</button>
+                <a href="{{ route('admin.tours.index') }}" class="btncancel">Hủy</a>
+            </div>
     </form>
 </div>
 @endsection

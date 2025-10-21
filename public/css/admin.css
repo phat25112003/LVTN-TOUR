@@ -308,6 +308,58 @@ h3 {
     color: white;
 }
 
+/* Nút form them tour */
+
+.form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+.btnsuccess{
+            background-color: #019d06;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+}
+.btnsuccess:hover{
+            background-color: #017230;
+}
+.btnschedule{
+            background-color: #b6ce00;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+}
+.btnschedule:hover{
+            background-color: #525802;
+}
+.btncancel {
+            background-color: #dc3545;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            display: inline-block;
+            transition: background-color 0.2s ease;
+        }
+
+.btncancel:hover {
+            background-color: #b02a37;
+        }
+
+
 /* ======== CSS Quản Lý Tour (Đồng nhất với Booking Style) ======== */
 
 /* Thiết lập chung và font */
@@ -824,3 +876,241 @@ h3 {
 }
 .btn-save:hover { background-color: #257d73; }
 .btn-cancel:hover { background-color: #b3b3b3; }
+
+
+/* Nguoi dung */
+/* Lưới người dùng */
+.user-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+/* Thẻ người dùng */
+.user-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    transition: 0.25s ease;
+}
+
+/* Thông tin người dùng */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar-container {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #e2e8f0;
+    flex-shrink: 0;
+}
+.avatar-user {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-details h5 {
+    margin: 0 0 5px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+.user-details p {
+    margin: 2px 0;
+    font-size: 13px;
+    color: #000000;
+    font-weight: bold;
+}
+
+/* Huy hiệu trạng thái */
+.toggle-status {
+    background-color: #be7b08;
+    margin-top: 20px;
+    color: white;
+    font-weight: bold;
+}
+
+.toggle-status:hover {
+    background-color: #566a05;
+    color: white;
+}
+
+
+.toggle-status.status-inactive {
+    background-color: green; 
+    color: white;
+    font-weight: bold;
+}
+
+.toggle-status.status-inactive:hover {
+    background-color: #058e11; 
+}
+
+.status-badge.status-active {
+    background-color: #155a0f; 
+    color: white;
+}
+
+.status-badge.status-blocked {
+    background-color: #f59e0b; 
+    color: white;
+    font-weight: bold;
+}
+
+/* Nút xóa */
+.btn-danger {
+    background-color: #dc2626;
+    font-weight: bold;
+}
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
+
+/* KHUYEN MAI */
+.admin-main-container {
+padding: 30px 20px;
+max-width: 1300px;
+margin: 0 auto;
+font-family: Arial, sans-serif; /* Dùng font phổ thông hơn */
+color: #333;
+}
+
+.promo-page-title {
+margin-bottom: 20px;
+color: #2c3e50;
+font-size: 1.8rem;
+font-weight: 700;
+}
+
+/* Nút Thêm Khuyến Mãi (Giữ màu xanh dương) */
+.add-button {
+display: inline-block;
+padding: 10px 20px;
+background-color: #05a21aff;
+color: white;
+text-decoration: none;
+border-radius: 5px;
+margin-bottom: 20px;
+font-weight: 600;
+transition: background-color 0.2s;
+}
+.add-button:hover {
+background-color: #076505ff;
+}
+
+/* THÔNG BÁO (THEO MẪU) */
+.notify {
+padding: 10px 15px;
+border-radius: 6px;
+margin-bottom: 15px;
+font-size: 0.95rem;
+}
+.notify-success {
+background: #e6f4ea; /* Xanh lá nhạt */
+color: #256029; /* Chữ xanh lá đậm */
+}
+.notify-error { /* Dùng cho nút Xóa */
+background: #fdecea;
+color: #8a1f1f;
+}
+
+/* BẢNG CHÍNH (THEO MẪU) */
+.promo-admin-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 0.95rem;
+}
+
+.promo-admin-table th,
+.promo-admin-table td {
+border: 1px solid #dee2e6; /* Đường kẻ bảng rõ ràng hơn */
+padding: 10px 12px;
+text-align: center;
+color: #333;
+}
+
+/* TIÊU ĐỀ CỘT (THEO MẪU .booking-table thead th) */
+.promo-admin-table thead th {
+background-color: #2b9084 !important; /* Xanh lá đậm */
+color: #ffffff !important;
+padding: 12px;
+font-weight: bold;
+/* width: 14.28% !important; */ /* Bỏ width cố định để bảng tự điều chỉnh */
+}
+
+.promo-admin-table tr {
+background-color: #fff;
+}
+.promo-admin-table tr:hover {
+background-color: #f7f7f7;
+}
+
+/* 4. NÚT HÀNH ĐỘNG (ACTION BUTTONS) */
+.action-buttons {
+display: flex;
+gap: 5px;
+justify-content: center;
+}
+
+.action-button {
+padding: 6px 12px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-weight: 600;
+transition: background-color 0.2s;
+color: white;
+font-size: 0.85rem;
+}
+
+/* Nút chung (THEO MẪU .btn-confirm) */
+.btn-confirm {
+color: white;
+}
+
+
+/* 🟡 Nút 'Chặn' (Khi khuyến mãi đang Active - Giữ màu vàng cam) */
+.toggle-status {
+background-color: #f39c12;
+}
+
+.toggle-status:hover {
+background-color: #d35400;
+}
+
+/* 🟢 Nút 'Kích hoạt' (Khi khuyến mãi đang bị Chặn) */
+.btn-activate {
+background-color: #0a8b01 !important; /* Xanh dương */
+}
+
+.btn-activate:hover {
+background-color: #083903 !important;
+}
+
+/* 🔴 Nút Xóa (Dùng màu đỏ riêng) */
+.delete-button {
+background-color: #e61f09 !important;
+}
+
+.delete-button:hover {
+background-color: #7d0f02 !important;
+}
+
+.edit-button {
+padding: 6px 12px;
+background-color: #2196F3;
+color: white;
+text-decoration: none;
+border-radius: 5px;
+display: inline-block;
+}
+.edit-button:hover {
+background-color: #1976D2;
+}

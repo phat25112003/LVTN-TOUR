@@ -44,7 +44,7 @@ class TourController extends Controller
             'giaTreEm'      => 'required|numeric|min:0',
             'diemDen'       => 'required|string|max:255',
             'tinhTrang'     => 'required|boolean',
-            'hinhAnh'       => 'nullable|array|max:7',
+            'hinhAnh'       => 'nullable|array',
             'hinhAnh.*'     => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|max:51200',
         ]);
 
@@ -70,7 +70,7 @@ class TourController extends Controller
                     HinhAnh::create([
                         'moTa'         => 'Hình ảnh tour ' . $tour->tieuDe,
                         'duongDanHinh' => $path,
-                        'tourid'       => $tour->maTour,
+                        'maTour'       => $tour->maTour,
                     ]);
                 } catch (\Exception $e) {
                     Log::error('Lỗi upload hình ảnh thứ ' . ($index + 1) . ': ' . $e->getMessage());
@@ -178,7 +178,7 @@ class TourController extends Controller
     public function show($maTour)
     {
         $tour = Tour::findOrFail($maTour);
-        $hinhAnh = HinhAnh::where('tourid', $maTour)->get();
+        $hinhAnh = HinhAnh::where('maTour', $maTour)->get();
         $lichTrinh = LichTrinh::where('maTour', $maTour)->get();
         return view('admin.tours.show', compact('tour', 'hinhAnh', 'lichTrinh'));
     }
@@ -186,7 +186,7 @@ class TourController extends Controller
     public function edit($maTour)
     {
         $tour = Tour::findOrFail($maTour);
-        $hinhAnh = HinhAnh::where('tourid', $maTour)->get();
+        $hinhAnh = HinhAnh::where('maTour', $maTour)->get();
         $lichTrinh = LichTrinh::where('maTour', $maTour)->get();
         return view('admin.tours.edit', compact('tour', 'hinhAnh', 'lichTrinh'));
     }
@@ -229,7 +229,7 @@ class TourController extends Controller
         if ($request->has('hinhAnhXoa')) {
             foreach ($request->hinhAnhXoa as $maHinhAnh) {
                 $hinh = \App\Models\HinhAnh::find($maHinhAnh);
-                if ($hinh && $hinh->tourid == $maTour) {
+                if ($hinh && $hinh->maTour == $maTour) {
                     Storage::disk('public')->delete($hinh->duongDanHinh);
                     $hinh->delete();
                 }
@@ -244,7 +244,7 @@ class TourController extends Controller
                 \App\Models\HinhAnh::create([
                     'moTa' => 'Hình ảnh tour ' . $tour->tieuDe,
                     'duongDanHinh' => $path,
-                    'tourid' => $maTour,
+                    'maTour' => $maTour,
                 ]);
             }
         }
@@ -280,7 +280,7 @@ class TourController extends Controller
             $dc->delete();
         }
 
-        $hinhAnh = HinhAnh::where('tourid', $maTour)->get();
+        $hinhAnh = HinhAnh::where('maTour', $maTour)->get();
         foreach ($hinhAnh as $hinh) {
             Storage::disk('public')->delete($hinh->duongDanHinh);
             $hinh->delete();
@@ -295,7 +295,7 @@ class TourController extends Controller
         protected function updateHinhAnhCount($maTour)
         {
             $tour = Tour::findOrFail($maTour);
-            $hinhAnhCount = HinhAnh::where('tourid', $maTour)->count();
+            $hinhAnhCount = HinhAnh::where('maTour', $maTour)->count();
             $tour->update(['hinhAnh' => $hinhAnhCount]);
         }
 

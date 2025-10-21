@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\TourController;
 use App\Http\Controllers\TourPublicController;
 use App\Http\Controllers\Admin\NguoiDungController;
 use App\Http\Controllers\Admin\DatChoController; 
+use App\Http\Controllers\Admin\KhuyenMaiController;
 
 Route::get('/', fn () => view('admin.login'));
 
@@ -30,8 +31,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Route cho NguoiDungController
     Route::controller(NguoiDungController::class)->middleware('auth:admin')->prefix('nguoidung')->name('nguoidung.')->group(function () {
         Route::get('/', 'index')->name('index');
-        Route::put('{maNguoiDung}/status', 'updateStatus')->name('updateStatus');
-        Route::delete('{maNguoiDung}', 'destroy')->name('destroy');
+        Route::put('{maNguoiDung}/update-status', 'updateStatus')->name('update-status');
+        Route::delete('destroy/{maNguoiDung}', 'destroy')->name('destroy');
     });
 
     // Route cho TourController
@@ -53,5 +54,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::controller(DatChoController::class)->middleware('auth:admin')->prefix('datcho')->name('datcho.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('{maDatCho}/xacnhan', 'xacNhan')->name('xacnhan');
+    });
+
+    Route::controller(KhuyenMaiController::class)->middleware('auth:admin')->prefix('khuyenmai')->name('khuyenmai.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{id}/edit', 'edit')->name('edit');
+        Route::put('/{id}', 'update')->name('update');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::put('/{id}/toggle-status', 'toggleStatus')->name('toggle-status');
     });
 });

@@ -25,7 +25,7 @@ class Tour extends Model
 
     public function hinhAnh()
     {
-        return $this->hasMany(HinhAnh::class, 'tourid', 'maTour');
+        return $this->hasMany(HinhAnh::class, 'maTour', 'maTour');
     }
 
     public function danhGia()

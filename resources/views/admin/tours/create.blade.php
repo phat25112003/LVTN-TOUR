@@ -78,7 +78,11 @@
             <input type="file" name="hinhAnh[]" multiple class="form-control">
         </div>
 
-        <button type="submit" class="btn btn-success">Lưu và Tạo Lịch Trình</button>
+
+            <div class="form-actions">
+                <button type="submit" class="btnsuccess">Lưu và Tạo Lịch Trình</button>
+                <a href="{{ route('admin.tours.index') }}" class="btncancel">Hủy</a>
+            </div>
     </form>
 </div>
 @endsection
