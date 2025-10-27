@@ -1048,10 +1048,6 @@ font-weight: bold;
 .promo-admin-table tr {
 background-color: #fff;
 }
-.promo-admin-table tr:hover {
-background-color: #f7f7f7;
-}
-
 /* 4. NÚT HÀNH ĐỘNG (ACTION BUTTONS) */
 .action-buttons {
 display: flex;
@@ -1105,12 +1101,128 @@ background-color: #7d0f02 !important;
 
 .edit-button {
 padding: 6px 12px;
-background-color: #2196F3;
+background-color: #afb800cb;
 color: white;
+font-weight: bold;
 text-decoration: none;
 border-radius: 5px;
 display: inline-block;
 }
 .edit-button:hover {
-background-color: #1976D2;
+background-color: #5e7a02;
 }
+
+        /* ===================================== */
+        /* 1. KHU VỰC CHUNG VÀ TIÊU ĐỀ */
+        /* ===================================== */
+
+        /* Đảm bảo tiêu đề bảng có màu đậm */
+        .admin-category-title {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        /* Nút thêm danh mục (Giữ lại màu xanh lá cây đậm) */
+        .btn-add-category {
+            background-color: #2b9084 !important;
+            color: white !important;
+            border: none;
+            transition: background-color 0.2s;
+            font-weight: 600;
+        }
+        .btn-add-category:hover {
+            background-color: #257d72 !important;
+        }
+        
+        /* Cập nhật class Bootstrap để phù hợp với màu sắc */
+        .btn-success {
+            background-color: #2b9084 !important;
+            border-color: #2b9084 !important;
+        }
+        .btn-success:hover {
+            background-color: #257d72 !important;
+            border-color: #257d72 !important;
+        }
+        /* Giữ nguyên màu alert cho thông báo thành công */
+        .alert-success {
+            background: #e6f4ea; 
+            color: #256029; 
+            border: 1px solid #c3e6cb;
+            padding: 10px 15px;
+            border-radius: 6px;
+        }
+
+
+        /* ===================================== */
+        /* 2. BẢNG DANH MỤC */
+        /* ===================================== */
+
+        /* Đặt tên class bảng riêng để áp dụng style admin */
+        .category-admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08); /* Thêm bóng đổ nhẹ */
+            border-radius: 8px; /* Bo góc */
+            overflow: hidden; /* Quan trọng để bo góc hoạt động tốt */
+            background: #fff;
+        }
+
+        /* Tiêu đề cột (Giống style bảng booking) */
+        .category-admin-table thead th {
+            background-color: #2b9084 !important; /* Xanh lá đậm */
+            color: #ffffff !important;
+            padding: 12px;
+            text-align: left; /* Đảm bảo căn trái cho phù hợp với nội dung */
+            font-weight: bold;
+            border: 1px solid #dee2e6 !important;
+        }
+        
+        /* Ô dữ liệu */
+        .category-admin-table th,
+        .category-admin-table td {
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            text-align: left;
+            color: #333;
+            vertical-align: middle;
+        }
+        
+        /* Hiệu ứng sọc và hover */
+        .category-admin-table tr:nth-child(even) {
+            background-color: #f9f9f9; /* Hàng chẵn màu xám nhạt */
+        }
+
+
+        /* ===================================== */
+        /* 3. NÚT HÀNH ĐỘNG */
+        /* ===================================== */
+        
+        /* Nút Sửa (Vàng) */
+        .btn-warning {
+            background-color: #ffc107 !important;
+            border-color: #ffc107 !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+        .btn-warning:hover {
+             background-color: #e0a800 !important;
+             border-color: #e0a800 !important;
+        }
+
+        /* Nút Xóa (Đỏ) */
+        .btn-danger {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            font-weight: 500;
+        }
+        .btn-danger:hover {
+            background-color: #c82333 !important;
+            border-color: #c82333 !important;
+        }
+
+        /* Đảm bảo form nội tuyến */
+        .inline-form {
+            display: inline-block;
+            margin-left: 5px; /* Tạo khoảng cách giữa nút Sửa và Xóa */
+        }

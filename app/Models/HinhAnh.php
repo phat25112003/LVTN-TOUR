@@ -12,6 +12,6 @@ class HinhAnh extends Model
 
     public function tour()
     {
-        return $this->belongsTo(Tour::class, 'tourid', 'maTour');
+        return $this->belongsTo(Tour::class, 'maTour', 'maTour');
     }
 }

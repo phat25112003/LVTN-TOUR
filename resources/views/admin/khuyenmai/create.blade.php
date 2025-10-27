@@ -79,9 +79,8 @@
             </div>
         </form>
     </div>
-@endsection
-@push('styles')
-    <style>
+
+        <style>
         /* Trang thêm khuyến mãi */
         .container {
             max-width: 900px;
@@ -216,7 +215,5 @@
             margin: 0;
             padding-left: 20px;
         }
-
-        
     </style>
-@endpush
+@endsection

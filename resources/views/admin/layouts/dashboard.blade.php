@@ -31,14 +31,14 @@
                 <a href="{{ route('admin.profile') }}" class="{{ request()->routeIs('admin.profile') ? 'active' : '' }}">
                     <i class="fa-solid fa-user"></i> Thông tin cá nhân</a>
             </li>
+                        <li><a href="{{ route('admin.tongquat.index') }}" class="{{ request()->routeIs('admin.tongquat.index') ? 'active' : '' }}"><i class="fa-solid fa-chart-line"></i> Tổng quan admin</a></li>
+            <li><a href="{{ route('admin.danhmuc.index') }}" class="{{ request()->routeIs('admin.danhmuc.index') ? 'active' : '' }}"><i class="fa-solid fa-list"></i> Quản lý Danh mục</a></li>
             <li><a href="{{ route('admin.tours.index') }}" class="{{ request()->routeIs('admin.tours.*') ? 'active' : '' }}"><i class="fa-solid fa-map-location-dot"></i> Quản lý Tour</a></li>
             <li><a href="{{ route('admin.nguoidung.index') }}" class="{{ request()->routeIs('admin.nguoidung.index') ? 'active' : '' }}"><i class="fa-solid fa-users"></i> Quản lý người dùng</a></li>
             <li><a href="{{ route('admin.datcho.index') }}" class="{{ request()->routeIs('admin.datcho.index') ? 'active' : '' }}"><i class="fa-solid fa-ticket"></i>Quản lý đặt tour</a></li>
             <li><a href="{{ route('admin.khuyenmai.index') }}" class="{{ request()->routeIs('admin.khuyenmai.index') ? 'active' : '' }}"><i class="fa-solid fa-gift"></i> Khuyến mãi</a></li>
-            <li><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Hóa đơn</a></li>
             <li><a href="#"><i class="fa-solid fa-comments"></i> Tin nhắn</a></li>
-            <li><a href="#"><i class="fa-solid fa-chart-line"></i> Thống kê</a></li>
-            <li><a href="#"><i class="fa-solid fa-user-shield"></i> Quản trị viên</a></li>
+
             <form action="{{ route('admin.logout') }}" method="POST" class="logout-form text-center">
                 @csrf
                 <button type="submit" class="btn btn-sm btn-danger logout-btn">

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h3 style="text-align: center" class="mb-4">Thông tin cá nhân</h3>
+    <h3 class="text-center mb-4 fw-bold text-primary">Thông tin cá nhân</h3>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

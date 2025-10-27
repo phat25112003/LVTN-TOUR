@@ -7,17 +7,15 @@ use App\Http\Controllers\TourPublicController;
 use App\Http\Controllers\Admin\NguoiDungController;
 use App\Http\Controllers\Admin\DatChoController; 
 use App\Http\Controllers\Admin\KhuyenMaiController;
+use App\Http\Controllers\Admin\DanhMucController;
+use App\Http\Controllers\Admin\TongQuatController;
 
 Route::get('/', fn () => view('admin.login'));
 
-// Route công khai
-Route::controller(TourPublicController::class)->prefix('tours')->name('tours.')->group(function () {
-    Route::get('/', 'index')->name('index');
-    Route::get('{maTour}', 'show')->name('show');
-});
-
 // Route admin
 Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('/tongquat', [TongQuatController::class, 'index'])->name('tongquat.index');
     // Route cho AuthController
     Route::controller(AuthController::class)->group(function () {
         Route::get('login', 'showLoginForm')->name('login');
@@ -50,12 +48,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('{tour}/update-schedule', 'updateSchedule')->name('updateSchedule');
     });
 
+
     // Route cho DatChoController
     Route::controller(DatChoController::class)->middleware('auth:admin')->prefix('datcho')->name('datcho.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('{maDatCho}/xacnhan', 'xacNhan')->name('xacnhan');
+        Route::post('xacnhan-thanhtoan/{maDatCho}', 'xacNhanThanhToan')->name('xacnhan_thanhtoan'); 
+        Route::get('{maDatCho}/chi-tiet', 'show')->name('show');
+        Route::post('{maDatCho}/xuat-hoa-don', 'sendInvoice')->name('send_invoice');
     });
 
+
+    // Route cho KhuyenMaiController
     Route::controller(KhuyenMaiController::class)->middleware('auth:admin')->prefix('khuyenmai')->name('khuyenmai.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
@@ -64,5 +68,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{id}', 'update')->name('update');
         Route::delete('/{id}', 'destroy')->name('destroy');
         Route::put('/{id}/toggle-status', 'toggleStatus')->name('toggle-status');
+    });
+
+    // Route cho DanhMucController
+    Route::controller(DanhMucController::class)->middleware('auth:admin')->prefix('danhmuc')->name('danhmuc.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{maDanhMuc}/edit', 'edit')->name('edit');
+        Route::put('/{maDanhMuc}', 'update')->name('update');
+        Route::delete('/{maDanhMuc}', 'destroy')->name('destroy');
     });
 });

@@ -80,10 +80,8 @@
             </div>
         </form>
     </div>
-@endsection
 
-@push('styles')
-<style>
+    <style>
     /* Giao diện khung form */
     .container {
         max-width: 900px;
@@ -219,4 +217,4 @@
         padding-left: 20px;
     }
 </style>
-@endpush
+@endsection
