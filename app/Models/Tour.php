@@ -25,7 +25,7 @@ class Tour extends Model
 
     public function hinhAnh()
     {
-        return $this->hasMany(HinhAnh::class, 'tourid', 'maTour');
+        return $this->hasMany(HinhAnh::class, 'maTour', 'maTour');
     }
 
     public function danhGia()
@@ -48,6 +48,16 @@ class Tour extends Model
         return $this->hasMany(LichSu::class, 'maTour', 'maTour');
     }
 
+    public function lichtrinh()
+    {
+        return $this->hasMany(LichTrinh::class, 'maTour', 'maTour');
+    }
+
+    public function danhmuc()
+    {
+        return $this->belongsTo(DanhMuc::class, 'maDanhMuc', 'maDanhMuc');
+    }
+    
     protected $casts = [
         'ngayBatDau' => 'date:Y-m-d',
         'ngayKetThuc' => 'date:Y-m-d',

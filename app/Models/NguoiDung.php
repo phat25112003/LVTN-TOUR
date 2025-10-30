@@ -3,14 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class NguoiDung extends Model
+class NguoiDung extends Authenticatable
 {
     protected $table = 'nguoidung';
     protected $primaryKey = 'maNguoiDung';
-    protected $fillable = ['tenDangNhap', 'matKhau', 'email', 'soDienThoai', 'diaChi', 'tinhTrang', 'avatar', 'gioiTinh'];
+    protected $fillable = ['tenDangNhap','hoTen','matKhau', 'email', 'soDienThoai', 'diaChi', 'tinhTrang', 'avatar', 'gioiTinh'];
     public $timestamps = false;
 
+    public function getAuthPassword()
+    {
+        return $this->matKhau;
+    }
     public function danhGia()
     {
         return $this->hasMany(DanhGia::class, 'maNguoiDung', 'maNguoiDung');

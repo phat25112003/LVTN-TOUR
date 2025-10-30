@@ -73,11 +73,19 @@
             </div>
         </div>
 
-        <div class="mb-3">
+        <div class="col-md-6 mb-3">
             <label class="form-label">Hình ảnh Tour</label>
             <input type="file" name="hinhAnh[]" multiple class="form-control">
+            
         </div>
-
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Danh Mục</label>
+            <select name="maDanhMuc" class="form-select" required>
+                <option value="">-- Chọn Danh Mục --</option>
+                @foreach($danhmucs as $dm)
+                    <option value="{{ $dm->maDanhMuc }}">{{ $dm->tenDanhMuc }}</option>
+                @endforeach
+            </select>
         <button type="submit" class="btn btn-success">Lưu và Tạo Lịch Trình</button>
     </form>
 </div>

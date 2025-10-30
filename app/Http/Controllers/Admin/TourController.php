@@ -13,6 +13,7 @@ use App\Models\ThanhToan;
 use App\Models\Tour;
 use App\Models\NguoiDung;
 use App\Models\LichTrinh;
+use App\Models\DanhMuc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -27,7 +28,8 @@ class TourController extends Controller
 
     public function create()
     {
-        return view('admin.tours.create');
+        $danhmucs = DanhMuc::all();
+        return view('admin.tours.create',compact('danhmucs'));
     }
 
     public function store(Request $request)
@@ -46,6 +48,7 @@ class TourController extends Controller
             'tinhTrang'     => 'required|boolean',
             'hinhAnh'       => 'nullable|array|max:7',
             'hinhAnh.*'     => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|max:51200',
+            'maDanhMuc'     => 'required|exists:danhmuc,maDanhMuc',
         ]);
 
         // Lưu tour mới
@@ -178,7 +181,7 @@ class TourController extends Controller
     public function show($maTour)
     {
         $tour = Tour::findOrFail($maTour);
-        $hinhAnh = HinhAnh::where('tourid', $maTour)->get();
+        $hinhAnh = HinhAnh::where('maTour', $maTour)->get();
         $lichTrinh = LichTrinh::where('maTour', $maTour)->get();
         return view('admin.tours.show', compact('tour', 'hinhAnh', 'lichTrinh'));
     }
@@ -186,9 +189,11 @@ class TourController extends Controller
     public function edit($maTour)
     {
         $tour = Tour::findOrFail($maTour);
-        $hinhAnh = HinhAnh::where('tourid', $maTour)->get();
+        $hinhAnh = HinhAnh::where('maTour', $maTour)->get();
         $lichTrinh = LichTrinh::where('maTour', $maTour)->get();
-        return view('admin.tours.edit', compact('tour', 'hinhAnh', 'lichTrinh'));
+        $danhmucs = DanhMuc::all();
+        
+        return view('admin.tours.edit', compact('tour', 'hinhAnh', 'lichTrinh', 'danhmucs'));
     }
 
     public function update(Request $request, $maTour)
@@ -295,7 +300,7 @@ class TourController extends Controller
         protected function updateHinhAnhCount($maTour)
         {
             $tour = Tour::findOrFail($maTour);
-            $hinhAnhCount = HinhAnh::where('tourid', $maTour)->count();
+            $hinhAnhCount = HinhAnh::where('maTour', $maTour)->count();
             $tour->update(['hinhAnh' => $hinhAnhCount]);
         }
 

@@ -43,6 +43,7 @@
                         {{ $tour->tinhTrang ? 'Hoạt động' : 'Ngưng' }}
                     </span>
                 </td>
+                
                 <td>
                     <div class="action-buttons">
                         <a href="{{ route('admin.tours.show', $tour->maTour) }}" class="btn-action btn-view">Xem</a>

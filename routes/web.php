@@ -6,14 +6,23 @@ use App\Http\Controllers\Admin\TourController;
 use App\Http\Controllers\TourPublicController;
 use App\Http\Controllers\Admin\NguoiDungController;
 use App\Http\Controllers\Admin\DatChoController; 
+use App\Http\Controllers\User\TourUserController;
+use App\Http\Controllers\User\TourDetailController;
+use App\Http\Controllers\Admin\DanhMucController;
+use App\Http\Controllers\User\DatTourController;
+use App\Http\Controllers\User\UserAuthController;
+use App\Http\Controllers\User\DangKyController;
+use App\Http\Controllers\User\GoogleLoginController;
 
-Route::get('/', fn () => view('admin.login'));
+// 👉 Route trang chủ — lấy dữ liệu tours
+Route::get('/', [TourUserController::class, 'index'])->name('home');
+
 
 // Route công khai
-Route::controller(TourPublicController::class)->prefix('tours')->name('tours.')->group(function () {
-    Route::get('/', 'index')->name('index');
-    Route::get('{maTour}', 'show')->name('show');
-});
+// Route::controller(TourPublicController::class)->prefix('tours')->name('tours.')->group(function () {
+//     Route::get('/', 'index')->name('index');
+//     Route::get('{maTour}', 'show')->name('show');
+// });
 
 // Route admin
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -34,7 +43,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('{maNguoiDung}', 'destroy')->name('destroy');
     });
 
-    // Route cho TourController
+    // Route cho TourController (admin)
     Route::controller(TourController::class)->middleware('auth:admin')->prefix('tours')->name('tours.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('create', 'create')->name('create');
@@ -54,4 +63,32 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('{maDatCho}/xacnhan', 'xacNhan')->name('xacnhan');
     });
+    // Route cho DanhMucController
+    Route::controller(DanhMucController::class)->middleware('auth:admin')->prefix('danhmuc')->name('danhmuc.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::delete('{maDanhMuc}', 'destroy')->name('destroy');   
+        Route::get('{maDanhMuc}/edit', 'edit')->name('edit');
+        Route::put('{maDanhMuc}', 'update')->name('update');
+    });
+    
 });
+Route::get('/tours/{maTour}', [TourDetailController::class, 'show'])->name('tour.detail');
+
+Route::get('/tours', [TourUserController::class, 'search'])->name('tour.list');
+
+Route::controller(DatTourController::class)->prefix('user')->name('dattour.')->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('create/{maTour}', 'create')->name('create');
+    Route::post('/', 'store')->name('store');
+});
+Route::controller(UserAuthController::class)->prefix('user')->name('user.')->group(function () {
+    Route::get('login', 'index')->name('login');
+    Route::post('login', 'login')->name('login.post');
+    Route::get('logout', 'logout')->name('logout');
+});
+Route::get('user/dangky', [DangKyController::class, 'showRegistrationForm'])->name('user.dangky');
+Route::post('user/dangky', [DangKyController::class, 'register'])->name('user.dangky.post');
+
+

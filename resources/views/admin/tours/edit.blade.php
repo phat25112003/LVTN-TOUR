@@ -94,7 +94,16 @@
             <label class="form-label">Thêm hình ảnh mới</label>
             <input type="file" name="hinhAnh[]" multiple class="form-control">
         </div>
-
+        <div class="mb-3">
+            <label class="form-label">Danh Mục</label>
+            <select name="maDanhMuc" class="form-select" required>
+                @foreach($danhmucs as $dm)
+                    <option value="{{ $dm->maDanhMuc }}" {{ $tour->maDanhMuc == $dm->maDanhMuc ? 'selected' : '' }}>
+                        {{ $dm->tenDanhMuc }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
         <div class="d-flex justify-content-between">
             <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
             <button type="submit" name="updateSchedule" value="1" class="btn btn-warning">Cập nhật lịch trình</button>
