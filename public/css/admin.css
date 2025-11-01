@@ -163,6 +163,13 @@ body {
 }
 
 /* Buttons */
+.text-center a {
+    background-color: #0080ff;
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
 .btn {
     border-radius: 25px;
     padding: 10px 25px;
@@ -888,7 +895,7 @@ h3 {
 
 /* Thẻ người dùng */
 .user-card {
-    background: #ffffff;
+    background: #acb9e8;
     border-radius: 14px;
     padding: 20px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.05);

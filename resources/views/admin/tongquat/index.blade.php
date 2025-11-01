@@ -37,7 +37,7 @@
     {{-- Nhóm: Biểu đồ thanh toán + Bảng tour được đặt nhiều --}}
     <div class="charts-row combined-card">
         <div class="table-box top-tours">
-            <label>🔥Top 5 Tour Được Đặt Nhiều Nhất</label>
+            <label>🔥Top 5 Tour Nổi Bật</label>
             <table>
                 <thead>
                     <tr>
@@ -114,6 +114,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+
     Chart.register(ChartDataLabels); // Đăng ký plugin
 
     const revenueCtx = document.getElementById("revenueChart");

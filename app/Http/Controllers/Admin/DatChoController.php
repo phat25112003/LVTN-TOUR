@@ -11,10 +11,6 @@ use App\Mail\InvoiceMail; // <-- Đảm bảo dòng này tồn tại và không 
 
 class DatChoController extends Controller
 {
-    /**
-     * Hiển thị danh sách đặt chỗ.
-     * Thêm eager load 'hoadon' để kiểm tra trạng thái hóa đơn trên View Index.
-     */
     public function index()
     {
         // Eager load quan hệ thanhtoan VÀ hoadon
@@ -126,7 +122,7 @@ class DatChoController extends Controller
             [
                 'soTien' => $datCho->tongGia,
                 'ngayTao' => now(),
-                // 'chiTiet' => 'Hóa đơn đặt tour ' . $datCho->tour->tieuDe, // Có thể thêm chi tiết nếu cần
+                'chiTiet' => 'Hóa đơn đặt tour ' . $datCho->tour->tieuDe, // Có thể thêm chi tiết nếu cần
                 'trangThai' => 'Chờ gửi'
             ]
         );

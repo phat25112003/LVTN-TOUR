@@ -9,7 +9,7 @@
             <div class="notify notify-success">{{ session('success') }}</div>
         @endif
 
-        <a href="{{ route('admin.khuyenmai.create') }}" class="add-button">Thêm Khuyến Mãi</a>
+        <a href="{{ route('admin.khuyenmai.create') }}" class="add-btn">+ Thêm Khuyến Mãi</a>
         
         {{-- Đổi tên class bao ngoài bảng --}}
         <div class="admin-card">
@@ -41,7 +41,7 @@
                             </td>
                             <td>
                                 {{-- Dùng class status-success/status-pending theo mẫu --}}
-                                <span class="status-badge status {{ $km->tinhTrang ? 'status-active' : 'status-inactive' }}">
+                                <span class="status-badge {{ $km->tinhTrang ? 'status-active' : 'status-inactive' }}">
                                     {{ $km->tinhTrang ? 'Kích hoạt' : 'Ngưng' }}
                                 </span>
                             </td>
@@ -53,13 +53,13 @@
                                     {{ $km->tinhTrang ? 'Ngưng' : 'Kích hoạt' }}
                                 </button>
 
-                                <a href="{{ route('admin.khuyenmai.edit', $km->id) }}" class="edit-button">Sửa</a>
+                                <a href="{{ route('admin.khuyenmai.edit', $km->id) }}" class="btn-action btn-edit">Sửa</a>
 
                                 
                                 <form action="{{ route('admin.khuyenmai.destroy', $km->id) }}" method="POST" class="inline-form" onsubmit="return confirm('Bạn có chắc muốn xóa?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="delete-button action-button btn-confirm">Xóa</button>
+                                    <button type="submit" class="btn-action btn-delete">Xóa</button>
                                 </form>
                             </td>
                         </tr>

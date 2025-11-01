@@ -233,10 +233,10 @@
                     <div class="timeline-card">
                         <h5>Ngày {{ \Carbon\Carbon::parse($tour->ngayBatDau)->addDays($item->ngay - 1)->format('d/m/Y') }}</h5>
                         <p><strong>Hướng đi:</strong> {{ $item->huongDi }}</p>
-                        <p><span class="meal-label">Sáng:</span> {{ $item->sang ?? 'Chưa cập nhật' }}</p>
-                        <p><span class="meal-label">Trưa:</span> {{ $item->trua ?? 'Chưa cập nhật' }}</p>
-                        <p><span class="meal-label">Chiều:</span> {{ $item->chieu ?? 'Chưa cập nhật' }}</p>
-                        <p><span class="meal-label">Tối:</span> {{ $item->toi ?? 'Chưa cập nhật' }}</p>
+                        <p><span class="meal-label">Sáng:</span> {{ $item->sang ?? 'Có thể phát sinh' }}</p>
+                        <p><span class="meal-label">Trưa:</span> {{ $item->trua ?? 'Có thể phát sinh' }}</p>
+                        <p><span class="meal-label">Chiều:</span> {{ $item->chieu ?? 'Có thể phát sinh' }}</p>
+                        <p><span class="meal-label">Tối:</span> {{ $item->toi ?? 'Có thể phát sinh' }}</p>
                     </div>
                 </div>
             @endforeach

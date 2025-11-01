@@ -34,7 +34,7 @@
                     </div>
 
                     <div class="action-buttons">
-                        <button class="toggle-status btn btn-sm 
+                        <button class="toggle-status btn-sm 
                             {{ $nguoiDung->tinhTrang ? '' : 'status-inactive' }}" 
                             data-id="{{ $nguoiDung->maNguoiDung }}" 
                             data-status="{{ $nguoiDung->tinhTrang }}">
@@ -43,7 +43,7 @@
                         <form action="{{ route('admin.nguoidung.destroy', $nguoiDung->maNguoiDung) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                            <button type="submit" class="btn-delete btn-sm">Xóa</button>
                         </form>
                     </div>
                 </div>

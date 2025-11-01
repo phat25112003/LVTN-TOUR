@@ -61,7 +61,7 @@
                             @php
                                 $ttThanhToan = $datCho->thanhtoan->tinhTrangThanhToan ?? 'Chưa tạo TT';
                                 $statusClass = ($ttThanhToan === 'Đã thanh toán') ? 'status-ok' : 'status-warning';
-                                $statusText = ($ttThanhToan === 'Chưa tạo TT') ? 'Chờ TT' : $ttThanhToan;
+                                $statusText = ($ttThanhToan === 'Chưa tạo Thanh Toán') ? 'Chờ Thanh Toán' : $ttThanhToan;
                             @endphp
                             <span class="status {{ $statusClass }}">
                                 {{ $statusText }}
@@ -79,7 +79,7 @@
                         
                         <td>
                             @php
-                                $ttHoaDon = $datCho->hoadon->trangThai ?? 'Chưa tạo HĐ';
+                                $ttHoaDon = $datCho->hoadon->trangThai ?? 'Chưa tạo Hóa Đơn';
                                 $hdClass = ($ttHoaDon === 'Đã gửi') ? 'status-ok' : (($ttHoaDon === 'Chưa tạo Hóa Đơn') ? 'status-default' : 'status-warning');
                             @endphp
                             <span class="status {{ $hdClass }}">
@@ -93,26 +93,28 @@
                             @endphp
 
                             {{-- NÚT XEM CHI TIẾT --}}
-                            <a style="text-decoration: none;"  href="{{ route('admin.datcho.show', $datCho->maDatCho) }}" style="display: inline-block;">
-                                Xem Chi Tiết
-                            </a>     
+                            <a class="btn-action btn-view" style="text-decoration: none;"  href="{{ route('admin.datcho.show', $datCho->maDatCho) }}" style="display: inline-block;">
+                                Xem
+                            </a>
+                            <div>---</div>
                             {{-- NÚT XÁC NHẬN ĐẶT CHỖ (chỉ hiển thị khi CHƯA xác nhận) --}}
                             @if (!$datCho->xacNhan)
                                 {{-- Kiểm tra nếu đã thanh toán, hiển thị nút Xác Nhận chính --}}
                                 @if ($ttThanhToan === 'Đã thanh toán')
                                     <form action="{{ route('admin.datcho.xacnhan', $datCho->maDatCho) }}" method="POST" class="inline-form">
                                         @csrf
-                                        <button type="submit" class="btn-confirm mb-1">Xác Nhận Booking</button>
+                                        <button style="background-color:darkgreen;" type="submit" class="btn-action btn-edit">Xác Nhận Booking</button>
                                     </form>
                                 @else
-                                    <button class="btn-disabled mb-1" disabled title="Cần thanh toán trước">Chờ TT</button>
+                                    <button class="btn-disabled mb-1" disabled title="Cần thanh toán trước">Chờ Thanh Toán</button>
                                 @endif
+                                <div>---</div>
 
                                 {{-- NÚT XÁC NHẬN THANH TOÁN (chỉ hiển thị cho phương thức tại văn phòng) --}}
                                 @if ($datCho->phuongThucThanhToan === 'tại văn phòng' && $ttThanhToan !== 'Đã thanh toán')
                                     <form action="{{ route('admin.datcho.xacnhan_thanhtoan', $datCho->maDatCho) }}" method="POST" class="inline-form">
                                         @csrf
-                                        <button type="submit" class="btn-secondary" onclick="return confirm('Xác nhận đã nhận tiền mặt tại văn phòng?');">
+                                        <button style="background-color:darkgoldenrod;" type="submit" class="btn-action btn-delete" onclick="return confirm('Xác nhận đã nhận tiền mặt tại văn phòng?');">
                                             Xác nhận Thanh Toán
                                         </button>
                                     </form>

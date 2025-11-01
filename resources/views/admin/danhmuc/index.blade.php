@@ -10,7 +10,7 @@
     @endif
 
     {{-- Sử dụng class mới nếu bạn muốn thay đổi màu nút Add --}}
-    <a href="{{ route('admin.danhmuc.create') }}" class="btn btn-success mb-3">
+    <a href="{{ route('admin.danhmuc.create') }}" class="add-btn">
         + Thêm Danh mục
     </a>
 
@@ -27,12 +27,12 @@
                 <tr>
                     <td>{{ $danhmuc->tenDanhMuc }}</td>
                     <td>
-                        <a href="{{ route('admin.danhmuc.edit', $danhmuc->maDanhMuc) }}" class="btn btn-warning btn-sm">Sửa</a>
+                        <a href="{{ route('admin.danhmuc.edit', $danhmuc->maDanhMuc) }}" class="btn-action btn-edit">Sửa</a>
                         {{-- Thêm class inline-form --}}
                         <form action="{{ route('admin.danhmuc.destroy', $danhmuc->maDanhMuc) }}" method="POST" class="inline-form" onsubmit="return confirm('Bạn có chắc muốn xóa?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                            <button type="submit" class="btn-action btn-delete">Xóa</button>
                         </form>
                     </td>
                 </tr>

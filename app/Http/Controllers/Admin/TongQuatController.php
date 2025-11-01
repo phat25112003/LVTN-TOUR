@@ -52,7 +52,7 @@ class TongQuatController extends Controller
         $toursDangHoatDong = Tour::where('tinhTrang', operator: 1)
             ->select('maTour', 'tieuDe', 'diemDen', 'giaNguoiLon', 'giaTreEm', 'ngayBatDau', 'ngayKetThuc')
             ->orderBy('ngayBatDau', 'desc')
-            ->take(5)
+            // ->take(5)
             ->get();
 
         // 4️⃣ Top tour được đặt nhiều nhất
@@ -63,22 +63,24 @@ class TongQuatController extends Controller
             ->take(5)
             ->get();
 
-        // 4️⃣ Biểu đồ tròn phương thức thanh toán
-        $paymentMethods = ThanhToan::select(
-                'phuongThucThanhToan',
-                DB::raw('COUNT(*) as count')
-            )
-            ->groupBy('phuongThucThanhToan')
-            ->pluck('count', 'phuongThucThanhToan')
-            ->toArray();
+        // 6️⃣ Tạo biểu đồ tròn phương thức thanh toán VỚI HIỂN THỊ PHẦN TRĂM
+        $paymentMethodsRaw = ThanhToan::select(
+            'phuongThucThanhToan',
+            DB::raw('COUNT(*) as count')
+        )
+        ->groupBy('phuongThucThanhToan')
+        ->pluck('count', 'phuongThucThanhToan')
+        ->toArray();
 
-        // Định dạng tên phương thức thanh toán cho dễ đọc
-        $paymentMethods = array_map(function ($key, $value) {
+        $totalPayments = array_sum($paymentMethodsRaw);
+        $paymentMethods = array_map(function ($key, $value) use ($totalPayments) {
+            $percentage = $totalPayments > 0 ? round(($value / $totalPayments) * 100, 1) : 0;
             return [
-                'name' => ucfirst(str_replace('_', ' ', $key)), // Chuyển đổi 'tại văn phòng' thành 'Tại Văn Phòng'
-                'count' => $value,
+                'name' => ucfirst(str_replace('_', ' ', $key)),
+                'count' => $percentage, // Lưu phần trăm trực tiếp
             ];
-        }, array_keys($paymentMethods), $paymentMethods);
+        }, array_keys($paymentMethodsRaw), $paymentMethodsRaw);
+
 
         // 5️⃣ Tạo biểu đồ doanh thu theo tháng
         $revenueChart = [
@@ -113,25 +115,6 @@ class TongQuatController extends Controller
                 ],
             ],
         ];
-
-
-        // 6️⃣ Tạo biểu đồ tròn phương thức thanh toán VỚI HIỂN THỊ PHẦN TRĂM
-        $paymentMethodsRaw = ThanhToan::select(
-            'phuongThucThanhToan',
-            DB::raw('COUNT(*) as count')
-        )
-        ->groupBy('phuongThucThanhToan')
-        ->pluck('count', 'phuongThucThanhToan')
-        ->toArray();
-
-        $totalPayments = array_sum($paymentMethodsRaw);
-        $paymentMethods = array_map(function ($key, $value) use ($totalPayments) {
-            $percentage = $totalPayments > 0 ? round(($value / $totalPayments) * 100, 1) : 0;
-            return [
-                'name' => ucfirst(str_replace('_', ' ', $key)),
-                'count' => $percentage, // Lưu phần trăm trực tiếp
-            ];
-        }, array_keys($paymentMethodsRaw), $paymentMethodsRaw);
 
         $paymentChart = [
             'type' => 'pie',
@@ -185,7 +168,6 @@ class TongQuatController extends Controller
                         'right' => 1,
                     ],
                 ],
-                // Tùy chỉnh kích thước canvas (tùy thuộc vào view)
                 'aspectRatio' => 1.2, // Giảm tỷ lệ để biểu đồ to hơn (giá trị nhỏ hơn làm biểu đồ cao hơn)
             ],
         ];
