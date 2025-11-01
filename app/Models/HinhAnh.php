@@ -7,11 +7,11 @@ class HinhAnh extends Model
 {
     protected $table = 'hinhanh';
     protected $primaryKey = 'maHinhAnh';
-    protected $fillable = ['moTa', 'duongDanHinh', 'tourid'];
+    protected $fillable = ['moTa', 'duongDanHinh', 'maTour'];
     public $timestamps = false;
 
     public function tour()
     {
-        return $this->belongsTo(Tour::class, 'tourid', 'maTour');
+        return $this->belongsTo(Tour::class, 'maTour', 'maTour');
     }
 }

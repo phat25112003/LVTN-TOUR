@@ -208,7 +208,16 @@
             <div class="destination-card">
               <div class="image-wrapper">
 
-                 <img src="{{ asset('storage/' . $tour->hinhanh->first()->duongDanHinh) }}"
+                 @if ($tour->hinhanh->isNotEmpty())
+                    <img src="{{ asset('storage/' . $tour->hinhanh->first()->duongDanHinh) }}"
+                        alt="Destination"
+                        class="img-fluid">
+                @else
+                    <img src="{{ asset('assets/img/default-tour.jpg') }}"
+                        alt="No image available"
+                        class="img-fluid">
+                @endif
+
                   alt="Destination" 
                   class="img-fluid">
                 <div class="overlay">

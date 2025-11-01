@@ -2,37 +2,43 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class NguoiDung extends Authenticatable
 {
+    use Notifiable;
+
     protected $table = 'nguoidung';
     protected $primaryKey = 'maNguoiDung';
-    protected $fillable = ['tenDangNhap','hoTen','matKhau', 'email', 'soDienThoai', 'diaChi', 'tinhTrang', 'avatar', 'gioiTinh'];
+    protected $fillable = ['tenDangNhap', 'hoTen', 'matKhau', 'email', 'soDienThoai', 'diaChi', 'tinhTrang', 'avatar', 'gioiTinh'];
+    protected $hidden = ['matKhau', 'remember_token'];
     public $timestamps = false;
 
     public function getAuthPassword()
     {
         return $this->matKhau;
     }
+
+    // Mối quan hệ với bảng đánh giá (danhGia)
     public function danhGia()
     {
-        return $this->hasMany(DanhGia::class, 'maNguoiDung', 'maNguoiDung');
+        return $this->hasMany(DanhGia::class, 'maNguoiDung');
     }
 
+    // Mối quan hệ với bảng đặt chỗ (datCho)
     public function datCho()
     {
-        return $this->hasMany(DatCho::class, 'maNguoiDung', 'maNguoiDung');
+        return $this->hasMany(DatCho::class, 'maNguoiDung');
     }
 
+    // Mối quan hệ với bảng lịch sử (lichSu) - giả định tên bảng là lich_su
     public function lichSu()
     {
-        return $this->hasMany(LichSu::class, 'maNguoiDung', 'maNguoiDung');
+        return $this->hasMany(LichSu::class, 'maNguoiDung');
     }
-
-    public function isActive()
+    public function thanhtoan()
     {
-        return $this->tinhTrang == 1;
+        return $this->hasMany(Thanhtoan::class, 'maNguoiDung');
     }
 }

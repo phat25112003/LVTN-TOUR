@@ -119,7 +119,7 @@
                   <div class="step-content">
                     <div class="payment-methods">
                       <div class="payment-method active">
-                        <input type="radio" name="phuongThucThanhToan" id="credit-card" value="credit_card" >
+                        <input type="radio" name="phuongThucThanhToan" id="credit-card" value="momo" >
                         <label for="credit-card">
                           <i class="bi bi-credit-card"></i>
                           Momo
@@ -133,7 +133,7 @@
                         </label>
                       </div>
                       <div class="payment-method">
-                        <input type="radio" name="phuongThucThanhToan" id="bank-transfer" value="bank_transfer">
+                        <input type="radio" name="phuongThucThanhToan" id="bank-transfer" value="tại văn phòng">
                         <label for="bank-transfer">
                           <i class="bi bi-bank"></i>
                           Thanh toán tại văn phòng

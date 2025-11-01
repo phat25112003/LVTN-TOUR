@@ -41,7 +41,7 @@ class DatTourController extends Controller
             'ngayKetThuc' => 'required|date|after_or_equal:ngayKhoiHanh',
             'nguoiLon' => 'required|integer|min:1',
             'treEm' => 'required|integer|min:0',
-            'phuongThucThanhToan' => 'string'
+            'phuongThucThanhToan' => 'required|in:momo,paypal,tại văn phòng',
         ]);
 
         DatCho::create([
@@ -54,7 +54,7 @@ class DatTourController extends Controller
             'nguoiLon' => $validated['nguoiLon'],
             'treEm' => $validated['treEm'],
             'tongGia' => $request->tongGia, // hoặc tính toán từ giá tour
-            'phuongThucThanhToan' => $validated['phuongThucThanhToan'] ?? 'Chưa chọn',
+            'phuongThucThanhToan' => $validated['phuongThucThanhToan'],
             'xacNhan' => 0, // mặc định chờ duyệt
         ]);
 

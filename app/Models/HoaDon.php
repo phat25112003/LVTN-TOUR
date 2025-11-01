@@ -7,7 +7,7 @@ class HoaDon extends Model
 {
     protected $table = 'hoadon';
     protected $primaryKey = 'maHoaDon';
-    protected $fillable = ['maDatCho', 'soTien', 'ngayTao', 'chiTiet'];
+    protected $fillable = ['maDatCho', 'soTien', 'ngayTao', 'chiTiet', 'trangThai',];
     public $timestamps = false;
 
     public function datCho()

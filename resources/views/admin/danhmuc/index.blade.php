@@ -1,42 +1,43 @@
 @extends('admin.layouts.dashboard')
 
 @section('content')
-<div class="booking-container">
-    <h2 class="text-center mb-4 fw-bold text-primary">Danh sách Booking</h2>
+<div class="container-fluid mt-4">
+
+    <h3 class="text-center mb-4 fw-bold text-primary">Quản lý Danh mục</h3>
+
     @if (session('success'))
-        <div class="notify notify-success">{{ session('success') }}</div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    @if (session('error'))
-        <div class="notify notify-error">{{ session('error') }}</div>
-    @endif
-<a href="{{ route('admin.danhmuc.create') }}" class="add-btn">+ Thêm Danh Mục</a>
-    <div class="table-container">
-        <table class="booking-table">
-            <thead>
+    {{-- Sử dụng class mới nếu bạn muốn thay đổi màu nút Add --}}
+    <a href="{{ route('admin.danhmuc.create') }}" class="add-btn">
+        + Thêm Danh mục
+    </a>
+
+    {{-- Thay class table-striped bằng class mới --}}
+    <table class="category-admin-table">
+        <thead>
+            <tr>
+                <th>Tên Danh mục</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($danhmucs as $danhmuc)
                 <tr>
-                    <th>Tên Danh Muc</th>
-
+                    <td>{{ $danhmuc->tenDanhMuc }}</td>
+                    <td>
+                        <a href="{{ route('admin.danhmuc.edit', $danhmuc->maDanhMuc) }}" class="btn-action btn-edit">Sửa</a>
+                        {{-- Thêm class inline-form --}}
+                        <form action="{{ route('admin.danhmuc.destroy', $danhmuc->maDanhMuc) }}" method="POST" class="inline-form" onsubmit="return confirm('Bạn có chắc muốn xóa?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-action btn-delete">Xóa</button>
+                        </form>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach ($danhmucs as $dm)
-                    <tr>
-                        <td>{{ $dm->tenDanhMuc}}
-                            <div class="buttons">
-                                <a href="{{ route('admin.danhmuc.edit', $dm->maDanhMuc) }}" class="btn btn-edit">Sửa</a>
-                                <form action="{{ route('admin.danhmuc.destroy', $dm->maDanhMuc) }}" method="POST" onsubmit="return confirm('Xóa danh mục này?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-delete">Xóa</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+            @endforeach
+        </tbody>
+    </table>
 </div>
 @endsection

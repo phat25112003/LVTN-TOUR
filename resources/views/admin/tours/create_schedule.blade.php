@@ -25,11 +25,25 @@
                 <h3>Ngày {{ $i }}</h3>
                 <div class="form-group">
                     <label for="huongDi{{ $i }}">Hướng đi</label>
-                    <input type="text" name="huongDi[{{ $i }}]" id="huongDi{{ $i }}" required>
+                    <input type="text" name="huongDi[{{ $i }}]" id="huongDi{{ $i }}" class="form-control" required>
                 </div>
-                <div class="form-group">
-                    <label for="noiDung{{ $i }}">Nội dung chuyến đi</label>
-                    <textarea name="noiDung[{{ $i }}]" id="noiDung{{ $i }}" rows="3" required></textarea>
+                <div class="meal-section">
+                    <div class="meal-group">
+                        <label class="meal-label"><strong>Sáng:</strong></label>
+                        <textarea name="sang[{{ $i }}]" id="sang{{ $i }}" rows="2" class="form-control"></textarea>
+                    </div>
+                    <div class="meal-group">
+                        <label class="meal-label"><strong>Trưa:</strong></label>
+                        <textarea name="trua[{{ $i }}]" id="trua{{ $i }}" rows="2" class="form-control"></textarea>
+                    </div>
+                    <div class="meal-group">
+                        <label class="meal-label"><strong>Chiều:</strong></label>
+                        <textarea name="chieu[{{ $i }}]" id="chieu{{ $i }}" rows="2" class="form-control"></textarea>
+                    </div>
+                    <div class="meal-group">
+                        <label class="meal-label"><strong>Tối:</strong></label>
+                        <textarea name="toi[{{ $i }}]" id="toi{{ $i }}" rows="2" class="form-control"></textarea>
+                    </div>
                 </div>
             </div>
         @endfor
@@ -100,8 +114,7 @@
     color: #333;
 }
 
-.form-group input,
-.form-group textarea {
+.form-control {
     width: 100%;
     padding: 8px;
     border: 1px solid #ced4da;
@@ -110,10 +123,31 @@
     transition: border 0.2s;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
+.form-control:focus {
     border-color: #2b9084;
     outline: none;
+}
+
+/* ===== Meal Section ===== */
+.meal-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.meal-group {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 6px;
+    border-left: 3px solid #2b9084;
+}
+
+.meal-label {
+    font-weight: 600;
+    color: #2b9084;
+    margin-bottom: 5px;
+    display: block;
 }
 
 /* ===== Nút hành động ===== */
@@ -155,6 +189,7 @@
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
     .schedule-title { font-size: 18px; }
+    .meal-section { grid-template-columns: 1fr; }
     .btn-save, .btn-cancel { font-size: 13px; padding: 6px 12px; }
 }
 </style>

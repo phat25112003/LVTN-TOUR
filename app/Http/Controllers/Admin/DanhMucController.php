@@ -3,80 +3,57 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\DanhMuc;
+use Illuminate\Http\Request;
+
 class DanhMucController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
+        $admin = auth()->guard('admin')->user();
         $danhmucs = DanhMuc::all();
-        return view('admin.danhmuc.index', compact('danhmucs'));
+        return view('admin.danhmuc.index', compact('danhmucs', 'admin'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        return view('admin.danhmuc.create');
+        $admin = auth()->guard('admin')->user();
+        return view('admin.danhmuc.create' , compact('admin'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $danhmuc = new DanhMuc();
-        $danhmuc->tenDanhMuc = $request->tenDanhMuc;
-        $danhmuc->save();
-        return redirect()->route('admin.danhmuc.index')->with('success', 'Danh mục đã được tạo thành công.');
+        $request->validate([
+            'tenDanhMuc' => 'required|string|max:255|unique:danhmuc,tenDanhMuc',
+        ]);
+
+        DanhMuc::create(['tenDanhMuc' => $request->tenDanhMuc]);
+        return redirect()->route('admin.danhmuc.index')->with('success', 'Thêm danh mục thành công!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit($maDanhMuc)
     {
-        //
+        $admin = auth()->guard('admin')->user();
+        $danhmuc = DanhMuc::findOrFail($maDanhMuc);
+        return view('admin.danhmuc.edit', compact('danhmuc', 'admin'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        return view('admin.danhmuc.edit', ['danhmuc' => DanhMuc::find($id)]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $maDanhMuc)
     {
-        $danhmuc = DanhMuc::find($maDanhMuc);
-        if ($danhmuc) {
-            $danhmuc->tenDanhMuc = $request->tenDanhMuc;
-            $danhmuc->save();
-            return redirect()->route('admin.danhmuc.index')->with('success', 'Danh mục đã được cập nhật thành công.');
-        } else {
-            return redirect()->route('admin.danhmuc.index')->with('error', 'Danh mục không tồn tại.');
-        }   
+        $danhmuc = DanhMuc::findOrFail($maDanhMuc);
+
+        $request->validate([
+            'tenDanhMuc' => 'required|string|max:255|unique:danhmuc,tenDanhMuc,' . $danhmuc->maDanhMuc . ',maDanhMuc',
+        ]);
+
+        $danhmuc->update($request->all());
+        return redirect()->route('admin.danhmuc.index')->with('success', 'Cập nhật danh mục thành công!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($maDanhMuc)
     {
-        $danhmuc = DanhMuc::find($maDanhMuc);
-        if ($danhmuc) {
-            $danhmuc->delete();
-            return redirect()->route('admin.danhmuc.index')->with('success', 'Danh mục đã được xóa thành công.');
-        } else {
-            return redirect()->route('admin.danhmuc.index')->with('error', 'Danh mục không tồn tại.');
-        }   
+        $danhmuc = DanhMuc::findOrFail($maDanhMuc);
+        $danhmuc->delete();
+        return redirect()->route('admin.danhmuc.index')->with('success', 'Xóa danh mục thành công!');
     }
 }

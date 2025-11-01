@@ -8,14 +8,9 @@ class DanhMuc extends Model
 {
     protected $table = 'danhmuc';
     protected $primaryKey = 'maDanhMuc';
-    public $timestamps = false;
+    public $incrementing = true;
+    protected $keyType = 'int';
+    protected $fillable = ['tenDanhMuc'];
 
-    protected $fillable = [
-        'tenDanhMuc',
-    ];
-
-    public function tours()
-    {
-        return $this->hasMany(Tour::class, 'maDanhMuc', 'maDanhMuc');
-    }
+    public $timestamps = false; // Tắt hoàn toàn tính năng timestamps
 }

@@ -2,12 +2,11 @@
 
 @section('content')
 <div class="container-fluid mt-4">
-    <h3>Thêm Tour Mới</h3>
+    <h3 class="mb-4">Thêm Danh mục</h3>
 
     @if ($errors->any())
         <div class="alert alert-danger">
-            <strong>Lỗi!</strong> Vui lòng kiểm tra lại thông tin nhập.
-            <ul class="mt-2 mb-0">
+            <ul class="mb-0">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -15,13 +14,16 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.danhmuc.store') }}" method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded shadow-sm">
+    <form action="{{ route('admin.danhmuc.store') }}" method="POST" class="bg-white p-4 rounded shadow-sm">
         @csrf
         <div class="mb-3">
-            <label class="form-label">Danh Mục</label>
-            <input type="text" name="tenDanhMuc" class="form-control">
+            <label class="form-label">Tên Danh mục</label>
+            <input type="text" name="tenDanhMuc" class="form-control" value="{{ old('tenDanhMuc') }}" required>
         </div>
-        <button type="submit" class="btn btn-success">Lưu</button>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">Lưu</button>
+            <a href="{{ route('admin.danhmuc.index') }}" class="btn btn-danger">Hủy</a>
+        </div>
     </form>
 </div>
 @endsection

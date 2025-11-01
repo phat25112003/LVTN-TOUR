@@ -10,13 +10,17 @@ class NguoiDungController extends Controller
 {
     public function index()
     {
-        $nguoiDungs = NguoiDung::all(); // Dữ liệu có 2 bản ghi
-        return view('admin.nguoidung.index', compact('nguoiDungs'));
+        $admin = auth()->guard('admin')->user();
+        $nguoiDungs = NguoiDung::all();
+        return view('admin.nguoidung.index', compact('nguoiDungs', 'admin'));
     }
 
     public function updateStatus(Request $request, $maNguoiDung)
     {
         $nguoiDung = NguoiDung::findOrFail($maNguoiDung);
+        $request->validate([
+            'tinhTrang' => 'required|in:0,1',
+        ]);
         $nguoiDung->update(['tinhTrang' => $request->tinhTrang]);
         return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái thành công!']);
     }
@@ -25,6 +29,7 @@ class NguoiDungController extends Controller
     {
         $nguoiDung = NguoiDung::findOrFail($maNguoiDung);
         $nguoiDung->danhGia()->delete();
+        $nguoiDung->thanhtoan()->delete();
         $nguoiDung->datCho()->delete();
         $nguoiDung->lichSu()->delete();
         $nguoiDung->delete();

@@ -1,21 +1,30 @@
 @extends('admin.layouts.dashboard')
 
 @section('content')
-<div class="booking-container">
-    <h2 class="text-center mb-4 fw-bold text-primary">Danh sách Booking</h2>
-    @if (session('success'))
-        <div class="notify notify-success">{{ session('success') }}</div>
+<div class="container-fluid mt-4">
+    <h3 class="mb-4">Sửa Danh mục</h3>
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
     @endif
 
-    @if (session('error'))
-        <div class="notify notify-error">{{ session('error') }}</div>
-    @endif
-<form action="{{ route('admin.danhmuc.update', $danhmuc->maDanhMuc) }}" method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded shadow-sm">
-@csrf
-@method('PUT')
-    <div class="table-container">
-        <input type="text" name="tenDanhMuc" class="form-control" value="{{ $danhmuc->tenDanhMuc }}" required>
-    </div>
-    <button type="submit" class="btn btn-success mt-3">Lưu</button>
+    <form action="{{ route('admin.danhmuc.update', $danhmuc->maDanhMuc) }}" method="POST" class="bg-white p-4 rounded shadow-sm">
+        @csrf
+        @method('PUT')
+        <div class="mb-3">
+            <label class="form-label">Tên Danh mục</label>
+            <input type="text" name="tenDanhMuc" class="form-control" value="{{ old('tenDanhMuc', $danhmuc->tenDanhMuc) }}" required>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">Cập nhật</button>
+            <a href="{{ route('admin.danhmuc.index') }}" class="btn btn-danger">Hủy</a>
+        </div>
+    </form>
 </div>
 @endsection

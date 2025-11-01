@@ -19,6 +19,9 @@ class DatCho extends Model
         'nguoiLon',
         'treEm',
         'tongGia',
+        'diaChi',
+        'soDienThoai',
+        'email',
         'phuongThucThanhToan',
         'xacNhan',
     ];
@@ -34,5 +37,16 @@ class DatCho extends Model
     {
         return $this->belongsTo(Tour::class, 'maTour', 'maTour');
     }
+
+    public function hoadon()
+    {
+        // Sử dụng hasOne vì khóa ngoại maDatCho nằm trong bảng hoadon
+        return $this->hasOne(HoaDon::class, 'maDatCho', 'maDatCho');
+    }
+
+    public function thanhtoan()
+    {
+        // Giả định khóa ngoại là maDatCho
+        return $this->hasOne(ThanhToan::class, 'maDatCho', 'maDatCho');
+    }
 }
-?>
