@@ -57,11 +57,7 @@
             <div class="text-center mt-4">
               <p>Chưa có tài khoản? <a href="{{ route('user.dangky') }}">Đăng ký ngay</a></p>
             </div>
-            <div class="text-center mt-3">
-              <a href="{{ route('google.login') }}" class="btn btn-outline-danger w-100">
-                <i class="bi bi-google"></i> Đăng nhập bằng Google
-              </a>
-            </div>
+            
 
           </form>
 
