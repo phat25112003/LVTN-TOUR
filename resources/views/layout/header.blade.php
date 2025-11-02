@@ -9,14 +9,14 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{{ route('home') }}" class="active">Home</a></li>
-          <li><a href="about.html">About</a></li>
+          <li><a href="{{ route('home') }}" class="active">Trang chủ</a></li>
+          <!-- <li><a href="about.html">About</a></li>
           <li><a href="destinations.html">Destinations</a></li>
           <li><a href="tours.html">Tours</a></li>
           <li><a href="gallery.html">Gallery</a></li>
           <li><a href="blog.html">Blog</a></li>
-          <li class="dropdown"><a href="#"><span>More Pages</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
+          <li class="dropdown"><a href="#"><span>More Pages</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a> -->
+            <!-- <ul>
               <li><a href="destination-details.html">Destination Details</a></li>
               <li><a href="tour-details.html">Tour Details</a></li>
               <li><a href="booking.html">Booking</a></li>
@@ -45,7 +45,7 @@
               <li><a href="#">Dropdown 4</a></li>
             </ul>
           </li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="contact.html">Contact</a></li> -->
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>

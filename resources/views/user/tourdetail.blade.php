@@ -11,16 +11,11 @@
     <!-- Page Title -->
     <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
       <div class="container position-relative">
-        <h1>Tour Details</h1>
-        <p>Esse dolorum voluptatum ullam est sint nemo et est ipsa porro placeat quibusdam quia assumenda numquam molestias.</p>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="index.html">Home</a></li>
-            <li class="current">Tour Details</li>
-          </ol>
-        </nav>
+        <h1>Chi tiết hành trình</h1>
+        <p>Khám phá mọi thông tin bạn cần để chuẩn bị cho chuyến đi hoàn hảo nhất.</p>
       </div>
-    </div><!-- End Page Title -->
+    </div>
+    <!-- End Page Title -->
 
     <!-- Travel Tour Details Section -->
     <section id="travel-tour-details" class="travel-tour-details section">
@@ -30,24 +25,20 @@
         <!-- Hero Banner -->
         <div class="tour-hero">
           <div class="hero-image-wrapper">
-            <img src="{{ asset('assets/img/travel/showcase-7.webp') }}" alt="Mediterranean Coast Adventure" class="hero-image">
+            <img src="{{ asset('storage/' . $tourdetail->hinhanh->first()->duongDanHinh) }}" alt="Mediterranean Coast Adventure" class="hero-image">
             <div class="hero-overlay">
               <div class="hero-content">
                 <span class="tour-type">{{ $tourdetail->danhmuc->tenDanhMuc }}</span>
-                <h1>Mediterranean Coast Discovery</h1>
-                <p class="hero-subtitle">Immerse yourself in ancient history and coastal splendor across Italy's most captivating destinations</p>
+                <h1>{{ $tourdetail->tieuDe }}</h1>
                 <div class="hero-stats">
                   <span class="stat-item">
                     <i class="bi bi-clock"></i>
-                    10 Days
+                    {{ $tourdetail->thoiGian }}
                   </span>
-                  <span class="stat-item">
-                    <i class="bi bi-geo-alt"></i>
-                    Rome • Florence • Amalfi
-                  </span>
+                  
                   <span class="stat-item">
                     <i class="bi bi-people"></i>
-                    Max 16 Guests
+                    số lượng còn {{ $tourdetail->soLuong }}
                   </span>
                 </div>
               </div>
@@ -64,7 +55,7 @@
                     <h2>{{ $tourdetail->tieuDe }}</h2>
                     <p>{{ $tourdetail->moTa }}</p>
 
-                    <div class="highlights-compact">
+                    <!-- <div class="highlights-compact">
                       <div class="highlight-item">
                         <i class="bi bi-palette"></i>
                         <span>Renaissance Art Tours</span>
@@ -81,13 +72,13 @@
                         <i class="bi bi-car-front"></i>
                         <span>Private Transport</span>
                       </div>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
               </div>
             </div>
             <!-- Inclusions Overview -->
-            <div class="inclusions-overview">
+            <!-- <div class="inclusions-overview">
               <div class="row">
                 <div class="col-lg-6">
                   <div class="included-section">
@@ -152,7 +143,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
             <!-- Booking Section -->
             <div class="booking-section" id="booking">
               <div class="row">
@@ -304,13 +295,28 @@
                   <div class="timeline-content">
                     <div class="day-header">
                       <h3>{{ $lt->huongDi }}</h3>
-                      <span class="location">Rome</span>
+                      
                     </div>
                     <p>{{ $lt->noiDung }}</p>
                     <div class="day-features">
-                      <span class="feature-tag">Hotel Del Greco</span>
-                      <span class="feature-tag">Welcome Dinner</span>
+                      <div class="feature-item">
+                        <h5>Sáng</h5>
+                        <span>{{ $lt->sang }}</span>
+                      </div>
+                      <div class="feature-item">
+                        <h5>Trưa</h5>
+                        <span>{{ $lt->trua }}</span>
+                      </div>
+                      <div class="feature-item">
+                        <h5>Chiều</h5>
+                        <span>{{ $lt->chieu }}</span>
+                      </div>
+                      <div class="feature-item">
+                        <h5>Tối</h5>
+                        <span>{{ $lt->toi }}</span>
+                      </div>
                     </div>
+
                   </div>
                 </div>
                 @endforeach
@@ -321,13 +327,12 @@
           <div class="tour-booking">
                 <div class="pricing-card">
                   <div class="price-header">
-                    <span class="price-label">From</span>
-                    <span class="price-amount">€3,450</span>
+                    <span class="price-label">Chỉ từ</span>
+                    <span class="price-amount">{{ $tourdetail->giaNguoiLon }}</span>
                   </div>
-                  <p class="price-description">per person, twin accommodation</p>
                   <a href="{{ route('dattour.create', ['maTour'=>$tourdetail->maTour] )}}" class="btn-reserve">Đặt chỗ ngay</a>
                   <div class="booking-notes">
-                    <span><i class="bi bi-shield-check"></i>Free cancellation up to 48h</span>
+                    <span><i class="bi bi-shield-check"></i>Có thể hủy miễn phí trong vòng 48h</span>
                   </div>
                 </div>
 
@@ -358,14 +363,14 @@
             @endforeach
             <div class="gallery-piece medium">
               <a href="{{ asset('assets/img/travel/tour-10.webp') }}" class="glightbox">
-                <img src="{{ asset('storage/' . $tourdetail->hinhanh->skip(5)->first()->duongDanHinh) }}" alt="Scenic Landscapes" class="img-fluid" loading="lazy">
+                <img src="{{ asset('storage/' . optional($tourdetail->hinhanh->skip(5)->first())->duongDanHinh ?? 'assets/img/travel/default-image.jpg') }}" alt="Scenic Landscapes" class="img-fluid" loading="lazy">
               </a>
             </div>
           </div>
         </div>
 
         <!-- Final Call to Action -->
-        <div class="final-call">
+        <!-- <div class="final-call">
           <div class="call-content">
             <h2>Your Italian Odyssey Awaits</h2>
             <p>Embark on a journey that transcends ordinary travel. Let us craft memories that will last a lifetime.</p>
@@ -377,7 +382,7 @@
               </a>
             </div>
           </div>
-        </div>
+        </div> -->
 
       </div>
 

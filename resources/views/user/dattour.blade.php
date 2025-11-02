@@ -10,14 +10,8 @@
     <!-- Page Title -->
     <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
       <div class="container position-relative">
-        <h1>Booking</h1>
-        <p>Esse dolorum voluptatum ullam est sint nemo et est ipsa porro placeat quibusdam quia assumenda numquam molestias.</p>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="index.html">Home</a></li>
-            <li class="current">Booking</li>
-          </ol>
-        </nav>
+        <h1>Đặt Tour</h1>
+        <p>Bắt đầu hành trình của bạn chỉ với vài bước đơn giản.</p>
       </div>
     </div><!-- End Page Title -->
 

@@ -3969,7 +3969,7 @@ section,
 .travel-tour-details .tour-hero .hero-image-wrapper .hero-overlay .hero-content .tour-type {
   display: inline-block;
   background: color-mix(in srgb, var(--contrast-color), transparent 80%);
-  color: var(--contrast-color);
+  color: var(--default-color);
   padding: 8px 20px;
   border-radius: 20px;
   font-size: 0.85rem;
