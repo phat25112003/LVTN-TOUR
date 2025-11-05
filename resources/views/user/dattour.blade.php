@@ -35,6 +35,7 @@
                     <input type="hidden" id="grand-total-input" name="tongGia" value="0">
                     <input type="hidden" name="ngayKhoiHanh" value="{{ $tour->chuyentour->first()->ngayBatDau }}">
                     <input type="hidden" name="ngayKetThuc" value="{{ $tour->chuyentour->first()->ngayKetThuc }}">
+                    <input type="hidden" name="maChuyen" id="maChuyen-input" value="">
                     <input type="hidden" name="maTour" value="{{ $tour->maTour }}">
                   </div>
                   <div class="step-content">
@@ -68,104 +69,7 @@
                   </div>
                 </div>
                 <div id="calendar" style="max-width:900px;margin:30px auto;"></div>
-                <script>
-                  document.addEventListener('DOMContentLoaded', function() {
-                    const calendarEl = document.getElementById('calendar');
 
-                    // Giá mặc định ban đầu (từ chuyến đầu tiên)
-                    let currentPrices = {
-                      adult: {{ $tour->giaTour->first()->nguoiLon }},
-                      child: {{ $tour->giaTour->first()->treEm }},
-                      baby: {{ $tour->giaTour->first()->emBe }}
-                    };
-
-                    // Số lượng hành khách
-                    let counts = {
-                      adult: 1,
-                      child: 0,
-                      baby: 0
-                    };
-
-                    // Cập nhật tổng tiền
-                    function updateTotal() {
-                      const total = 
-                        counts.adult * currentPrices.adult +
-                        counts.child * currentPrices.child +
-                        counts.baby * currentPrices.baby;
-
-                      document.getElementById('adult-total').textContent = formatCurrency(counts.adult * currentPrices.adult);
-                      document.getElementById('child-total').textContent = formatCurrency(counts.child * currentPrices.child);
-                      document.getElementById('baby-total').textContent = formatCurrency(counts.baby * currentPrices.baby);
-                      document.getElementById('grand-total').textContent = formatCurrency(total);
-
-                      // Cập nhật hidden inputs
-                      document.getElementById('adult-input').value = counts.adult;
-                      document.getElementById('child-input').value = counts.child;
-                      document.getElementById('baby-input').value = counts.baby;
-                      document.getElementById('grand-total-input').value = total;
-                    }
-
-                    // Format tiền tệ
-                    function formatCurrency(amount) {
-                      return new Intl.NumberFormat('vi-VN', {
-                        style: 'currency',
-                        currency: 'VND'
-                      }).format(amount);
-                    }
-
-                    // Khởi tạo FullCalendar
-                    const calendar = new FullCalendar.Calendar(calendarEl, {
-                      initialView: 'dayGridMonth',
-                      locale: 'vi',
-                      timeZone: 'local',
-                      height: 'auto',
-                      events: '/api/tour-dates/{{ $tour->maTour }}',
-                      eventClick: function(info) {
-                        const props = info.event.extendedProps;
-
-                        // Cập nhật giá hiện tại từ chuyến được chọn
-                        currentPrices = {
-                          adult: props.giaNguoiLon,
-                          child: props.giaTreEm,
-                          baby: props.giaEmBe
-                        };
-
-                        // Cập nhật ngày
-                        document.querySelector('input[name="ngayKhoiHanh"]').value = info.event.startStr;
-                        document.querySelector('input[name="ngayKetThuc"]').value = props.ngayKetThuc;
-
-                        document.querySelector('.booking-details .detail-row:nth-child(1) span:last-child').textContent = info.event.startStr;
-                        document.querySelector('.booking-details .detail-row:nth-child(2) span:last-child').textContent = props.ngayKetThuc;
-
-                        // Cập nhật lại tổng tiền với giá mới
-                        updateTotal();
-
-                        // Highlight event đã chọn (tùy chọn)
-                        calendar.getEvents().forEach(ev => ev.setProp('backgroundColor', ''));
-                        info.event.setProp('backgroundColor', '#007bff');
-                      }
-                    });
-
-                    calendar.render();
-
-                    // Xử lý nút + / - số lượng hành khách
-                    document.querySelectorAll('.btn-plus, .btn-minus').forEach(btn => {
-                      btn.addEventListener('click', function() {
-                        const target = this.getAttribute('data-target');
-                        const change = this.classList.contains('btn-plus') ? 1 : -1;
-
-                        if (counts[target] + change >= 0) {
-                          counts[target] += change;
-                          document.getElementById(target + '-count').textContent = counts[target];
-                          updateTotal();
-                        }
-                      });
-                    });
-
-                    // Khởi tạo tổng tiền lần đầu
-                    updateTotal();
-                  });
-                </script>
                 <div class="booking-step" id="step-3">
                   <div class="step-header">
                     <h3>Hành Khách</h3>
@@ -311,6 +215,10 @@
                     <span>Ngày Kết Thúc:</span>
                     <span>--/--/----</span>
                   </div>
+                  <div class="detail-row">
+                    <span>Mã chuyến:</span>
+                    <span id="ma-chuyen-display">-</span>
+                  </div>
                 </div>
                 <div class="price-breakdown">
                   <input type="hidden" id="adult-price" value="{{ $tour->giaTour->first()->nguoiLon }}">
@@ -403,6 +311,17 @@
     </div>
   </div>
 </div>
+<script>
+  // Truyền dữ liệu từ PHP sang JS toàn cục
+  window.initialPrices = {
+    adult: {{ $tour->giaTour->first()->nguoiLon }},
+    child: {{ $tour->giaTour->first()->treEm }},
+    baby: {{ $tour->giaTour->first()->emBe }}
+  };
+
+  window.tourId = '{{ $tour->maTour }}';
+</script>
+<script src="{{ asset('assets/js/counter.js') }}"></script>
 
 </body>
 

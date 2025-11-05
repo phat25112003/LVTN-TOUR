@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Tour;
 use App\Models\DatCho;
 use App\Models\GiaTour;
+use App\Models\ChuyenTour;
 
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -39,22 +40,47 @@ class DatTourController extends Controller
     /**
      * Lưu thông tin đặt tour
      */
+    // app/Http/Controllers/User/DatTourController.php
+
+    public function getTourDates($maTour)
+    {
+        $chuyen = ChuyenTour::with('giatour')
+            ->where('maTour', $maTour)
+            ->where('tinhTrangChuyen', 'HoatDong')
+            ->select('maChuyen', 'ngayBatDau', 'ngayKetThuc')
+            ->get();
+
+        $events = $chuyen->map(function ($c) {
+            $gia = $c->giatour;               // quan hệ 1-1
+            return [
+                'title' => number_format($gia->nguoiLon, 0, ',', '.') . ' ₫',   // lấy tiêu đề tour
+                'start'        => $c->ngayBatDau,
+                'color'        => '#28a745',
+                'extendedProps' => [
+                    'maChuyen'    => $c->maChuyen,
+                    'giaNguoiLon' => $gia->nguoiLon ?? 0,
+                    'giaTreEm'    => $gia->treEm   ?? 0,
+                    'giaEmBe'     => $gia->emBe    ?? 0,
+                    'ngayKetThuc' => $c->ngayKetThuc,
+                ],
+            ];
+        });
+
+        return response()->json($events);
+    }
     public function store(Request $request)
     {
-        // ✅ Kiểm tra đăng nhập đúng guard
         if (!Auth::guard('web')->check()) {
-            return redirect()->route('user.login')->with('error', 'Vui lòng đăng nhập trước khi đặt tour.');
+            return redirect()->route('user.login')->with('error', 'Vui lòng đăng nhập.');
         }
 
-        // ✅ Validate dữ liệu đầu vào
         $validated = $request->validate([
             'maTour' => 'required|exists:tour,maTour',
+            'maChuyen' => 'required|exists:chuyentour,maChuyen',
             'hoTen' => 'required|string|max:255',
             'email' => 'required|email',
             'ngayKhoiHanh' => 'required|date',
             'ngayKetThuc' => 'required|date|after_or_equal:ngayKhoiHanh',
-            'maChuyen' => 'required|exists:chuyentour,maChuyen',
-            // Bổ sung đủ 4 nhóm người
             'nguoiLon' => 'required|integer|min:1',
             'treEm' => 'required|integer|min:0',
             'emBe' => 'required|integer|min:0',
@@ -62,26 +88,26 @@ class DatTourController extends Controller
         ]);
 
         $user = Auth::guard('web')->user();
-        $tour = Tour::with('giatour')->find($validated['maTour']);
 
-        if (!$tour || !$tour->giatour) {
-            return redirect()->back()->with('error', 'Không tìm thấy thông tin giá tour.');
-        }
+        // LẤY CHUYẾN + GIÁ THEO maChuyen
+        $chuyen = ChuyenTour::with('giatour')
+            ->where('maChuyen', $validated['maChuyen'])
+            ->where('maTour', $validated['maTour'])
+            ->firstOrFail();
 
-        // ✅ Lấy giá từ bảng giatour
-        $gia = $tour->giatour;
-        $tongGia =
-            ($validated['nguoiLon'] * $gia->nguoiLon) +
-            ($validated['treEm'] * $gia->treEm) +
-            ($validated['emBe'] * $gia->emBe);
+        $gia = $chuyen->giatour; // Đây là 1 object
 
-        // ✅ Tạo bản ghi đặt chỗ
+        $tongGia = 
+            $validated['nguoiLon'] * $gia->nguoiLon +
+            $validated['treEm']   * $gia->treEm +
+            $validated['emBe']    * $gia->emBe;
+
         DatCho::create([
             'maNguoiDung' => $user->maNguoiDung,
             'tenNguoiDat' => $validated['hoTen'],
             'maChuyen' => $validated['maChuyen'],
             'maTour' => $validated['maTour'],
-            'ngayDat' => Carbon::now(),
+            'ngayDat' => now(),
             'ngayKhoiHanh' => $validated['ngayKhoiHanh'],
             'ngayKetThuc' => $validated['ngayKetThuc'],
             'soNguoiLon' => $validated['nguoiLon'],
@@ -90,40 +116,13 @@ class DatTourController extends Controller
             'tongGia' => $tongGia,
             'phuongThucThanhToan' => $validated['phuongThucThanhToan'],
             'xacNhan' => 0,
-            'diaChi' => $user->diaChi,
-            'soDienThoai' => $user->soDienThoai,
-            'email' => $user->email,
+            'diaChi' => $request->address ?? $user->diaChi,
+            'soDienThoai' => $request->phone ?? $user->soDienThoai,
+            'email' => $request->email ?? $user->email,
         ]);
 
         return redirect()
-            ->route('dattour.create', ['maTour' => $validated['maTour']])
-            ->with('success', 'Đặt tour thành công! Vui lòng chờ admin xác nhận.');
+            ->route('dattour.create', $validated['maTour'])
+            ->with('success', 'Đặt tour thành công!');
     }
-    public function getTourDates($maTour)
-    {
-        $tour = Tour::with(['chuyentour.giatour'])->find($maTour);
-
-        if (!$tour || $tour->chuyentour->isEmpty()) {
-            return response()->json([]);
-        }
-
-        // Tạo mảng các chuyến tour
-        $events = $tour->chuyentour->map(function ($chuyen) use ($tour) {
-            return [
-                'title' => $tour->tieuDe,
-                'start' => \Carbon\Carbon::parse($chuyen->ngayBatDau)->format('Y-m-d'), // chỉ ngày bắt đầu
-                'color' => '#28a745',
-                'extendedProps' => [
-                    'maChuyen' => $chuyen->maChuyen,
-                    'giaNguoiLon' => optional($chuyen->giatour)->nguoiLon,
-                    'giaTreEm' => optional($chuyen->giatour)->treEm,
-                    'giaEmBe' => optional($chuyen->giatour)->emBe,
-                    'ngayKetThuc' => $chuyen->ngayKetThuc,
-                ]
-            ];
-        });
-
-        return response()->json($events);
-    }
-
 }
