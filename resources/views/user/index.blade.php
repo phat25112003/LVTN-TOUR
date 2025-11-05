@@ -208,7 +208,7 @@
             <div class="destination-card">
               <div class="image-wrapper">
 
-                 @if ($tour->hinhanh->isNotEmpty())
+                @if ($tour->hinhanh->isNotEmpty())
                     <img src="{{ asset('storage/' . $tour->hinhanh->first()->duongDanHinh) }}"
                         alt="Destination"
                         class="img-fluid">
@@ -217,6 +217,7 @@
                         alt="No image available"
                         class="img-fluid">
                 @endif
+
 
                   alt="Destination" 
                   class="img-fluid">
@@ -232,7 +233,7 @@
                 </div>
                 <div class="card-footer">
                   <div class="tours-count">{{ $tour->thoiGian }}</div>
-                  <div class="tours-count">Lượng người tham gia còn: {{ $tour->soLuong }}</div>
+                  <div class="tours-count">Sô lượng còn: </div>
                   <a href="{{ route('tour.detail', $tour->maTour) }}" class="explore-btn">
                     Tìm hiểu ngay <i class="bi bi-arrow-right"></i>
                   </a>

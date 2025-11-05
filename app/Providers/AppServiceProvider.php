@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Models\DanhMuc;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Giữ trống để tránh lỗi BindingResolutionException
+        View::composer('layout.header', function ($view) {
+        $view->with('danhmucs', DanhMuc::all());
+        });
     }
 }

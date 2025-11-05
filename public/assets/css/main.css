@@ -7212,7 +7212,7 @@ section,
   color: var(--contrast-color);
   border-radius: 20px;
   padding: 40px 30px;
-  height: 100%;
+  height: 680px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
@@ -8089,4 +8089,69 @@ section,
   border-radius: 20px;
   padding: 25px;
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.06);
+}
+.booked-tours-section {
+  background: #fff;
+  border-radius: 20px;
+  padding: 25px 30px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+
+.booked-tours-section .section-title {
+  font-weight: 700;
+  font-size: 1.5rem;
+  padding-bottom: 0px;
+  color: #341f1f;
+}
+
+/* Từng card tour */
+.tour-card {
+  background: linear-gradient(135deg, #fff 0%, #f9f9f9 100%);
+  border: 1px solid #eee;
+  border-radius: 15px;
+  padding: 20px 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tour-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.tour-card-header {
+  border-bottom: 1px solid #e4e4e4;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+}
+
+.tour-title {
+  color: #e14d2a;
+  font-weight: 600;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.tour-card-body p {
+  margin: 6px 0;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.tour-card-body i {
+  color: #e14d2a;
+  margin-right: 8px;
+}
+
+.price {
+  color: #c52d1f;
+  font-weight: 600;
+}
+
+.no-booking {
+  text-align: center;
+  font-style: italic;
+  color: #999;
+  margin-top: 20px;
 }

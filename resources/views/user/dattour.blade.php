@@ -29,14 +29,14 @@
                   <div class="step-header">
                     <h3>Thông tin liên lạc</h3>
                     <p>Vui lòng cung cấp thông tin liên lạc của du khách chính (chỉ thay đổi khi đặt hộ)</p>
-                    <input type="hidden" id="start-date-value" value="{{ $tour->ngayBatDau->format('Y-m-d') }}" name="ngayKhoiHanh">
-                    <input type="hidden" id="end-date-value" value="{{ $tour->ngayKetThuc->format('Y-m-d') }}" name="ngayKetThuc">
                     <input type="hidden" id="adult-input" name="nguoiLon" value="1">
                     <input type="hidden" id="child-input" name="treEm" value="0">
+                    <input type="hidden" id="baby-input" name="emBe" value="0">
                     <input type="hidden" id="grand-total-input" name="tongGia" value="0">
+                    <input type="hidden" name="ngayKhoiHanh" value="{{ $tour->chuyentour->first()->ngayBatDau }}">
+                    <input type="hidden" name="ngayKetThuc" value="{{ $tour->chuyentour->first()->ngayKetThuc }}">
                     <input type="hidden" name="maTour" value="{{ $tour->maTour }}">
                   </div>
-
                   <div class="step-content">
                     <div class="row">
                       <div class="col-md-6">
@@ -67,41 +67,149 @@
                     </div>
                   </div>
                 </div>
+                <div id="calendar" style="max-width:900px;margin:30px auto;"></div>
+                <script>
+                  document.addEventListener('DOMContentLoaded', function() {
+                    const calendarEl = document.getElementById('calendar');
+
+                    // Giá mặc định ban đầu (từ chuyến đầu tiên)
+                    let currentPrices = {
+                      adult: {{ $tour->giaTour->first()->nguoiLon }},
+                      child: {{ $tour->giaTour->first()->treEm }},
+                      baby: {{ $tour->giaTour->first()->emBe }}
+                    };
+
+                    // Số lượng hành khách
+                    let counts = {
+                      adult: 1,
+                      child: 0,
+                      baby: 0
+                    };
+
+                    // Cập nhật tổng tiền
+                    function updateTotal() {
+                      const total = 
+                        counts.adult * currentPrices.adult +
+                        counts.child * currentPrices.child +
+                        counts.baby * currentPrices.baby;
+
+                      document.getElementById('adult-total').textContent = formatCurrency(counts.adult * currentPrices.adult);
+                      document.getElementById('child-total').textContent = formatCurrency(counts.child * currentPrices.child);
+                      document.getElementById('baby-total').textContent = formatCurrency(counts.baby * currentPrices.baby);
+                      document.getElementById('grand-total').textContent = formatCurrency(total);
+
+                      // Cập nhật hidden inputs
+                      document.getElementById('adult-input').value = counts.adult;
+                      document.getElementById('child-input').value = counts.child;
+                      document.getElementById('baby-input').value = counts.baby;
+                      document.getElementById('grand-total-input').value = total;
+                    }
+
+                    // Format tiền tệ
+                    function formatCurrency(amount) {
+                      return new Intl.NumberFormat('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND'
+                      }).format(amount);
+                    }
+
+                    // Khởi tạo FullCalendar
+                    const calendar = new FullCalendar.Calendar(calendarEl, {
+                      initialView: 'dayGridMonth',
+                      locale: 'vi',
+                      timeZone: 'local',
+                      height: 'auto',
+                      events: '/api/tour-dates/{{ $tour->maTour }}',
+                      eventClick: function(info) {
+                        const props = info.event.extendedProps;
+
+                        // Cập nhật giá hiện tại từ chuyến được chọn
+                        currentPrices = {
+                          adult: props.giaNguoiLon,
+                          child: props.giaTreEm,
+                          baby: props.giaEmBe
+                        };
+
+                        // Cập nhật ngày
+                        document.querySelector('input[name="ngayKhoiHanh"]').value = info.event.startStr;
+                        document.querySelector('input[name="ngayKetThuc"]').value = props.ngayKetThuc;
+
+                        document.querySelector('.booking-details .detail-row:nth-child(1) span:last-child').textContent = info.event.startStr;
+                        document.querySelector('.booking-details .detail-row:nth-child(2) span:last-child').textContent = props.ngayKetThuc;
+
+                        // Cập nhật lại tổng tiền với giá mới
+                        updateTotal();
+
+                        // Highlight event đã chọn (tùy chọn)
+                        calendar.getEvents().forEach(ev => ev.setProp('backgroundColor', ''));
+                        info.event.setProp('backgroundColor', '#007bff');
+                      }
+                    });
+
+                    calendar.render();
+
+                    // Xử lý nút + / - số lượng hành khách
+                    document.querySelectorAll('.btn-plus, .btn-minus').forEach(btn => {
+                      btn.addEventListener('click', function() {
+                        const target = this.getAttribute('data-target');
+                        const change = this.classList.contains('btn-plus') ? 1 : -1;
+
+                        if (counts[target] + change >= 0) {
+                          counts[target] += change;
+                          document.getElementById(target + '-count').textContent = counts[target];
+                          updateTotal();
+                        }
+                      });
+                    });
+
+                    // Khởi tạo tổng tiền lần đầu
+                    updateTotal();
+                  });
+                </script>
                 <div class="booking-step" id="step-3">
                   <div class="step-header">
                     <h3>Hành Khách</h3>
                     <p>Vui Lòng Nhập Số Lượng Hành Khách</p>
                   </div>
                   <div class="step-content ">
-                    <div class="add-ons-grid d-flex flex-row">
-                      <div class="add-on-item col-lg-6">
+                    <div class="add-ons-grid">
+                      <div class="add-on-item">
                         <div class="add-on-header">
                           <label for="travel-insurance row align-items-center">
-                            <strong class="col-lg-6">Người lớn</strong>
-                            <div class="counter col-lg-6 ">
-                              <button type="button" class="btn-minus" data-target="adult">-</button>
-                              <span id="adult-count">1</span>
-                              
-                              <button type="button" class="btn-plus" data-target="adult">+</button>
-                            </div>
-                          </label>
+                              <strong class="col-lg-6">Người lớn (> 18 tuổi)</strong>
+                              <div class="counter col-lg-6 ">
+                                <button type="button" class="btn-minus" data-target="adult">-</button>
+                                <span id="adult-count">1</span>
+                                <button type="button" class="btn-plus" data-target="adult">+</button>
+                              </div>
+                            </label>
+                          </div>
+                        </div>    
+                        <div class="add-on-item">
+                          <div class="add-on-header">
+                            <label for="airport-transfer row align-items-center">
+                              <strong class="col-lg-6"> Trẻ em ( 6-12 tuổi )</strong>
+                              <div class="counter col-lg-6">
+                                <button type="button" class="btn-minus" data-target="child">-</button>
+                                <span id="child-count">0</span>
+                                <button type="button" class="btn-plus" data-target="child">+</button>
+                              </div>
+                            </label>
+                          </div>
                         </div>
-                      </div>
-                      <div class="add-on-item col-lg-6">
-                        <div class="add-on-header">
-                          <label for="airport-transfer row align-items-center">
-                            <strong class="col-lg-6">Trẻ em</strong>
-                            <div class="counter col-lg-6">
-                              <button type="button" class="btn-minus" data-target="child">-</button>
-                              <span id="child-count">0</span>
-                              
-                              <button type="button" class="btn-plus" data-target="child">+</button>
-                            </div>
-                          </label>
+                        <div class="add-on-item">
+                          <div class="add-on-header">
+                            <label for="airport-transfer row align-items-center">
+                              <strong class="col-lg-6">Em bé (> 2 tuổi)</strong>
+                              <div class="counter col-lg-6">
+                                <button type="button" class="btn-minus" data-target="baby">-</button>
+                                <span id="baby-count">0</span>
+                                <button type="button" class="btn-plus" data-target="baby">+</button>
+                              </div>
+                            </label>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    
+                      </div>   
                   </div>
                 </div>
                 <div class="booking-step" id="step-4">
@@ -134,40 +242,6 @@
                         </label>
                       </div>
                     </div>
-<!-- 
-                    <div class="credit-card-form">
-                      <div class="row">
-                        <div class="col-md-12">
-                          <div class="form-group">
-                            <label for="card-number">Card Number</label>
-                            <input type="text" name="card_number" id="card-number" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19">
-                          </div>
-                        </div>
-                        <div class="col-md-8">
-                          <div class="form-group">
-                            <label for="card-name">Cardholder Name</label>
-                            <input type="text" name="card_name" id="card-name" class="form-control" placeholder="John Doe">
-                          </div>
-                        </div>
-                        <div class="col-md-4">
-                          <div class="form-group">
-                            <label for="card-expiry">Expiry Date</label>
-                            <input type="text" name="card_expiry" id="card-expiry" class="form-control" placeholder="MM/YY" maxlength="5">
-                          </div>
-                        </div>
-                        <div class="col-md-4">
-                          <div class="form-group">
-                            <label for="card-cvv">CVV</label>
-                            <input type="text" name="card_cvv" id="card-cvv" class="form-control" placeholder="123" maxlength="4">
-                          </div>
-                        </div>
-                      </div>
-                    </div> -->
-<!-- 
-                    <div class="secure-badge">
-                      <i class="bi bi-shield-lock"></i>
-                      <span>Your payment information is secure and encrypted</span>
-                    </div> -->
                   </div>
                 </div>
                 <div class="booking-step" id="step-5">
@@ -212,7 +286,6 @@
               <div class="summary-header">
                 <h4>Tóm Tắt Đơn Đặt</h4>
               </div>
-
               <div class="summary-content">
                 <div class="selected-tour">
                   <img src="{{ asset('storage/' . $tour->hinhanh->first()->duongDanHinh) }}" alt="Tour" class="img-fluid">
@@ -229,34 +302,35 @@
                     </div>
                   </div>
                 </div>
-
                 <div class="booking-details">
                   <div class="detail-row">
                     <span>Ngày Bắt Đầu:</span>
-                    <span>{{ $tour->ngayBatDau->format('d/m/Y') }}</span>
+                    <span>--/--/----</span>
                   </div>
                   <div class="detail-row">
                     <span>Ngày Kết Thúc:</span>
-                    <span>{{ $tour->ngayKetThuc->format('d/m/Y') }}</span>
+                    <span>--/--/----</span>
                   </div>
-                  <!-- <div class="detail-row">
-                    <span>Travelers:</span>
-                    <span>2 Adults</span>
-                  </div> -->
                 </div>
-
                 <div class="price-breakdown">
-                  <input type="hidden" id="adult-price" value="{{ $tour->giaNguoiLon }}">
-                  <input type="hidden" id="child-price" value="{{ $tour->giaTreEm }}">
-                  <input type="hidden" id="slot" value="{{ $tour->soLuong }}">
+                  <input type="hidden" id="adult-price" value="{{ $tour->giaTour->first()->nguoiLon }}">
+                  <input type="hidden" id="child-price" value="{{ $tour->giaTour->first()->treEm }}">
+                  <input type="hidden" id="baby-price" value="{{ $tour->giaTour->first()->emBe }}">
+                  <input type="hidden" id="slot" value="{{ $tour->chuyentour->first()->soLuongToiDa }}">
                   <h6>Chi Tiết Giá</h6>
                   <div class="price-row">
                     <span>Giá người lớn</span>
                     <span id="adult-total"></span>
                   </div>
+
+
                   <div class="price-row">
                     <span>Giá trẻ em</span>
                     <span id="child-total"></span>
+                  </div>
+                  <div class="price-row">
+                    <span>Giá em bé</span>
+                    <span id="baby-total"></span>
                   </div>
                   <!-- <div class="price-row">
                     <span>Travel Insurance</span>

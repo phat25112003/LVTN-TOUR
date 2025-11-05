@@ -36,7 +36,7 @@ class TourDetailController extends Controller
      */
     public function show($maTour)
     {
-        $tourdetail = Tour::with('lichtrinh','danhmuc')->findOrFail($maTour);
+        $tourdetail = Tour::with('lichtrinh','danhmuc','giatour','chuyentour')->findOrFail($maTour);
         return view('user.tourdetail', compact('tourdetail'));
     }
 

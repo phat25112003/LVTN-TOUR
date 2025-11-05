@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 
-class NguoiDung extends Authenticatable
+class NguoiDung extends Authenticatable implements AuthenticatableContract
 {
     use Notifiable;
 

@@ -1,76 +1,143 @@
-/* ✅ Xử lý sự kiện cộng/trừ số lượng */
 document.addEventListener("DOMContentLoaded", function () {
   const showError = (msg) => {
     const errorDiv = document.getElementById("error-message");
     if (errorDiv) errorDiv.textContent = msg;
   };
 
-  const updateTotalPrice = () => {
-    const adultCount = parseInt(document.getElementById("adult-count").textContent);
-    const childCount = parseInt(document.getElementById("child-count").textContent);
-    const adultPrice = parseFloat(document.getElementById("adult-price").value) || 0;
-    const childPrice = parseFloat(document.getElementById("child-price").value) || 0;
-    const adultTotal = adultCount * adultPrice;
-    const childTotal = childCount * childPrice;
-    const grandTotal = adultTotal + childTotal;
-    document.getElementById("adult-total").textContent = adultTotal.toLocaleString() + "Đ";
-    document.getElementById("child-total").textContent = childTotal.toLocaleString() + "Đ";
-    document.getElementById("grand-total").textContent = grandTotal.toLocaleString() + "Đ";
-    document.getElementById("adult-input").value = adultCount;
-    document.getElementById("child-input").value = childCount;
-    document.getElementById("grand-total-input").value = grandTotal;
-  };
-
-  document.querySelectorAll(".btn-plus, .btn-minus").forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const target = this.getAttribute("data-target"); // adult hoặc child
-      const countSpan = document.getElementById(target + "-count");
-      const input = document.getElementById(target + "-input");
-      const adultCount = parseInt(document.getElementById("adult-count").textContent);
-      const childCount = parseInt(document.getElementById("child-count").textContent);
-      const slot = parseInt(document.getElementById("slot").value);
+  const showToast = (msg) => {
     const toastEl = document.getElementById("errorToast");
     const toastMessage = document.getElementById("toastMessage");
-    let toastInstance;
-        // Tổng người hiện tại (trước khi thay đổi)
-        let totalPeople = adultCount + childCount;
+    if (!toastEl || !toastMessage) return;
+    toastMessage.textContent = msg;
+    const toastInstance = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toastInstance.show();
+  };
 
-      let value = parseInt(countSpan.textContent);
-      const showToast = (msg) => {
-        if (!toastEl || !toastMessage) return;
-        toastMessage.textContent = msg;
-        if (!toastInstance) toastInstance = new bootstrap.Toast(toastEl, { delay: 3000 });
-        toastInstance.show();
+  // Biến lưu giá hiện tại (theo chuyến)
+  let currentPrices = {
+    adult: {{ $tour->giaTour->first()->nguoiLon }},
+    child: {{ $tour->giaTour->first()->treEm }},
+    baby: {{ $tour->giaTour->first()->emBe }}
+  };
+
+  // Hàm lấy số lượng
+  const getCount = (type) => {
+    const el = document.getElementById(`${type}-count`);
+    return el ? parseInt(el.textContent) || 0 : 0;
+  };
+
+  // Hàm lấy giá (dùng currentPrices)
+  const getPrice = (type) => currentPrices[type] || 0;
+
+  // Cập nhật tổng tiền
+  const updateTotalPrice = () => {
+    const adultCount = getCount("adult");
+    const childCount = getCount("child");
+    const babyCount = getCount("baby");
+
+    const adultTotal = adultCount * getPrice("adult");
+    const childTotal = childCount * getPrice("child");
+    const babyTotal = babyCount * getPrice("baby");
+    const grandTotal = adultTotal + childTotal + babyTotal;
+
+    const formatPrice = (price) => price.toLocaleString("vi-VN") + " ₫";
+
+    const updateEl = (id, value) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = formatPrice(value);
     };
 
-      // Nếu là nút cộng
+    updateEl("adult-total", adultTotal);
+    updateEl("child-total", childTotal);
+    updateEl("baby-total", babyTotal);
+    updateEl("grand-total", grandTotal);
+
+    // Cập nhật input ẩn
+    document.getElementById("adult-input").value = adultCount;
+    document.getElementById("child-input").value = childCount;
+    document.getElementById("baby-input").value = babyCount;
+    document.getElementById("grand-total-input").value = grandTotal;
+
+    showError("");
+  };
+
+  // FullCalendar
+  const calendarEl = document.getElementById('calendar');
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    locale: 'vi',
+    height: 'auto',
+    events: '/api/tour-dates/{{ $tour->maTour }}',
+    eventClick: function(info) {
+      const props = info.event.extendedProps;
+
+      // CẬP NHẬT GIÁ THEO CHUYẾN
+      currentPrices = {
+        adult: props.giaNguoiLon,
+        child: props.giaTreEm,
+        baby: props.giaEmBe
+      };
+
+      // Cập nhật ngày
+      document.querySelector('input[name="ngayKhoiHanh"]').value = info.event.startStr;
+      document.querySelector('input[name="ngayKetThuc"]').value = props.ngayKetThuc;
+      document.querySelector('.booking-details .detail-row:nth-child(1) span:last-child').textContent = info.event.startStr;
+      document.querySelector('.booking-details .detail-row:nth-child(2) span:last-child').textContent = props.ngayKetThuc;
+
+      // Reset số lượng về mặc định khi đổi chuyến (tùy chọn)
+      // document.getElementById('adult-count').textContent = Schatz 1;
+      // document.getElementById('child-count').textContent = 0;
+      // document.getElementById('baby-count').textContent = 0;
+
+      updateTotalPrice();
+
+      // Highlight
+      calendar.getEvents().forEach(ev => ev.setProp('backgroundColor', ''));
+      info.event.setProp('backgroundColor', '#007bff');
+    }
+  });
+  calendar.render();
+
+  // Xử lý + / -
+  document.querySelectorAll(".btn-plus, .btn-minus").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const target = this.getAttribute("data-target");
+      const countSpan = document.getElementById(`${target}-count`);
+      if (!countSpan) return;
+
+      let value = getCount(target);
+      const slot = parseInt(document.getElementById("slot").value) || 0;
+
       if (this.classList.contains("btn-plus")) {
-        if (totalPeople >= slot) {
-            showToast("❌ Số lượng người đã đạt tối đa (" + slot + " người)");
-            return; // không cho tăng thêm
-          }
         value++;
-        showError("");
-      } 
-      // Nếu là nút trừ
-      else if (this.classList.contains("btn-minus")) {
+      } else if (this.classList.contains("btn-minus")) {
         if (target === "adult" && value <= 1) {
-          // Không cho người lớn < 1
-          showError("❌ Mỗi tour phải có ít nhất 1 người lớn");
+          showError("Mỗi tour phải có ít nhất 1 người lớn");
           return;
         }
-        if (value > 0) {
-          value--;
-          showError("");
-        }
+        if (value <= 0) return;
+        value--;
       }
 
-      // Cập nhật lại hiển thị
+      // Tính tổng người SAU KHI ĐÃ THAY ĐỔI
+      const totalPeople =
+        (target === 'adult' ? value : getCount('adult')) +
+        (target === 'child' ? value : getCount('child')) +
+        (target === 'baby' ? value : getCount('baby'));
+
+      if (totalPeople > slot) {
+        showToast(`Chỉ còn ${slot} chỗ trống!`);
+        return;
+      }
+
+      // Cập nhật giao diện
       countSpan.textContent = value;
-      if (input) input.value = value;
+      document.getElementById(`${target}-input`).value = value;
+
       updateTotalPrice();
     });
   });
 
+  // Khởi tạo
   updateTotalPrice();
 });

@@ -3,7 +3,7 @@
 return [
     'defaults' => [
         'guard' => 'web', 
-        'passwords' => 'users',
+        'passwords' => 'nguoidung',
     ],
 
     'guards' => [
@@ -13,7 +13,7 @@ return [
         ],
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'nguoidung',
         ],
     ],
 
@@ -22,7 +22,7 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\QuanTri::class,
         ],
-        'users' => [
+        'nguoidung' => [
             'driver' => 'eloquent',
             'model' => App\Models\NguoiDung::class,
         ],
@@ -35,7 +35,7 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
-        'users' => [
+        'nguoidung' => [
             'provider' => 'users',
             'table' => 'password_resets',
             'expire' => 60,

@@ -44,7 +44,7 @@
             <tbody>
                 @foreach ($datChos as $datCho)
                     <tr>
-                        <td>{{ $datCho->hoTen ?? 'Không xác định' }}</td>
+                        <td>{{ $datCho->nguoiDung->hoTen ?? 'Không xác định' }}</td>
                         <td>{{ $datCho->tour->tieuDe ?? 'Không xác định' }}</td>
                         <td>{{ \Carbon\Carbon::parse($datCho->ngayDat)->format('d/m/Y H:i') }}</td>
                         <td>{{ \Carbon\Carbon::parse($datCho->ngayKhoiHanh)->format('d/m/Y') }}</td>

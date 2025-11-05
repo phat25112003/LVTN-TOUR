@@ -13,12 +13,8 @@ class Tour extends Model
         'tieuDe',
         'thoiGian',
         'moTa',
-        'ngayBatDau',
-        'ngayKetThuc',
         'hinhAnh',
         'soLuong',
-        'giaNguoiLon',
-        'giaTreEm',
         'diemDen',
         'tinhTrang',
         'maDanhMuc',
@@ -49,7 +45,6 @@ class Tour extends Model
         return $this->hasMany(LichSu::class, 'maTour', 'maTour');
     }
 
-
     public function lichtrinh()
     {
         return $this->hasMany(LichTrinh::class, 'maTour', 'maTour');
@@ -59,12 +54,12 @@ class Tour extends Model
     {
         return $this->belongsTo(DanhMuc::class, 'maDanhMuc', 'maDanhMuc');
     }
-
-    
-    protected $casts = [
-        'ngayBatDau' => 'date:Y-m-d',
-        'ngayKetThuc' => 'date:Y-m-d',
-    ];
-
-
+    public function giatour()
+    {
+        return $this->hasManyThrough(GiaTour::class, ChuyenTour::class, 'maTour', 'maChuyen', 'maTour', 'maChuyen');
+    }
+    public function chuyentour()
+    {
+        return $this->hasMany(ChuyenTour::class, 'maTour', 'maTour');
+    }
 }

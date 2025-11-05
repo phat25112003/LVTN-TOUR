@@ -12,14 +12,9 @@
     <!-- Page Title -->
     <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
       <div class="container position-relative">
-        <h1>Tours</h1>
-        <p>Esse dolorum voluptatum ullam est sint nemo et est ipsa porro placeat quibusdam quia assumenda numquam molestias.</p>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="index.html">Home</a></li>
-            <li class="current">Tours</li>
-          </ol>
-        </nav>
+        <h1>Danh Sách Tour</h1>
+        <p>Trải nghiệm du lịch được tuyển chọn kỹ lưỡng, biến hành trình thành những câu chuyện khó quên. Tìm theo sở thích của bạn và tìm kiếm chuyến đi hoàn hảo.</p>
+        
       </div>
     </div><!-- End Page Title -->
 
@@ -29,12 +24,7 @@
       <div class="container">
 
         <!-- Hero Introduction -->
-        <div class="row">
-          <div class="col-lg-8 mx-auto text-center mb-5">
-            <h2 class="hero-title">Danh Sách Tour</h2>
-            <p class="hero-description">Trải nghiệm du lịch được tuyển chọn kỹ lưỡng, biến hành trình thành những câu chuyện khó quên. Tìm theo sở thích của bạn và tìm kiếm chuyến đi hoàn hảo..</p>
-          </div>
-        </div>
+
 
         <!-- Search & Filters -->
               <form action="{{ route('tour.list') }}" method="GET">
@@ -81,12 +71,21 @@
                 @foreach($tours as $tour)
                 <div class="tour-item">
                   <div class="tour-image">
-                    <img src="{{ asset('storage/' . $tour->hinhanh->first()->duongDanHinh) }}" alt="Moroccan Odyssey" class="img-fluid">
+                    @if ($tour->hinhanh->isNotEmpty())
+                        <img src="{{ asset('storage/' . $tour->hinhanh->first()->duongDanHinh) }}" 
+                            alt="{{ $tour->tieuDe }}" 
+                            class="img-fluid">
+                    @else
+                        <img src="{{ asset('assets/img/default-tour.jpg') }}" 
+                            alt="No image available" 
+                            class="img-fluid">
+                    @endif
+
                     <div class="tour-availability">Limited spots</div>
                   </div>
                   <div class="tour-details">
                     <h4>{{ $tour->tieuDe }}</h4>
-                    <p>{{ $tour->moTa  }}</p>
+                    <p>{{ Str::before($tour->moTa, '.') }}.</p>
                     <div class="tour-highlights">
                       <span><i class="bi bi-clock"></i> {{ $tour->thoiGian }}</span>
                       <span><i class="bi bi-star-fill"></i> 4.7</span>
