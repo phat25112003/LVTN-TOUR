@@ -1,0 +1,1235 @@
+/* Admin Dashboard CSS */
+:root {
+    --sidebar-width: 250px;
+    --sidebar-bg: #2c3e50;
+    --sidebar-hover: #34495e;
+    --primary-color: #3498db;
+    --card-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+body {
+    background: #f4f7fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    color: white;
+    z-index: 1000;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+/* Admin Info */
+.admin-info {
+    padding: 20px;
+    border-bottom: 1px solid #34495e;
+    text-align: center;
+}
+
+.admin-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    margin-bottom: 10px;
+}
+
+.admin-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+/* Menu */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    margin: 0;
+}
+
+.sidebar-menu a {
+    display: block;
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background: var(--sidebar-hover);
+    color: #3498db;
+}
+
+.sidebar-menu i {
+    width: 20px;
+    margin-right: 10px;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 20px;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+.main-content.sidebar-collapsed {
+    margin-left: 0;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.card-body {
+    padding: 25px;
+    text-align: center;
+}
+
+.card-icon {
+    font-size: 48px;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.card-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+    
+    .mobile-menu-toggle {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1001;
+        background: var(--sidebar-bg);
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+    }
+}
+
+.mobile-menu-toggle {
+    display: none;
+}
+
+/* Buttons */
+.text-center a {
+    background-color: #0080ff;
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.btn {
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+/* Alert */
+.alert {
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 20px;
+}
+
+/* Table */
+.table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+}
+
+.table th {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: linear-gradient(180deg, #004aad, #0078d4);
+    color: #fff;
+    width: 250px;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.sidebar-menu li {
+    margin-bottom: 10px;
+}
+
+.sidebar-menu a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.logout-form {
+    margin-top: auto;
+}
+
+.logout-form button {
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: 600;
+}
+
+/* Thiết lập chung và font */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7f9; /* Màu nền nhẹ cho khu vực admin */
+    color: #333;
+}
+
+.container-fluid {
+    padding: 20px;
+}
+
+/* Tiêu đề */
+h3 {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 20px !important;
+    font-weight: 600;
+}
+
+/* Thông báo (Alert) */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+/* Nút Thêm Tour */
+.add-btn {
+    display: inline-block;
+    background-color: #2ecc71; /* Màu xanh lá cây nổi bật */
+    color: white;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.add-btn:hover {
+    background-color: #27ae60;
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: white;
+}
+
+/* Nút form them tour */
+
+.form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+.btnsuccess{
+            background-color: #019d06;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+}
+.btnsuccess:hover{
+            background-color: #017230;
+}
+.btnschedule{
+            background-color: #b6ce00;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+}
+.btnschedule:hover{
+            background-color: #525802;
+}
+.btncancel {
+            background-color: #dc3545;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            display: inline-block;
+            transition: background-color 0.2s ease;
+        }
+
+.btncancel:hover {
+            background-color: #b02a37;
+        }
+
+
+/* ======== CSS Quản Lý Tour (Đồng nhất với Booking Style) ======== */
+
+/* Thiết lập chung và font */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7f9;
+    color: #333;
+}
+
+.container-fluid {
+    padding: 25px;
+}
+
+/* Tiêu đề */
+h3 {
+    color: blue;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* 1. Thiết lập Card Wrapper cho bảng (Giả định .container-fluid là wrapper hoặc cần thêm lớp) */
+/* Áp dụng quy tắc card vào chính bảng .table-custom nếu không muốn thay đổi HTML */
+.table-custom {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    margin: 25px 0 0 0; /* Bỏ margin cũ, để bảng cách tiêu đề */
+    
+    /* Hiệu ứng Booking-card */
+    background: #fff;
+    border-radius: 8px;
+    /* Giả lập padding của booking-card bằng cách thêm padding cho container nếu cần, 
+       hoặc dùng box-shadow và margin để tạo hiệu ứng nổi */
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    overflow-x: auto;
+    display: block;
+}
+
+/* 2. Tiêu đề bảng (thead) - Sử dụng .table-custom thead th */
+.table-custom thead th {
+    background-color: #2b9084 !important; /* Màu xanh ngọc chủ đạo */
+    color: #ffffff !important;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #dee2e6 !important;
+    border-top: none !important;
+}
+
+.table-custom th,
+.table-custom td {
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+    text-align: center;
+    color: #333;
+}
+
+/* Thân bảng (tbody) */
+.table-custom tbody tr {
+    background-color: #fff;
+    transition: background-color 0.15s ease;
+}
+
+/* Cột Mô tả */
+.table-custom td.desc {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+/* Cột Giá (định dạng tiền) */
+.table-custom td:nth-child(7), 
+.table-custom td:nth-child(8) { 
+    text-align: right; 
+    font-weight: 600;
+    color: #000000; /* Màu vàng nâu */
+}
+
+/* 3. Thông báo (Sử dụng lớp .alert-success) */
+.alert {
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    border: none;
+}
+.alert-success {
+    /* Áp dụng phong cách notify-success */
+    background: #e6f4ea;
+    color: #256029;
+}
+
+/* 4. Badge Trạng thái (Sử dụng .status-badge) */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Trạng thái Hoạt động (Sử dụng status-active -> Áp dụng phong cách status-success) */
+.status-active {
+    background: #017230;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* Trạng thái Ngưng (Sử dụng status-inactive -> Áp dụng phong cách status-pending) */
+.status-inactive {
+    background: #dc0303;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+}
+
+/* 5. Nút Thêm Tour (Giữ nguyên phong cách Xác nhận) */
+.add-btn {
+    display: inline-block;
+    background-color: #07681a;
+    color: white;
+    padding: 8px 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-btn:hover {
+    background-color: #062445;
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: white;
+}
+
+/* 6. Nút Hành động (Giữ nguyên xếp dọc, nhỏ gọn và chữ trắng) */
+.table-custom td:last-child {
+    width: 90px; 
+    max-width: 90px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column; 
+    gap: 4px; 
+    align-items: stretch; 
+    width: 100%;
+}
+
+.btn-action {
+    display: block; 
+    padding: 3px 6px; 
+    border-radius: 3px; 
+    font-size: 11px; 
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    color: white !important; 
+}
+
+.btn-action:hover {
+    opacity: 0.9;
+    text-decoration: none;
+}
+
+.btn-view,
+.btn-edit,
+.btn-delete {
+    display: inline-block;
+    padding: 10px 18px;       /* to hơn */
+    font-size: 1rem;          /* chữ lớn hơn */
+    font-weight: 700;         /* chữ đậm hơn */
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+}
+
+/* Màu riêng từng nút */
+.btn-view {
+    background-color: #0e6096;
+}
+
+.btn-edit {
+    background-color: #ba780e;
+}
+
+.btn-delete {
+    background-color: #a11e0f;
+}
+
+.action-buttons form {
+    margin: 0;
+    padding: 0;
+    display: contents; 
+}
+
+
+
+/* ===== NÚT ĐĂNG XUẤT NHỎ GỌN ===== */
+.logout-form {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    text-align: center;
+}
+
+.logout-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background-color: #dc3545;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: #bb2d3b;
+    transform: translateY(-2px);
+}
+
+/* Style cho container form */
+.custom-form-container {
+    max-width: 600px; /* Giảm chiều rộng tối đa */
+    margin: 20px auto; /* Căn giữa và thêm khoảng cách */
+    padding: 20px;
+    background-color: #f8f9fa; /* Nền sáng nhẹ */
+    border-radius: 8px; /* Bo góc */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+}
+
+/* Style cho tiêu đề */
+.custom-form-container h2 {
+    text-align: center;
+    color: #28a745; /* Màu xanh lá */
+    margin-bottom: 20px;
+}
+
+/* Style cho input và textarea */
+.custom-form .form-control {
+    font-size: 0.9em; /* Giảm kích thước chữ */
+    padding: 8px; /* Giảm padding */
+    border-radius: 4px; /* Bo góc nhẹ */
+    border: 1px solid #ced4da; /* Viền nhẹ */
+    height: 38px; /* Giảm chiều cao */
+}
+
+.custom-form textarea.form-control {
+    height: 80px; /* Chiều cao cố định cho textarea */
+    resize: vertical; /* Cho phép kéo dọc */
+}
+
+/* Style cho label */
+.custom-form .form-label {
+    font-size: 0.95em; /* Giảm kích thước chữ label */
+    font-weight: 500; /* Tăng độ đậm */
+    color: #333; /* Màu chữ đậm */
+    margin-bottom: 5px; /* Giảm khoảng cách dưới label */
+}
+
+/* Style cho select */
+.custom-form select.form-control {
+    height: 38px; /* Chiều cao đồng nhất */
+    font-size: 0.9em;
+}
+
+/* Style cho file input */
+.custom-form .form-control[type="file"] {
+    padding: 6px; /* Giảm padding */
+    font-size: 0.9em;
+}
+
+/* Style cho button */
+.custom-form .btn {
+    padding: 8px 15px; /* Giảm padding */
+    font-size: 0.9em; /* Giảm kích thước chữ */
+    border-radius: 4px; /* Bo góc */
+    margin-right: 10px; /* Khoảng cách giữa các button */
+}
+
+.custom-form .btn-primary {
+    background-color: #28a745; /* Màu xanh lá */
+    border-color: #28a745;
+}
+
+.custom-form .btn-primary:hover {
+    background-color: #218838; /* Màu đậm hơn khi hover */
+    border-color: #218838;
+}
+
+.custom-form .btn-secondary {
+    background-color: #6c757d; /* Màu xám */
+    border-color: #6c757d;
+}
+
+.custom-form .btn-secondary:hover {
+    background-color: #5a6268; /* Màu đậm hơn khi hover */
+}
+
+/* Style cho alert */
+.custom-form .alert {
+    font-size: 0.9em;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .custom-form-container {
+        max-width: 100%;
+        padding: 15px;
+    }
+    .custom-form .btn {
+        width: 100%;
+        margin-bottom: 10px;
+        margin-right: 0;
+    }
+}
+
+
+/* ======== Đặt chỗ admin ======== */
+
+.booking-table thead th {
+    background-color: #2b9084 !important;
+    color: #ffffff !important;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+    width: 12.5% !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+/* Thông báo */
+.notify {
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+.notify-success {
+    background: #e6f4ea;
+    color: #256029;
+}
+.notify-error {
+    background: #fdecea;
+    color: #8a1f1f;
+}
+
+/* Bảng chính */
+.booking-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    overflow-x: auto;
+}
+
+.booking-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.booking-table th,
+.booking-table td {
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+    text-align: center;
+    color: #333;
+}
+
+.booking-table th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+}
+
+/* Không hover */
+.booking-table tr {
+    background-color: #fff;
+}
+
+/* Trạng thái */
+.status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.status-success {
+    background: #e6f9ee;
+    color: #167c3e;
+}
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* Nút xác nhận */
+.btn-confirm {
+    background-color: #07681a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-confirm:hover {
+    background-color: #062445;
+}
+
+/* Form nội tuyến */
+.inline-form {
+    display: inline;
+}
+
+
+/* ==== Khung form ==== */
+.custom-form-container {
+    background: #f8f9fb;
+    padding: 25px;
+    border-radius: 10px;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* ==== Tiêu đề ==== */
+.form-title {
+    color: #2c3e50;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+.form-subtitle {
+    color: #d9534f;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* ==== Khối ngày ==== */
+.day-block {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.day-title {
+    color: #2b9084;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* ==== Input & Textarea ==== */
+.input-group {
+    margin-bottom: 12px;
+}
+.input-group label {
+    display: block;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 5px;
+}
+.input-field, .textarea-field {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 14px;
+    outline: none;
+}
+.input-field:focus, .textarea-field:focus {
+    border-color: #2b9084;
+}
+
+/* ==== Hành động ==== */
+.action-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+.btn-save, .btn-cancel {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+}
+.btn-save {
+    background-color: #2b9084;
+    color: white;
+}
+.btn-cancel {
+    background-color: #ccc;
+    color: black;
+}
+.btn-save:hover { background-color: #257d73; }
+.btn-cancel:hover { background-color: #b3b3b3; }
+
+
+/* Nguoi dung */
+/* Lưới người dùng */
+.user-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+/* Thẻ người dùng */
+.user-card {
+    background: #fafbff4c;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    transition: 0.25s ease;
+}
+
+/* Thông tin người dùng */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar-container {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #e2e8f0;
+    flex-shrink: 0;
+}
+.avatar-user {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-details h5 {
+    margin: 0 0 5px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+.user-details p {
+    margin: 2px 0;
+    font-size: 13px;
+    color: #000000;
+    font-weight: bold;
+}
+
+/* Huy hiệu trạng thái */
+.toggle-status {
+    background-color: #be7b08;
+    margin-top: 20px;
+    color: white;
+    font-weight: bold;
+}
+
+.toggle-status:hover {
+    background-color: #566a05;
+    color: white;
+}
+
+
+.toggle-status.status-inactive {
+    background-color: green; 
+    color: white;
+    font-weight: bold;
+}
+
+.toggle-status.status-inactive:hover {
+    background-color: #058e11; 
+}
+
+.status-badge.status-active {
+    background-color: #155a0f; 
+    color: white;
+}
+
+.status-badge.status-blocked {
+    background-color: #f59e0b; 
+    color: white;
+    font-weight: bold;
+}
+
+/* Nút xóa */
+.btn-danger {
+    background-color: #dc2626;
+    font-weight: bold;
+}
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
+
+/* KHUYEN MAI */
+.admin-main-container {
+padding: 30px 20px;
+max-width: 1300px;
+margin: 0 auto;
+font-family: Arial, sans-serif; /* Dùng font phổ thông hơn */
+color: #333;
+}
+
+.promo-page-title {
+margin-bottom: 20px;
+color: #2c3e50;
+font-size: 1.8rem;
+font-weight: 700;
+}
+
+/* Nút Thêm Khuyến Mãi (Giữ màu xanh dương) */
+.add-button {
+display: inline-block;
+padding: 10px 20px;
+background-color: #05a21aff;
+color: white;
+text-decoration: none;
+border-radius: 5px;
+margin-bottom: 20px;
+font-weight: 600;
+transition: background-color 0.2s;
+}
+.add-button:hover {
+background-color: #076505ff;
+}
+
+/* THÔNG BÁO (THEO MẪU) */
+.notify {
+padding: 10px 15px;
+border-radius: 6px;
+margin-bottom: 15px;
+font-size: 0.95rem;
+}
+.notify-success {
+background: #e6f4ea; /* Xanh lá nhạt */
+color: #256029; /* Chữ xanh lá đậm */
+}
+.notify-error { /* Dùng cho nút Xóa */
+background: #fdecea;
+color: #8a1f1f;
+}
+
+/* BẢNG CHÍNH (THEO MẪU) */
+.promo-admin-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 0.95rem;
+}
+
+.promo-admin-table th,
+.promo-admin-table td {
+border: 1px solid #dee2e6; /* Đường kẻ bảng rõ ràng hơn */
+padding: 10px 12px;
+text-align: center;
+color: #333;
+}
+
+/* TIÊU ĐỀ CỘT (THEO MẪU .booking-table thead th) */
+.promo-admin-table thead th {
+background-color: #2b9084 !important; /* Xanh lá đậm */
+color: #ffffff !important;
+padding: 12px;
+font-weight: bold;
+/* width: 14.28% !important; */ /* Bỏ width cố định để bảng tự điều chỉnh */
+}
+
+.promo-admin-table tr {
+background-color: #fff;
+}
+/* 4. NÚT HÀNH ĐỘNG (ACTION BUTTONS) */
+.action-buttons {
+display: flex;
+gap: 5px;
+justify-content: center;
+}
+
+.action-button {
+padding: 6px 12px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-weight: 600;
+transition: background-color 0.2s;
+color: white;
+font-size: 0.85rem;
+}
+
+/* Nút chung (THEO MẪU .btn-confirm) */
+.btn-confirm {
+color: white;
+}
+
+
+/* 🟡 Nút 'Chặn' (Khi khuyến mãi đang Active - Giữ màu vàng cam) */
+.toggle-status {
+background-color: #f39c12;
+}
+
+.toggle-status:hover {
+background-color: #d35400;
+}
+
+/* 🟢 Nút 'Kích hoạt' (Khi khuyến mãi đang bị Chặn) */
+.btn-activate {
+background-color: #0a8b01 !important; /* Xanh dương */
+}
+
+.btn-activate:hover {
+background-color: #083903 !important;
+}
+
+/* 🔴 Nút Xóa (Dùng màu đỏ riêng) */
+.delete-button {
+background-color: #e61f09 !important;
+}
+
+.delete-button:hover {
+background-color: #7d0f02 !important;
+}
+
+.edit-button {
+padding: 6px 12px;
+background-color: #afb800cb;
+color: white;
+font-weight: bold;
+text-decoration: none;
+border-radius: 5px;
+display: inline-block;
+}
+.edit-button:hover {
+background-color: #5e7a02;
+}
+
+        /* ===================================== */
+        /* 1. KHU VỰC CHUNG VÀ TIÊU ĐỀ */
+        /* ===================================== */
+
+        /* Đảm bảo tiêu đề bảng có màu đậm */
+        .admin-category-title {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        /* Nút thêm danh mục (Giữ lại màu xanh lá cây đậm) */
+        .btn-add-category {
+            background-color: #2b9084 !important;
+            color: white !important;
+            border: none;
+            transition: background-color 0.2s;
+            font-weight: 600;
+        }
+        .btn-add-category:hover {
+            background-color: #257d72 !important;
+        }
+        
+        /* Cập nhật class Bootstrap để phù hợp với màu sắc */
+        .btn-success {
+            background-color: #2b9084 !important;
+            border-color: #2b9084 !important;
+        }
+        .btn-success:hover {
+            background-color: #257d72 !important;
+            border-color: #257d72 !important;
+        }
+        /* Giữ nguyên màu alert cho thông báo thành công */
+        .alert-success {
+            background: #e6f4ea; 
+            color: #256029; 
+            border: 1px solid #c3e6cb;
+            padding: 10px 15px;
+            border-radius: 6px;
+        }
+
+
+        /* ===================================== */
+        /* 2. BẢNG DANH MỤC */
+        /* ===================================== */
+
+        /* Đặt tên class bảng riêng để áp dụng style admin */
+        .category-admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08); /* Thêm bóng đổ nhẹ */
+            border-radius: 8px; /* Bo góc */
+            overflow: hidden; /* Quan trọng để bo góc hoạt động tốt */
+            background: #fff;
+        }
+
+        /* Tiêu đề cột (Giống style bảng booking) */
+        .category-admin-table thead th {
+            background-color: #2b9084 !important; /* Xanh lá đậm */
+            color: #ffffff !important;
+            padding: 12px;
+            text-align: left; /* Đảm bảo căn trái cho phù hợp với nội dung */
+            font-weight: bold;
+            border: 1px solid #dee2e6 !important;
+        }
+        
+        /* Ô dữ liệu */
+        .category-admin-table th,
+        .category-admin-table td {
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            text-align: left;
+            color: #333;
+            vertical-align: middle;
+        }
+        
+        /* Hiệu ứng sọc và hover */
+        .category-admin-table tr:nth-child(even) {
+            background-color: #f9f9f9; /* Hàng chẵn màu xám nhạt */
+        }
+
+
+        /* ===================================== */
+        /* 3. NÚT HÀNH ĐỘNG */
+        /* ===================================== */
+        
+        /* Nút Sửa (Vàng) */
+        .btn-warning {
+            background-color: #ffc107 !important;
+            border-color: #ffc107 !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+        .btn-warning:hover {
+             background-color: #e0a800 !important;
+             border-color: #e0a800 !important;
+        }
+
+        /* Nút Xóa (Đỏ) */
+        .btn-danger {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            font-weight: 500;
+        }
+        .btn-danger:hover {
+            background-color: #c82333 !important;
+            border-color: #c82333 !important;
+        }
+
+        /* Đảm bảo form nội tuyến */
+        .inline-form {
+            display: inline-block;
+            margin-left: 5px; /* Tạo khoảng cách giữa nút Sửa và Xóa */
+        }
