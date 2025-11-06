@@ -12,7 +12,7 @@ use App\Models\GiaTour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str; // THÊM DÒNG NÀY
+use Illuminate\Support\Str; 
 
 class TourController extends Controller
 {
@@ -138,7 +138,7 @@ class TourController extends Controller
 
                 HinhAnh::create([
                     'moTa' => 'Hình tour: ' . $tour->tieuDe,
-                    'duongDanHinh' => $path, // → images/tours/xxx.jpg
+                    'duongDanHinh' => $path,
                     'maTour' => $tour->maTour,
                 ]);
             }
