@@ -15,6 +15,7 @@ use App\Http\Controllers\User\DatTourController;
 use App\Http\Controllers\User\UserAuthController;
 use App\Http\Controllers\User\DangKyController; 
 use App\Http\Controllers\User\ThongTinUserController;
+use App\Http\Controllers\User\SuaTourDetailController;
 
 
 // Route công khai
@@ -104,9 +105,6 @@ Route::get('/', [TourUserController::class, 'index'])->name('home');
 // Danh sách tour / tìm kiếm tour
 Route::get('/tours', [TourUserController::class, 'search'])->name('tour.list');
 
-
-
-
 Route::controller(DatTourController::class)->middleware('auth:web')->prefix('user')->name('dattour.')->group(function () {
     Route::get('/', 'index')->name('index');
     Route::get('create/{maTour}', 'create')->name('create');
@@ -123,3 +121,10 @@ Route::post('user/dangky', [DangKyController::class, 'register'])->name('user.da
 Route::get('user/thongtin', [ThongTinUserController::class, 'index'])->name('user.thongtinuser');
 
 Route::get('/api/tour-dates/{maTour}', [DatTourController::class, 'getTourDates']);
+
+Route::controller(SuaTourDetailController::class)->middleware('auth:web')->prefix('user/suatourdetail')->name('user.suatourdetail.')->group(function () {
+    Route::get('{maDatCho}', 'index')->name('index');
+    Route::post('{maDatCho}/update', 'update')->name('update');
+});
+
+Route::delete('user/thongtin/{maDatCho}', [ThongTinUserController::class, 'destroy'])->name('user.thongtinuser.destroy');

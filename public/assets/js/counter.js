@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Số lượng hành khách
   let counts = {
-    adult: 1,
-    child: 0,
-    baby: 0
+    adult: parseInt(document.getElementById('adult-count').textContent) || 1,
+  child: parseInt(document.getElementById('child-count').textContent) || 0,
+  baby: parseInt(document.getElementById('baby-count').textContent) || 0
   };
 
   // Cập nhật tổng tiền
@@ -50,6 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }).format(amount);
   }
 
+  let selectedEvent = null;
+
   // Khởi tạo FullCalendar
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
@@ -57,34 +59,66 @@ document.addEventListener('DOMContentLoaded', function () {
     timeZone: 'local',
     height: 'auto',
     events: `/api/tour-dates/${window.tourId}`,
+    eventDidMount: function (info) {
+    info.el.style.backgroundColor = '#f95e4d'; // màu cam
+    info.el.style.borderColor = '#f95e4d';
+    info.el.style.transition = 'all 0.2s ease';
+    info.el.style.transition = 'background-color 0.3s ease';},
     eventClick: function (info) {
-      const props = info.event.extendedProps;
+    const props = info.event.extendedProps;
 
-      // Cập nhật giá hiện tại từ chuyến được chọn
-      currentPrices = {
-        adult: props.giaNguoiLon,
-        child: props.giaTreEm,
-        baby: props.giaEmBe
-      };
-      document.getElementById('ma-chuyen-display').textContent = props.maChuyen || '-';
-      const maChuyenInput = document.getElementById('maChuyen-input');
-      if (maChuyenInput) {
-        maChuyenInput.value = props.maChuyen || '';
-      }
-      // Cập nhật ngày
-      document.querySelector('input[name="ngayKhoiHanh"]').value = info.event.startStr;
-      document.querySelector('input[name="ngayKetThuc"]').value = props.ngayKetThuc;
+    // Cập nhật giá hiện tại từ chuyến được chọn
+    currentPrices = {
+      adult: props.giaNguoiLon,
+      child: props.giaTreEm,
+      baby: props.giaEmBe
+    };
 
-      document.querySelector('.booking-details .detail-row:nth-child(1) span:last-child').textContent = info.event.startStr;
-      document.querySelector('.booking-details .detail-row:nth-child(2) span:last-child').textContent = props.ngayKetThuc;
+    
 
-      // Cập nhật lại tổng tiền với giá mới
-      updateTotal();
-
-      // Highlight event đã chọn
-      calendar.getEvents().forEach(ev => ev.setProp('backgroundColor', ''));
-      info.event.setProp('backgroundColor', '#007bff');
+    document.getElementById('ma-chuyen-display').textContent = props.maChuyen || '-';
+    const maChuyenInput = document.getElementById('maChuyen-input');
+    if (maChuyenInput) {
+      maChuyenInput.value = props.maChuyen || '';
     }
+
+    // 🗓️ Hàm định dạng ngày sang dd/MM/yyyy
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    // Cập nhật ngày (đã định dạng)
+    const ngayKhoiHanh = formatDate(info.event.startStr);
+    const ngayKetThuc = formatDate(props.ngayKetThuc);
+
+    document.querySelector('input[name="ngayKhoiHanh"]').value = ngayKhoiHanh;
+    document.querySelector('input[name="ngayKetThuc"]').value = ngayKetThuc;
+
+    document.querySelector('.booking-details .detail-row:nth-child(1) span:last-child').textContent = ngayKhoiHanh;
+    document.querySelector('.booking-details .detail-row:nth-child(2) span:last-child').textContent = ngayKetThuc;
+
+    // Cập nhật lại tổng tiền với giá mới
+    updateTotal();
+
+    // Highlight event đã chọn
+    if (selectedEvent) {
+      // Trả màu cam nhạt cho event trước
+      selectedEvent.setProp('backgroundColor', '#f95e4d');
+      selectedEvent.setProp('borderColor', '#f95e4d');
+    }
+
+    // Làm event đang chọn tối màu hơn
+    info.event.setProp('backgroundColor', '#d94b3e'); // cam đậm
+    info.event.setProp('borderColor', '#d94b3e');
+
+    selectedEvent = info.event;
+  
+  }
+
   });
 
   calendar.render();

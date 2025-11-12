@@ -86,49 +86,73 @@
           <div class="booked-tours-section mt-4">
             <h3 class="section-title">Các tour bạn đã đặt</h3>
 
-            @forelse($datCho as $dat)
-              <div class="tour-card mb-4 p-3 shadow-sm rounded">
-                <h5 class="fw-bold text-danger mb-2">{{ $dat->tour->tieuDe ?? 'Tour không xác định' }}</h5>
+            @forelse($datCho as $index => $dat)
+              <div class="tour-card mb-3 shadow-sm rounded">
+                <div class="card-header bg-light">
+                  <a class="fw-bold text-danger text-decoration-none d-block mb-2" 
+                    data-bs-toggle="collapse" 
+                    href="#tourCollapse{{ $index }}" 
+                    role="button" 
+                    aria-expanded="false" 
+                    aria-controls="tourCollapse{{ $index }}">
+                    {{ $dat->tour->tieuDe ?? 'Tour không xác định' }}
+                    <i class="bi bi-chevron-down float-end"></i>
+                  </a>
+                </div>
 
-                <p><i class="bi bi-calendar-check"></i>
-                  <strong>Ngày đặt:</strong> {{ \Carbon\Carbon::parse($dat->ngayDat)->format('d/m/Y') }}
-                </p>
+                <div class="collapse" id="tourCollapse{{ $index }}">
+                  <div class="card-body">
+                    <p><i class="bi bi-calendar-check"></i>
+                      <strong>Ngày đặt:</strong> {{ \Carbon\Carbon::parse($dat->ngayDat)->format('d/m/Y H:i') }}
+                    </p>
 
-                <p><i class="bi bi-calendar-event"></i>
-                  <strong>Ngày khởi hành:</strong> {{ \Carbon\Carbon::parse($dat->ngayKhoiHanh)->format('d/m/Y') }}
-                  - <strong>Ngày kết thúc:</strong> {{ \Carbon\Carbon::parse($dat->ngayKetThuc)->format('d/m/Y') }}
-                </p>
+                    <p><i class="bi bi-calendar-event"></i>
+                      <strong>Ngày khởi hành:</strong> {{ \Carbon\Carbon::parse($dat->ngayKhoiHanh)->format('d/m/Y') }}
+                      - <strong>Ngày kết thúc:</strong> {{ \Carbon\Carbon::parse($dat->ngayKetThuc)->format('d/m/Y') }}
+                    </p>
 
-                <p><i class="bi bi-people-fill"></i>
-                  <strong>Người lớn:</strong> {{ $dat->soNguoiLon }}|
-                  <strong>Trẻ em:</strong> {{ $dat->soTreEm }}|
-                  <strong>Thiếu niên:</strong> {{ $dat->soThieuNien }}|
-                  <strong>Người già:</strong> {{ $dat->soNguoiGia }}
-                </p>
+                    <p><i class="bi bi-people-fill"></i>
+                      <strong>Người lớn:</strong> {{ $dat->soNguoiLon }} |
+                      <strong>Trẻ em:</strong> {{ $dat->soTreEm }} |
+                      <strong>Em Bé:</strong> {{ $dat->soEmBe }} |
+                    </p>
 
-                <p><i class="bi bi-cash-stack"></i>
-                  <strong>Tổng giá tiền:</strong>
-                  <span class="text-success fw-bold">{{ number_format($dat->tongGia, 0, ',', '.') }} ₫</span>
-                </p>
+                    <p><i class="bi bi-cash-stack"></i>
+                      <strong>Tổng giá tiền:</strong>
+                      <span class="text-success fw-bold">{{ number_format($dat->tongGia, 0, ',', '.') }} ₫</span>
+                    </p>
 
-                <p><i class="bi bi-credit-card"></i>
-                  <strong>Phương thức thanh toán:</strong> {{ ucfirst($dat->phuongThucThanhToan ?? 'Chưa xác định') }}
-                </p>
+                    <p><i class="bi bi-credit-card"></i>
+                      <strong>Phương thức thanh toán:</strong> {{ ucfirst($dat->phuongThucThanhToan ?? 'Chưa xác định') }}
+                    </p>
 
-                <p>
-                  <i class="bi bi-check-circle"></i>
-                  <strong>Trạng thái xác nhận:</strong>
-                  @if($dat->xacNhan == 1)
-                    <span class="text-success fw-bold">Đã xác nhận</span>
-                  @else
-                    <span class="text-warning fw-bold">Chưa xác nhận</span>
-                  @endif
-                </p>
+                    <p><i class="bi bi-check-circle"></i>
+                      <strong>Trạng thái xác nhận:</strong>
+                      @if($dat->xacNhan == 1)
+                        <span class="text-success fw-bold">Đã xác nhận</span>
+                      @else
+                        <span class="text-warning fw-bold">Chưa xác nhận</span>
+                      @endif
+                    </p>
+                    <a href="{{ route('user.suatourdetail.index', ['maDatCho' => $dat->maDatCho]) }}" 
+                      class="btn btn-lg ">
+                      <i class="bi bi-gear"></i>
+                    </a>
+                    <form action="{{ route('user.thongtinuser.destroy', ['maDatCho' => $dat->maDatCho]) }}" method="POST" class="d-inline">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit" class="btn btn-lg " onclick="return confirm('Bạn có chắc chắn muốn xóa tour này không?');">
+                        <i class="bi bi-trash3-fill"></i>
+                      </button>
+                    </form>
+                  </div>
+                </div>
               </div>
             @empty
               <p class="text-muted mt-3">Bạn chưa đặt tour nào.</p>
             @endforelse
           </div>
+
         </div>
       </div>
     </section><!-- /Contact Section -->

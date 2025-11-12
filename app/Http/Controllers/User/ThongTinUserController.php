@@ -25,4 +25,13 @@ class ThongTinUserController extends Controller
         // Trả về view và truyền dữ liệu user
         return view('user.thongtinuser', compact('user', 'datCho'));
     }
+    public function destroy($maDatCho)
+    {
+        $datcho = Auth::user()->datCho()->findOrFail($maDatCho);
+        
+        $datcho->delete();
+
+        return redirect()->route('user.thongtinuser')
+                        ->with('success', 'Xóa tour thành công!');
+    }
 }

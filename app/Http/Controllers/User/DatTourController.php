@@ -53,7 +53,7 @@ class DatTourController extends Controller
         $events = $chuyen->map(function ($c) {
             $gia = $c->giatour;               // quan hệ 1-1
             return [
-                'title' => number_format($gia->nguoiLon, 0, ',', '.') . ' ₫',   // lấy tiêu đề tour
+                'title' => number_format($gia?->nguoiLon, 0, ',', '.') . ' ₫',   // lấy tiêu đề tour
                 'start'        => $c->ngayBatDau,
                 'color'        => '#28a745',
                 'extendedProps' => [
