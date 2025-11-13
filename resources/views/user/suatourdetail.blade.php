@@ -24,7 +24,7 @@
           <div class="col-lg-8">
             <div class="booking-form">
               <form action="{{ route('user.suatourdetail.update', $datcho->maDatCho) }}" method="POST">
-                @method('POST')
+                @method('PUT')
                   @csrf
                 <div class="booking-step" id="step-2">
                   <div class="step-header">
@@ -34,8 +34,8 @@
                     <input type="hidden" id="child-input" name="treEm" value="0">
                     <input type="hidden" id="baby-input" name="emBe" value="0">
                     <input type="hidden" id="grand-total-input" name="tongGia" value="0">
-                    <input type="hidden" name="ngayKhoiHanh" value="{{ $tour->chuyentour->first()->ngayBatDau }}">
-                    <input type="hidden" name="ngayKetThuc" value="{{ $tour->chuyentour->first()->ngayKetThuc }}">
+                    <input type="hidden" name="ngayKhoiHanh" value="{{ $ngayKhoiHanh_Laravel }}">
+                    <input type="hidden" name="ngayKetThuc" value="{{ $ngayKetThuc_Laravel }}">
                     <input type="hidden" name="maChuyen" id="maChuyen-input" value="{{ $datcho->maChuyen }}">
                     <input type="hidden" name="maTour" value="{{ $tour->maTour }}">
                   </div>
@@ -211,17 +211,21 @@
                 <div class="booking-details">
                   <div class="detail-row">
                     <span>Ngày Bắt Đầu:</span>
-                      <span>{{ $tour->chuyentour->first()->ngayBatDau ? \Carbon\Carbon::parse($tour->chuyentour->first()->ngayBatDau)->format('d/m/Y') : '--/--/----' }}</span>
+                      <span class="ngayKhoiHanhDisplay">{{ $ngayKhoiHanh_Display }}</span>
                   </div>
                   <div class="detail-row">
                     <span>Ngày Kết Thúc:</span>
-                      <span>{{ $tour->chuyentour->first()->ngayKetThuc ? \Carbon\Carbon::parse($tour->chuyentour->first()->ngayKetThuc)->format('d/m/Y') : '--/--/----' }}</span>
+                      <span class="ngayKetThucDisplay">{{ $ngayKetThuc_Display }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span>Mã chuyến:</span>
+                    <span id="ma-chuyen-display">{{ $datcho->maChuyen ?? 'N/A' }}</span>
                   </div>
                 </div>
                 <div class="price-breakdown">
-                  <input type="hidden" id="adult-price" value="{{ $tour->giaTour->first()->nguoiLon }}">
-                  <input type="hidden" id="child-price" value="{{ $tour->giaTour->first()->treEm }}">
-                  <input type="hidden" id="baby-price" value="{{ $tour->giaTour->first()->emBe }}">
+                  <input type="hidden" id="adult-price" value="{{ $gia->nguoiLon }}">
+                  <input type="hidden" id="child-price" value="{{ $gia->treEm }}">
+                  <input type="hidden" id="baby-price" value="{{ $gia->emBe }}">
                   <input type="hidden" id="slot" value="{{ $tour->chuyentour->first()->soLuongToiDa }}">
                   <h6>Chi Tiết Giá</h6>
                   <div class="price-row">
@@ -308,13 +312,11 @@
   </div>
 </div>
 <script>
-  // Truyền dữ liệu từ PHP sang JS toàn cục
   window.initialPrices = {
-    adult: {{ $tour->giaTour->first()->nguoiLon }},
-    child: {{ $tour->giaTour->first()->treEm }},
-    baby: {{ $tour->giaTour->first()->emBe }}
+    adult: {{ $gia->nguoiLon }},
+    child: {{ $gia->treEm }},
+    baby:  {{ $gia->emBe }}
   };
-
   window.tourId = '{{ $tour->maTour }}';
 </script>
 <script src="{{ asset('assets/js/counter.js') }}"></script>

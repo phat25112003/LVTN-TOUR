@@ -49,4 +49,8 @@ class DatCho extends Model
         // Giả định khóa ngoại là maDatCho
         return $this->hasOne(ThanhToan::class, 'maDatCho', 'maDatCho');
     }
+    public function chuyenTour()
+    {
+        return $this->belongsTo(ChuyenTour::class, 'maChuyen', 'maChuyen');
+    }
 }

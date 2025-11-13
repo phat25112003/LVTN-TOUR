@@ -20,7 +20,7 @@
         </nav>
       </div>
     </div><!-- End Page Title -->
-
+    
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
@@ -84,6 +84,19 @@
             </div>
           </div>
           <div class="booked-tours-section mt-4">
+            @if (session('success'))
+              <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
+            @if (session('error'))
+              <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+
+            @if (!empty($canhBao))
+              <div class="alert alert-warning">
+                {{ $canhBao }}
+              </div>
+            @endif
             <h3 class="section-title">Các tour bạn đã đặt</h3>
 
             @forelse($datCho as $index => $dat)
@@ -107,8 +120,8 @@
                     </p>
 
                     <p><i class="bi bi-calendar-event"></i>
-                      <strong>Ngày khởi hành:</strong> {{ \Carbon\Carbon::parse($dat->ngayKhoiHanh)->format('d/m/Y') }}
-                      - <strong>Ngày kết thúc:</strong> {{ \Carbon\Carbon::parse($dat->ngayKetThuc)->format('d/m/Y') }}
+                      <strong>Ngày khởi hành:</strong> {{ \Carbon\Carbon::parse($dat->chuyenTour->ngayBatDau)->format('d/m/Y') }}
+                      - <strong>Ngày kết thúc:</strong> {{ \Carbon\Carbon::parse($dat->chuyenTour->ngayKetThuc)->format('d/m/Y') }}
                     </p>
 
                     <p><i class="bi bi-people-fill"></i>

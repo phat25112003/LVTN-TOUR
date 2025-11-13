@@ -209,11 +209,11 @@
                 <div class="booking-details">
                   <div class="detail-row">
                     <span>Ngày Bắt Đầu:</span>
-                    <span>--/--/----</span>
+                    <span class="ngayKhoiHanhDisplay">--/--/----</span>
                   </div>
                   <div class="detail-row">
                     <span>Ngày Kết Thúc:</span>
-                    <span>--/--/----</span>
+                    <span class="ngayKetThucDisplay">--/--/----</span>
                   </div>
                   <div class="detail-row">
                     <span>Mã chuyến:</span>

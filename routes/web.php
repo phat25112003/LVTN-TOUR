@@ -124,7 +124,7 @@ Route::get('/api/tour-dates/{maTour}', [DatTourController::class, 'getTourDates'
 
 Route::controller(SuaTourDetailController::class)->middleware('auth:web')->prefix('user/suatourdetail')->name('user.suatourdetail.')->group(function () {
     Route::get('{maDatCho}', 'index')->name('index');
-    Route::post('{maDatCho}/update', 'update')->name('update');
+    Route::put('{maDatCho}/update', 'update')->name('update');
 });
 
 Route::delete('user/thongtin/{maDatCho}', [ThongTinUserController::class, 'destroy'])->name('user.thongtinuser.destroy');

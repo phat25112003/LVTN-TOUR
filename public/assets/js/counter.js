@@ -73,34 +73,46 @@ document.addEventListener('DOMContentLoaded', function () {
       child: props.giaTreEm,
       baby: props.giaEmBe
     };
-
     
-
     document.getElementById('ma-chuyen-display').textContent = props.maChuyen || '-';
     const maChuyenInput = document.getElementById('maChuyen-input');
     if (maChuyenInput) {
       maChuyenInput.value = props.maChuyen || '';
     }
 
-    // 🗓️ Hàm định dạng ngày sang dd/MM/yyyy
-    function formatDate(dateStr) {
+    // 🗓️ Hàm định dạng ngày sang YYYY-MM-DD (để Laravel nhận diện)
+    function formatDateForLaravel(dateStr) {
+      const date = new Date(dateStr);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`; // 2025-11-10
+    }
+
+    // Hàm hiển thị cho người dùng (giữ nguyên dd/MM/yyyy)
+    function formatDateForDisplay(dateStr) {
       const date = new Date(dateStr);
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
+      return `${day}/${month}/${year}`; // 10/11/2025
     }
+    // Cập nhật ngày
+const ngayKhoiHanh_Laravel = formatDateForLaravel(info.event.startStr);
+const ngayKetThuc_Laravel = formatDateForLaravel(props.ngayKetThuc);
 
-    // Cập nhật ngày (đã định dạng)
-    const ngayKhoiHanh = formatDate(info.event.startStr);
-    const ngayKetThuc = formatDate(props.ngayKetThuc);
+const ngayKhoiHanh_Display = formatDateForDisplay(info.event.startStr);
+const ngayKetThuc_Display = formatDateForDisplay(props.ngayKetThuc);
 
-    document.querySelector('input[name="ngayKhoiHanh"]').value = ngayKhoiHanh;
-    document.querySelector('input[name="ngayKetThuc"]').value = ngayKetThuc;
+// Cập nhật input hidden (gửi lên server)
+document.querySelector('input[name="ngayKhoiHanh"]').value = ngayKhoiHanh_Laravel;
+document.querySelector('input[name="ngayKetThuc"]').value = ngayKetThuc_Laravel;
 
-    document.querySelector('.booking-details .detail-row:nth-child(1) span:last-child').textContent = ngayKhoiHanh;
-    document.querySelector('.booking-details .detail-row:nth-child(2) span:last-child').textContent = ngayKetThuc;
-
+// Cập nhật hiển thị cho người dùng
+const ngayBatDauEl = document.querySelector('.ngayKhoiHanhDisplay');
+const ngayKetThucEl = document.querySelector('.ngayKetThucDisplay');
+if (ngayBatDauEl) ngayBatDauEl.textContent = ngayKhoiHanh_Display;
+if (ngayKetThucEl) ngayKetThucEl.textContent = ngayKetThuc_Display;
     // Cập nhật lại tổng tiền với giá mới
     updateTotal();
 
