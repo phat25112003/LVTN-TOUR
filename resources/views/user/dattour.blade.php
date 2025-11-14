@@ -173,15 +173,6 @@
                   </div>
                 </div>
               </form>
-              @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
             </div>
           </div>
 
@@ -192,7 +183,7 @@
               </div>
               <div class="summary-content">
                 <div class="selected-tour">
-                  <img src="{{ asset('storage/' . $tour->hinhanh->first()->duongDanHinh) }}" alt="Tour" class="img-fluid">
+                  <img src="{{ asset('storage/' . optional($tour->hinhanh->first())->duongDanHinh ?? 'default.jpg') }}"alt="Tour" class="img-fluid">
                   <div class="tour-info">
                     <h5>{{ $tour->tieuDe }}</h5>
                     <p>{{ $tour->thoiGian }}</p>
@@ -311,6 +302,14 @@
     </div>
   </div>
 </div>
+<div class="toast-container position-fixed top-0 start-50 p-3 translate-middle-x" style="z-index: 1100;">
+  <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="successMessage"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
 <script>
   // Truyền dữ liệu từ PHP sang JS toàn cục
   window.initialPrices = {
@@ -321,6 +320,35 @@
 
   window.tourId = '{{ $tour->maTour }}';
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // --- Hiển thị lỗi (toast đỏ) ---
+    @if ($errors->any())
+        let errorMsg = `{!! implode('\n', $errors->all()) !!}`;
+        document.getElementById('toastMessage').textContent = errorMsg;
+        var errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+        errorToast.show();
+    @endif
+
+    @if (session('error'))
+        document.getElementById('toastMessage').textContent = "{{ session('error') }}";
+        var errorToast2 = new bootstrap.Toast(document.getElementById('errorToast'));
+        errorToast2.show();
+    @endif
+
+
+    // --- Hiển thị thành công (toast xanh lá) ---
+    @if (session('success'))
+        document.getElementById('successMessage').textContent = "{{ session('success') }}";
+        var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+        successToast.show();
+    @endif
+
+});
+</script>
+
 <script src="{{ asset('assets/js/counter.js') }}"></script>
 
 </body>

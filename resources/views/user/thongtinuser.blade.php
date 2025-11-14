@@ -10,14 +10,7 @@
     <!-- Page Title -->
     <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
       <div class="container position-relative">
-        <h1>Contact</h1>
-        <p>Esse dolorum voluptatum ullam est sint nemo et est ipsa porro placeat quibusdam quia assumenda numquam molestias.</p>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="index.html">Home</a></li>
-            <li class="current">Contact</li>
-          </ol>
-        </nav>
+        <h1>Thông tin tài khoản</h1>
       </div>
     </div><!-- End Page Title -->
     
@@ -84,19 +77,6 @@
             </div>
           </div>
           <div class="booked-tours-section mt-4">
-            @if (session('success'))
-              <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-
-            @if (session('error'))
-              <div class="alert alert-danger">{{ session('error') }}</div>
-            @endif
-
-            @if (!empty($canhBao))
-              <div class="alert alert-warning">
-                {{ $canhBao }}
-              </div>
-            @endif
             <h3 class="section-title">Các tour bạn đã đặt</h3>
 
             @forelse($datCho as $index => $dat)
@@ -171,6 +151,58 @@
     </section><!-- /Contact Section -->
 
   </main>
+<!-- Toast ERROR -->
+<div class="toast-container position-fixed top-0 start-50 p-3 translate-middle-x" style="z-index: 2000;">
+  <div id="errorToast" class="toast align-items-center text-white bg-danger border-0">
+    <div class="d-flex">
+      <div class="toast-body" id="errorMessage"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast SUCCESS -->
+<div class="toast-container position-fixed top-0 start-50 p-3 translate-middle-x" style="z-index: 2000;">
+  <div id="successToast" class="toast align-items-center text-white bg-success border-0">
+    <div class="d-flex">
+      <div class="toast-body" id="successMessage"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast WARNING -->
+<div class="toast-container position-fixed top-0 start-50 p-3 translate-middle-x" style="z-index: 2000;">
+  <div id="warningToast" class="toast align-items-center text-dark bg-warning border-0" data-bs-autohide="false">
+    <div class="d-flex">
+      <div class="toast-body fw-bold" id="warningMessage"></div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // SUCCESS TOAST (toast xanh lá)
+    @if(session('success'))
+        document.getElementById('successMessage').textContent = "{{ session('success') }}";
+        new bootstrap.Toast(document.getElementById('successToast')).show();
+    @endif
+
+    // ERROR TOAST (toast đỏ)
+    @if(session('error'))
+        document.getElementById('errorMessage').textContent = "{{ session('error') }}";
+        new bootstrap.Toast(document.getElementById('errorToast')).show();
+    @endif
+
+    // CẢNH BÁO (toast vàng)
+    @if(!empty($canhBao))
+        document.getElementById('warningMessage').textContent = "{{ $canhBao }}";
+        new bootstrap.Toast(document.getElementById('warningToast')).show();
+    @endif
+
+});
+</script>
 
 @include('layout.footer')
 

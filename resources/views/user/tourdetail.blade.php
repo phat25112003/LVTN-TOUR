@@ -25,7 +25,7 @@
         <!-- Hero Banner -->
         <div class="tour-hero">
           <div class="hero-image-wrapper">
-            <img src="{{ asset('storage/' . $tourdetail->hinhanh->first()->duongDanHinh) }}" alt="Mediterranean Coast Adventure" class="hero-image">
+            <img src="{{ asset('storage/' . optional($tourdetail->hinhanh->first())->duongDanHinh) }}"alt="tour-image" class="hero-image">
             <div class="hero-overlay">
               <div class="hero-content">
                 <h1>{{ $tourdetail->tieuDe }}</h1>
@@ -55,21 +55,21 @@
                     <p>{{ $tourdetail->moTa }}</p>
 
                     <div class="highlights-compact">
-                      <div class="highlight-item">
+                      <!-- <div class="highlight-item">
                         <i class="bi bi-palette"></i>
                         <span>Renaissance Art Tours</span>
-                      </div>
-                      <div class="highlight-item">
+                      </div> -->
+                      <!-- <div class="highlight-item">
                         <i class="bi bi-cup-hot"></i>
                         <span>Culinary Experiences</span>
-                      </div>
+                      </div> -->
                       <div class="highlight-item">
-                        <i class="bi bi-building"></i>
-                        <span>Boutique Accommodations</span>
+                        <i class="bi bi-geo-fill"></i>
+                        <span>Điểm khởi hành: {{ $tourdetail->chuyenTour->first()->diemKhoiHanh }} </span>
                       </div>
                       <div class="highlight-item">
                         <i class="bi bi-car-front"></i>
-                        <span>Phương Tiện: </span>
+                        <span>Phương Tiện: {{ $tourdetail->chuyenTour->first()->phuongTien }} </span>
                       </div>
                     </div>
                   </div>
@@ -308,24 +308,37 @@
                       
                     </div>
                     <p>{{ $lt->noiDung }}</p>
-                    <div class="day-features">
-                      <div class="feature-item">
-                        <h5>Sáng</h5>
-                        <span>{{ $lt->sang }}</span>
+                  <div class="day-features d-flex flex-column gap-3">
+
+                      @if(!empty($lt->sang))
+                      <div class="feature-item d-flex flex-column">
+                          <h5 class="mb-1 fw-bold">Sáng</h5>
+                          <span>{{ $lt->sang }}</span>
                       </div>
-                      <div class="feature-item">
-                        <h5>Trưa</h5>
-                        <span>{{ $lt->trua }}</span>
+                      @endif
+
+                      @if(!empty($lt->trua))
+                      <div class="feature-item d-flex flex-column">
+                          <h5 class="mb-1 fw-bold">Trưa</h5>
+                          <span>{{ $lt->trua }}</span>
                       </div>
-                      <div class="feature-item">
-                        <h5>Chiều</h5>
-                        <span>{{ $lt->chieu }}</span>
+                      @endif
+
+                      @if(!empty($lt->chieu))
+                      <div class="feature-item d-flex flex-column">
+                          <h5 class="mb-1 fw-bold">Chiều</h5>
+                          <span>{{ $lt->chieu }}</span>
                       </div>
-                      <div class="feature-item">
-                        <h5>Tối</h5>
-                        <span>{{ $lt->toi }}</span>
+                      @endif
+
+                      @if(!empty($lt->toi))
+                      <div class="feature-item d-flex flex-column">
+                          <h5 class="mb-1 fw-bold">Tối</h5>
+                          <span>{{ $lt->toi }}</span>
                       </div>
-                    </div>
+                      @endif
+
+                  </div>
 
                   </div>
                 </div>
@@ -353,8 +366,8 @@
           <h2>Moments to Remember</h2>
           <div class="gallery-grid">
             <div class="gallery-piece large">
-              <a href="{{ asset('storage/' . $tourdetail->hinhanh->first()->duongDanHinh) }}" class="glightbox">
-                <img src="{{ asset('storage/' . $tourdetail->hinhanh->first()->duongDanHinh) }}" alt="Italian Countryside" class="img-fluid" loading="lazy">
+              <a href="{{ asset('storage/' . optional($tourdetail->hinhanh->first())->duongDanHinh) }}" class="glightbox">
+                <img src="{{ asset('storage/' . optional($tourdetail->hinhanh->first())->duongDanHinh) }}" alt="Italian Countryside" class="img-fluid" loading="lazy">
               </a>
             </div>
             @foreach ($tourdetail->hinhanh->skip(1)->take(4) as $ha)
