@@ -1,3 +1,4 @@
+{{-- resources/views/admin/tours/create.blade.php --}}
 @extends('admin.layouts.dashboard')
 
 @section('content')
@@ -6,7 +7,7 @@
 
     @if ($errors->any())
         <div class="alert alert-danger">
-            <strong>Lỗi!</strong> Vui lòng kiểm tra lại thông tin nhập.
+            <strong>Lỗi!</strong> Vui lòng kiểm tra lại.
             <ul class="mt-2 mb-0">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -17,83 +18,53 @@
 
     <form action="{{ route('admin.tours.store') }}" method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded shadow-sm">
         @csrf
+
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">Tiêu đề Tour</label>
+                <label class="form-label">Tiêu đề Tour <span class="text-danger">*</span></label>
                 <input type="text" name="tieuDe" class="form-control" value="{{ old('tieuDe') }}" required>
             </div>
             <div class="col-md-6 mb-3">
-                <label class="form-label">Thời gian (ví dụ: 3 ngày 2 đêm)</label>
-                <input type="text" name="thoiGian" class="form-control" value="{{ old('thoiGian') }}">
+                <label class="form-label">Thời gian (ví dụ: 3 ngày 2 đêm) <span class="text-danger">*</span></label>
+                <input type="text" name="thoiGian" class="form-control" value="{{ old('thoiGian') }}" required>
             </div>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Mô tả</label>
-            <textarea name="moTa" rows="3" class="form-control" required>{{ old('moTa') }}</textarea>
+            <label class="form-label">Mô tả <span class="text-danger">*</span></label>
+            <textarea name="moTa" rows="4" class="form-control" required>{{ old('moTa') }}</textarea>
         </div>
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">Ngày bắt đầu</label>
-                <input type="date" name="ngayBatDau" class="form-control" value="{{ old('ngayBatDau') }}" required>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Ngày kết thúc</label>
-                <input type="date" name="ngayKetThuc" class="form-control" value="{{ old('ngayKetThuc') }}" required>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Số lượng</label>
-                <input type="number" name="soLuong" class="form-control" value="{{ old('soLuong') }}" required>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Giá người lớn (VNĐ)</label>
-                <input type="number" name="giaNguoiLon" class="form-control" value="{{ old('giaNguoiLon') }}" required>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Giá trẻ em (VNĐ)</label>
-                <input type="number" name="giaTreEm" class="form-control" value="{{ old('giaTreEm') }}" required>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Điểm đến</label>
+                <label class="form-label">Điểm đến <span class="text-danger">*</span></label>
                 <input type="text" name="diemDen" class="form-control" value="{{ old('diemDen') }}" required>
             </div>
+
             <div class="col-md-6 mb-3">
-                <label class="form-label">Tình trạng</label>
-                <select name="tinhTrang" class="form-select">
-                    <option value="1" {{ old('tinhTrang') == 1 ? 'selected' : '' }}>Hoạt động</option>
-                    <option value="0" {{ old('tinhTrang') == 0 ? 'selected' : '' }}>Ngưng</option>
+                <label class="form-label">Danh mục</label>
+                <select name="maDanhMuc" class="form-select">
+                    <option value="">Chưa chọn</option>
+                    @foreach ($danhmucs ?? [] as $danhmuc)
+                        <option value="{{ $danhmuc->maDanhMuc }}" {{ old('maDanhMuc') == $danhmuc->maDanhMuc ? 'selected' : '' }}>
+                            {{ $danhmuc->tenDanhMuc }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Danh mục</label>
-            <select name="maDanhMuc" class="form-select">
-                <option value="">Chưa có</option>
-                @foreach ($danhmucs ?? [] as $danhmuc)
-                    <option value="{{ $danhmuc->maDanhMuc }}" {{ old('maDanhMuc') == $danhmuc->maDanhMuc ? 'selected' : '' }}>
-                        {{ $danhmuc->tenDanhMuc }}
-                    </option>
-                @endforeach
-            </select>
+            <label class="form-label">Hình ảnh Tour (nhiều ảnh)</label>
+            <input type="file" name="hinhAnh[]" multiple class="form-control" accept="image/*">
+            <small class="text-muted">Tối đa 5MB/ảnh, định dạng: jpg, png, webp</small>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Hình ảnh Tour</label>
-            <input type="file" name="hinhAnh[]" multiple class="form-control">
-            
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn-success">Lưu và Tạo Lịch Trình</button>
-            <a href="{{ route('admin.tours.index') }}" class="btn-cancel">Hủy</a>
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg">
+                Lưu & Tiếp tục
+            </button>
+            <a href="{{ route('admin.tours.index') }}" class="btn btn-secondary btn-lg">Hủy</a>
         </div>
     </form>
 </div>
@@ -152,4 +123,18 @@
             border-radius: 5px;
         }
     </style>
+<style>
+    .form-control, .form-select {
+        border-radius: 6px;
+        padding: 10px;
+    }
+    .btn-success {
+        background: #28a745;
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+    }
+    .btn-success:hover { background: #218838; }
+    .btn-secondary { padding: 12px 30px; }
+</style>
 @endpush

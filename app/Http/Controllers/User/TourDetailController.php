@@ -36,7 +36,11 @@ class TourDetailController extends Controller
      */
     public function show($maTour)
     {
+<<<<<<< HEAD
         $tourdetail = Tour::with('lichtrinh','danhmuc','giatour','chuyentour')->findOrFail($maTour);
+=======
+        $tourdetail = Tour::with('lichtrinh','danhmuc')->findOrFail($maTour);
+>>>>>>> 558f8d9a959838049afa7e59c23074b6b7e3cfad
         return view('user.tourdetail', compact('tourdetail'));
     }
 

@@ -9,17 +9,17 @@ class Tour extends Model
     protected $table = 'tour';
     protected $primaryKey = 'maTour';
     public $timestamps = false;
+
     protected $fillable = [
         'tieuDe',
         'thoiGian',
-        'moTa',
+        'moTa',  
         'hinhAnh',
-        'soLuong',
         'diemDen',
-        'tinhTrang',
         'maDanhMuc',
     ];
 
+    // === Relationships ===
     public function hinhAnh()
     {
         return $this->hasMany(HinhAnh::class, 'maTour', 'maTour');

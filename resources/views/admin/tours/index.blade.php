@@ -31,13 +31,7 @@
                 <th>Tiêu đề</th>
                 <th>Thời gian</th>
                 <th>Mô tả</th>
-                <th>Ngày bắt đầu</th>
-                <th>Ngày kết thúc</th>
-                <th>Số lượng</th>
-                <th>Giá người lớn</th>
-                <th>Giá trẻ em</th>
                 <th>Điểm đến</th>
-                <th>Trạng thái</th>
                 <th>Hành động</th>
             </tr>
         </thead>
@@ -46,22 +40,12 @@
                 <tr>
                     <td>{{ $tour->tieuDe }}</td>
                     <td>{{ $tour->thoiGian ?? '-' }}</td>
-                    <td class="desc">{{ $tour->moTa }}</td>
-                    <td>{{ $tour->ngayBatDau ?? '-' }}</td>
-                    <td>{{ $tour->ngayKetThuc ?? '-' }}</td>
-                    <td>{{ $tour->soLuong }}</td>
-                    <td>{{ number_format($tour->giaNguoiLon) }} VND</td>
-                    <td>{{ number_format($tour->giaTreEm) }} VND</td>
+                    <td class="desc">{{ Str::limit($tour->moTa, 150) }}</td>
                     <td>{{ $tour->diemDen }}</td>
-                    <td>
-                        <span class="status-badge {{ $tour->tinhTrang ? 'status-active' : 'status-inactive' }}">
-                            {{ $tour->tinhTrang ? 'Hoạt động' : 'Ngưng' }}
-                        </span>
-                    </td>
                     <td>
                         <div class="action-buttons">
                             <a href="{{ route('admin.tours.show', $tour->maTour) }}" class="btn-action btn-view">Xem</a>
-                            <a href="{{ route('admin.tours.edit', parameters: $tour->maTour) }}" class="btn-action btn-edit">Sửa</a>
+                            <a href="{{ route('admin.tours.edit', $tour->maTour) }}" class="btn-action btn-edit">Sửa</a>
                             <form action="{{ route('admin.tours.destroy', $tour->maTour) }}" method="POST" onsubmit="return confirm('Xóa tour này?')">
                                 @csrf
                                 @method('DELETE')

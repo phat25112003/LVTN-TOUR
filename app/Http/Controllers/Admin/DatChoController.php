@@ -3,11 +3,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\DatCho;
-use App\Models\ThanhToan;
 use App\Models\HoaDon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail; // Cần thiết cho gửi mail
-use App\Mail\InvoiceMail; // <-- Đảm bảo dòng này tồn tại và không bị lỗi chính tả
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InvoiceMail;
+use Illuminate\Support\Facades\Log;
 
 class DatChoController extends Controller
 {
@@ -92,54 +92,90 @@ class DatChoController extends Controller
             // Sửa tên route: datcho.index
             return redirect()->route('admin.datcho.index')->with('warning', 'Đặt chỗ này đã được thanh toán trước đó.');
         }
+        $datChos = DatCho::with(['tour', 'chuyentour', 'thanhtoan'])
+                        ->orderBy('ngayDat', 'desc')
+                        ->get();
+        return view('admin.datcho.index', compact('datChos', 'admin'));
     }
 
     public function show($maDatCho)
     {
         $admin = auth()->guard('admin')->user();
-        // Lấy toàn bộ thông tin chi tiết, bao gồm cả hóa đơn
-        $datCho = DatCho::with(['nguoiDung', 'tour', 'thanhtoan', 'hoadon'])->findOrFail($maDatCho);
-        
-        return view('admin.datcho.show', compact('datCho', 'admin'));
+        $datCho = DatCho::with([
+                'tour' => fn($q) => $q->select('maTour', 'tieuDe', 'thoiGian'), 
+                'chuyentour' => fn($q) => $q->select(
+                    'maChuyen', 'maTour', 'diemKhoiHanh', 'maHDV', 'phuongTien',
+                    'ngayBatDau', 'ngayKetThuc', 'soLuongToiDa', 'soLuongDaDat', 'tinhTrangChuyen'
+                ),
+                'chuyentour.giatour' => fn($q) => $q->select('maChuyen', 'nguoiLon', 'treEm', 'emBe'),
+                'chuyentour.huongdanvien' => fn($q) => $q->select('maHDV', 'hoTen'),
+                'thanhtoan',
+                'hoadon'
+            ])->findOrFail($maDatCho);
+
+        // Tính giá
+        $gia = $datCho->chuyentour?->giatour;
+        $giaNguoiLon = $gia?->nguoiLon ?? 0;
+        $giaTreEm    = $gia?->treEm ?? 0;
+        $giaEmBe     = $gia?->emBe ?? 0;
+
+        $tongTienTinhToan = 
+            ($datCho->soNguoiLon * $giaNguoiLon) +
+            ($datCho->soTreEm * $giaTreEm) +
+            ($datCho->soEmBe * $giaEmBe);
+
+        return view('admin.datcho.show', compact(
+            'datCho', 'giaNguoiLon', 'giaTreEm', 'giaEmBe', 'tongTienTinhToan', 'admin'
+        ));
     }
 
     /**
-     * Xuất và Gửi Hóa Đơn qua Email
+     * Xuất & Gửi Hóa Đơn qua Email
      */
     public function sendInvoice($maDatCho)
     {
-        $datCho = DatCho::with(['nguoiDung', 'tour', 'thanhtoan'])->findOrFail($maDatCho);
-        
-        // 1. Kiểm tra điều kiện xuất hóa đơn
-        $isPaid = $datCho->thanhtoan && $datCho->thanhtoan->tinhTrangThanhToan === 'Đã thanh toán';
-        
-        if ($datCho->xacNhan == 0 || !$isPaid) {
-            return redirect()->route('admin.datcho.show', $maDatCho)->with('error', 'Lỗi: Đặt chỗ chưa được xác nhận hoặc chưa thanh toán.');
+        $datCho = DatCho::with([
+                'tour',
+                'chuyentour',
+                'chuyentour.giatour',
+                'chuyentour.huongdanvien',  // Lấy tên HDV
+                'thanhtoan',
+                'hoadon'
+            ])->findOrFail($maDatCho);
+
+        // Kiểm tra thanh toán
+        if (!$datCho->thanhtoan || $datCho->thanhtoan->tinhTrangThanhToan !== 'Đã thanh toán') {
+            return back()->with('error', 'Không thể gửi hóa đơn: Chưa thanh toán.');
         }
 
-        // 2. Tạo hoặc cập nhật bản ghi Hóa Đơn (HoaDon)
-        // Dùng updateOrCreate nếu maDatCho đã tồn tại
+        // Tính giá (đảm bảo)
+        $gia = $datCho->chuyentour?->giatour;
+        $giaNguoiLon = $gia?->nguoiLon ?? 0;
+        $giaTreEm    = $gia?->treEm ?? 0;
+        $giaEmBe     = $gia?->emBe ?? 0;
+
+        $tongTienTinhToan = 
+            ($datCho->soNguoiLon * $giaNguoiLon) +
+            ($datCho->soTreEm * $giaTreEm) +
+            ($datCho->soEmBe * $giaEmBe);
+
+        // Tạo/cập nhật hóa đơn
         $hoaDon = HoaDon::updateOrCreate(
             ['maDatCho' => $datCho->maDatCho],
             [
-                'soTien' => $datCho->tongGia,
+                'soTien' => $tongTienTinhToan,
                 'ngayTao' => now(),
-                'chiTiet' => 'Hóa đơn đặt tour ' . $datCho->tour->tieuDe, // Có thể thêm chi tiết nếu cần
-                'trangThai' => 'Chờ gửi'
+                'chiTiet' => "Hóa đơn tour: {$datCho->tour->tieuDe} - Mã chuyến: {$datCho->maChuyen}",
+                'trangThai' => 'Đã gửi'
             ]
         );
 
-        // 3. Gửi email
         try {
-            Mail::to($datCho->email)->send(new InvoiceMail($datCho, $hoaDon)); 
-            // Nếu gửi mail thật, hãy đảm bảo email tồn tại và cấu hình đúng
-            
-            $hoaDon->update(['trangThai' => 'Đã gửi']);
-            
-            return redirect()->route('admin.datcho.show', $maDatCho)->with('success', 'Đã xuất và gửi hóa đơn thành công đến email: ' . $datCho->email);
+            Mail::to($datCho->email)->send(new InvoiceMail($datCho, $hoaDon, $tongTienTinhToan));
+            return back()->with('success', "Hóa đơn đã được gửi đến: {$datCho->email}");
         } catch (\Exception $e) {
-            // Log lỗi $e->getMessage() nếu cần
-            return redirect()->route('admin.datcho.show', $maDatCho)->with('error', 'Lỗi khi gửi email hóa đơn. Vui lòng kiểm tra cấu hình mail.');
+            Log::error("Lỗi gửi email hóa đơn #{$maDatCho}: " . $e->getMessage());
+            return back()->with('error', 'Gửi thất bại. Vui lòng kiểm tra email hoặc cấu hình mail.');
         }
     }
 }

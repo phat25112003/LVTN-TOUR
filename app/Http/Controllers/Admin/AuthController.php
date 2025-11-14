@@ -46,43 +46,64 @@ class AuthController extends Controller
         }
 
         // Nếu là GET, hiển thị form
+        // CHỈ HIỂN THỊ FORM - KHÔNG XỬ LÝ POST
         return view('admin.profile', compact('admin'));
     }
    
 
     public function updateProfile(Request $request)
     {
-        /** @var \App\Models\Admin $admin */
+        /** @var \App\Models\QuanTri $admin */
         $admin = Auth::guard('admin')->user();
 
-        $validated = $request->validate([
+        // Xác định rule động cho mật khẩu
+        $rules = [
             'tenDangNhap' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'soDienThoai' => 'nullable|string|max:20',
-            'matKhau' => 'nullable|string|min:6|confirmed', // xác nhận mật khẩu
             'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-        ], [
+        ];
+
+        $messages = [
             'matKhau.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
             'matKhau.confirmed' => 'Xác nhận mật khẩu không khớp.',
-        ]);
+        ];
 
-        // 🔹 Upload ảnh đại diện
-        if ($request->hasFile('avatar')) {
-            if ($admin->avatar && Storage::disk('public')->exists('avatars/'.$admin->avatar)) {
-                Storage::disk('public')->delete('avatars/'.$admin->avatar);
-            }
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $validated['avatar'] = basename($path);
+        // Nếu có nhập mật khẩu mới → yêu cầu mật khẩu hiện tại + xác nhận
+        if ($request->filled('matKhau')) {
+            $rules['matKhauHienTai'] = ['required', function ($attribute, $value, $fail) use ($admin) {
+                if (!Hash::check($value, $admin->matKhau)) {
+                    $fail('Mật khẩu hiện tại không đúng.');
+                }
+            }];
+            $rules['matKhau'] = 'required|string|min:6|confirmed';
+        } else {
+            $rules['matKhauHienTai'] = 'nullable';
         }
 
-        // 🔹 Nếu có nhập mật khẩu mới → mã hóa trước khi lưu
+        $validated = $request->validate($rules, $messages);
+
+        // Upload ảnh đại diện
+        if ($request->hasFile('avatar')) {
+            // XÓA ẢNH CŨ (nếu có)
+            if ($admin->avatar && Storage::disk('public')->exists('avatars/' . $admin->avatar)) {
+                Storage::disk('public')->delete('avatars/' . $admin->avatar);
+            }
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $validated['avatar'] = basename($path); // → abc123.jpg
+        }
+
+        // Cập nhật mật khẩu nếu có
         if (!empty($validated['matKhau'])) {
             $validated['matKhau'] = Hash::make($validated['matKhau']);
         } else {
-            unset($validated['matKhau']); // không thay đổi nếu để trống
+            unset($validated['matKhau']);
         }
 
-        // 🔹 Cập nhật thông tin admin
+        // Loại bỏ matKhauHienTai khỏi dữ liệu lưu
+        unset($validated['matKhauHienTai']);
+
+        // Cập nhật
         $admin->update($validated);
 
         return redirect()->route('admin.profile')->with('success', 'Cập nhật thông tin thành công!');

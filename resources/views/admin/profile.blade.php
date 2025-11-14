@@ -47,6 +47,16 @@
                 </div>
 
                 <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label text-danger fw-bold">Mật khẩu hiện tại <span class="text-muted">(bắt buộc nếu đổi mật khẩu)</span></label>
+                        <input type="password" name="matKhauHienTai" class="form-control" placeholder="Nhập mật khẩu hiện tại">
+                        @error('matKhauHienTai')
+                            <small class="text-danger">{{ $message }}</small>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Mật khẩu mới</label>
                         <input type="password" name="matKhau" class="form-control" placeholder="Nhập mật khẩu mới">

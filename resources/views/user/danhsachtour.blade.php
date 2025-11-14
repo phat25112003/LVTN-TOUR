@@ -25,7 +25,6 @@
 
         <!-- Hero Introduction -->
 
-
         <!-- Search & Filters -->
               <form action="{{ route('tour.list') }}" method="GET">
                 @method('GET')

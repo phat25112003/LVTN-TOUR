@@ -10,47 +10,61 @@ class DatCho extends Model
 
     protected $table = 'datcho';
     protected $primaryKey = 'maDatCho';
+
+    // app/Models/DatCho.php
     protected $fillable = [
+        'hoTen',
         'maNguoiDung',
         'maTour',
-        'ngayDat',
         'maChuyen',
-        'soNguoiLon',
-        'soTreEm',
-        'soEmBe',
+        'ngayDat',
         'tongGia',
-        'diaChi',
-        'soDienThoai',
+        'diaChi',           
+        'soDienThoai',      
         'email',
         'phuongThucThanhToan',
         'xacNhan',
+        'soNguoiLon',       
+        'soTreEm',          
+        'soEmBe',           
     ];
 
-    public $timestamps = false; // Tắt timestamps để tránh lỗi created_at/updated_at
+    public $timestamps = false; 
 
+    // === QUAN HỆ ===
     public function nguoiDung()
     {
-        return $this->belongsTo(NguoiDung::class, 'maNguoiDung', 'maNguoiDung');
+        return $this->belongsTo(NguoiDung::class, 'maNguoiDung');
     }
 
     public function tour()
     {
-        return $this->belongsTo(Tour::class, 'maTour', 'maTour');
+        return $this->belongsTo(Tour::class, 'maTour');
     }
 
     public function hoadon()
     {
-        // Sử dụng hasOne vì khóa ngoại maDatCho nằm trong bảng hoadon
-        return $this->hasOne(HoaDon::class, 'maDatCho', 'maDatCho');
+        return $this->hasOne(HoaDon::class, 'maDatCho');
     }
 
     public function thanhtoan()
     {
-        // Giả định khóa ngoại là maDatCho
-        return $this->hasOne(ThanhToan::class, 'maDatCho', 'maDatCho');
+        return $this->hasOne(ThanhToan::class, 'maDatCho');
     }
-    public function chuyenTour()
+
+    public function chuyentour()
     {
         return $this->belongsTo(ChuyenTour::class, 'maChuyen', 'maChuyen');
+    }
+    // === ACCESSOR: Tính tổng người ===
+    public function getTongNguoiAttribute()
+    {
+        return $this->soNguoiLon + $this->soTreEm + $this->soEmBe;
+    }
+
+    // === ACCESSOR: Định dạng tiền ===
+    public function getTongGiaFormattedAttribute()
+    {
+        return number_format($this->tongGia) . '₫';
     }
 }

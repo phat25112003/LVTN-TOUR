@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\TourController;
-use App\Http\Controllers\TourPublicController;
+// use App\Http\Controllers\TourPublicController;
 use App\Http\Controllers\Admin\NguoiDungController;
 use App\Http\Controllers\Admin\DatChoController; 
 use App\Http\Controllers\Admin\KhuyenMaiController;
@@ -19,6 +19,11 @@ use App\Http\Controllers\User\SuaTourDetailController;
 
 
 // Route công khai
+use App\Http\Controllers\Admin\HuongDanVienController;
+
+
+
+// // Route công khai
 // Route::controller(TourPublicController::class)->prefix('tours')->name('tours.')->group(function () {
 //     Route::get('/', 'index')->name('index');
 //     Route::get('{maTour}', 'show')->name('show');
@@ -26,10 +31,15 @@ use App\Http\Controllers\User\SuaTourDetailController;
 
 Route::get('/', [TourUserController::class, 'index'])->name('home');
 
+Route::get('/admin/dashboard', [TongQuatController::class, 'index'])->name('admin.dashboard.index');
+
+Route::get('/admin/dashboard/charts', [TongQuatController::class, 'getChartData'])->name('admin.dashboard.charts');
+
 // Route admin
 Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/tongquat', [TongQuatController::class, 'index'])->name('tongquat.index');
+    
     // Route cho AuthController
     Route::controller(AuthController::class)->group(function () {
         Route::get('login', 'showLoginForm')->name('login');
@@ -48,7 +58,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     // Route cho TourController (admin)
-    Route::controller(TourController::class)->middleware('auth:admin')->prefix('tours')->name('tours.')->group(function () {
+    Route::controller(TourController::class)
+    ->middleware('auth:admin')
+    ->prefix('tours')
+    ->name('tours.')
+    ->group(function () {
+
         Route::get('/', 'index')->name('index');
         Route::get('create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
@@ -56,20 +71,30 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('{tour}/edit', 'edit')->name('edit');
         Route::put('{tour}', 'update')->name('update');
         Route::delete('{tour}', 'destroy')->name('destroy');
+
+        // Lịch trình
         Route::get('{tour}/create-schedule', 'createSchedule')->name('createSchedule');
         Route::post('{tour}/store-schedule', 'storeSchedule')->name('storeSchedule');
         Route::get('{tour}/edit-schedule', 'editSchedule')->name('editSchedule');
         Route::post('{tour}/update-schedule', 'updateSchedule')->name('updateSchedule');
+
+        // Chuyến tour
+        Route::get('{tour}/create-trips', 'createTrips')->name('createTrips');
+        Route::post('{tour}/store-trips', 'storeTrips')->name('storeTrips');
+
+        Route::get('{tour}/edit-trips', 'editTrips')->name('editTrips');
+        Route::put('{tour}/update-trips', 'updateTrips')->name('updateTrips');
     });
 
 
     // Route cho DatChoController
-    Route::controller(DatChoController::class)->middleware('auth:admin')->prefix('datcho')->name('datcho.')->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::post('{maDatCho}/xacnhan', 'xacNhan')->name('xacnhan');
-        Route::post('xacnhan-thanhtoan/{maDatCho}', 'xacNhanThanhToan')->name('xacnhan_thanhtoan'); 
-        Route::get('{maDatCho}/chi-tiet', 'show')->name('show');
-        Route::post('{maDatCho}/xuat-hoa-don', 'sendInvoice')->name('send_invoice');
+    Route::controller(DatChoController::class)
+        ->prefix('datcho')
+        ->name('datcho.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('{maDatCho}/chi-tiet', 'show')->name('show');
+            Route::post('{maDatCho}/xuat-hoa-don', 'sendInvoice')->name('sendInvoice');
     });
 
 
@@ -106,6 +131,30 @@ Route::get('/', [TourUserController::class, 'index'])->name('home');
 Route::get('/tours', [TourUserController::class, 'search'])->name('tour.list');
 
 Route::controller(DatTourController::class)->middleware('auth:web')->prefix('user')->name('dattour.')->group(function () {
+    // Route cho HuongDanVienController
+    Route::controller(HuongDanVienController::class)
+           ->prefix('huongdanvien')
+           ->name('huongdanvien.')
+           ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{maHDV}/edit', 'edit')->name('edit');
+        Route::put('/{maHDV}', 'update')->name('update');
+        Route::delete('/{maHDV}', 'destroy')->name('destroy');
+        Route::get('/{maHDV}', 'show')->name('show');
+    });
+});
+
+// routes/web.php
+Route::post('/admin/datcho/{maDatCho}/send-invoice', [DatChoController::class, 'sendInvoice'])
+     ->name('admin.datcho.sendInvoice');
+
+Route::get('/tours/{maTour}', [TourDetailController::class, 'show'])->name('tour.detail');
+
+Route::get('/tours', [TourUserController::class, 'search'])->name('tour.list');
+
+Route::controller(DatTourController::class)->prefix('user')->name('dattour.')->group(function () {
     Route::get('/', 'index')->name('index');
     Route::get('create/{maTour}', 'create')->name('create');
     Route::post('/', 'store')->name('store');

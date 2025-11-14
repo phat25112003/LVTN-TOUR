@@ -218,7 +218,6 @@
                         class="img-fluid">
                 @endif
 
-
                   alt="Destination" 
                   class="img-fluid">
                 <div class="overlay">

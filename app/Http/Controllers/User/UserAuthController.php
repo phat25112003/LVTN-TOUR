@@ -26,7 +26,11 @@ class UserAuthController extends Controller
             ]
         );
 
+<<<<<<< HEAD
         if (Auth::guard('web')->attempt($credentials,$request->boolean('remember'))) {
+=======
+        if (Auth::guard('web')->attempt($credentials,$request->boolean('remember_token'))) {
+>>>>>>> 558f8d9a959838049afa7e59c23074b6b7e3cfad
             $request->session()->regenerate();
             // Authentication passed...
             return redirect()->intended('/');

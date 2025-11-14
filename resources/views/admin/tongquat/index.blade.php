@@ -1,341 +1,407 @@
 @extends('admin.layouts.dashboard')
 
 @section('content')
-<div class="dashboard-container">
-    <h1 class="title">📊 Bảng Thống Kê Tổng Quan</h1>
 
-    {{-- Thông báo --}}
-    @if (session('success'))
-        <div class="alert success">{{ session('success') }}</div>
-    @endif
-    @if (session('error'))
-        <div class="alert error">{{ session('error') }}</div>
-    @endif
+@push('styles')
+    <style>
+        .dashboard-container { max-width: 100%; margin: 0 auto; padding: 20px; }
+        h2 { font-size: 1.5rem; color: #495057; margin-bottom: 15px; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
+        
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card { 
+            color: white; 
+            padding: 25px; 
+            border-radius: 8px; 
+            text-align: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+            transition: all 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .stat-card p:first-child { font-size: 0.9rem; margin-bottom: 5px; opacity: 0.9; }
+        .stat-card p:last-child { font-size: 1.8rem; font-weight: bold; margin-top: 0; }
+        
+        .top-data-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px; 
+        }
 
-    {{-- Thống kê nhanh --}}
-    <div class="stats-grid">
-        @php
-            $stats = [
-                ['Tổng Số Tour', $totalTours ?? 0, 'fa-map-marker-alt', '#3498db'],
-                ['Tổng Số Đặt Chỗ', $totalBookings ?? 0, 'fa-ticket-alt', '#2ecc71'],
-                ['Tổng Doanh Thu', number_format($totalRevenue ?? 0, 0, ',', '.') . ' VNĐ', 'fa-money-bill-wave', '#f39c12'],
-                ['Tổng Người Dùng', $totalUsers ?? 0, 'fa-users', '#9b59b6'],
-            ];
-        @endphp
+        .bottom-chart-row {
+            margin-top: 20px;
+        }
 
-        @foreach ($stats as [$title, $value, $icon, $color])
-            <div class="stat-card" style="--color: {{ $color }}">
-                <div class="icon"><i class="fas {{ $icon }}"></i></div>
-                <div class="info">
-                    <p>{{ $title }}</p>
-                    <h3>{{ $value }}</h3>
+        .chart-box, .table-box {
+            background-color: #ffffff; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            min-height: 380px; 
+        }
+        .chart-box h2, .table-box h2 { font-size: 1.3rem; }
+
+        .pie-chart-wrapper {
+            position: relative;
+            height: 300px; 
+            max-width: 80%; 
+            margin: 0 auto;
+        }
+        
+        .revenue-chart-wrapper {
+            position: relative;
+            height: 350px; 
+        }
+        
+        .table-box table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table-box th, .table-box td { text-align: left; padding: 10px; border-bottom: 1px solid #f1f1f1; font-size: 0.9em; }
+        .table-box th { background-color: #f8f9fa; color: #333; }
+        .table-box tr:hover { background-color: #fafafa; }
+        
+        .loading-placeholder { 
+            height: 250px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            color: #6c757d; 
+            font-size: 1em;
+            background-color: #f7f7f7;
+            border-radius: 6px;
+        }
+        /* === CAROUSEL TỰ ĐỘNG TRƯỢT - KHÔNG NÚT === */
+        .guides-auto-section {
+            margin: 50px 0;
+            overflow: hidden;
+        }
+        .guides-auto-section h2 {
+            font-size: 1.4rem;
+            color: #343a40;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+            position: relative;
+        }
+        .guides-auto-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: #007bff;
+        }
+
+        .guides-auto-carousel {
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .guides-auto-track {
+            display: flex;
+            width: max-content;
+            animation: autoScroll 25s linear infinite;
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .guide-auto-card {
+            flex: 0 0 240px;
+            height: 320px;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+        .guide-auto-card:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        .guide-auto-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .guide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 40px 16px 16px;
+            text-align: center;
+        }
+        .guide-overlay h4 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+        }
+        .guide-overlay p {
+            margin: 4px 0 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* TỰ ĐỘNG TRƯỢT */
+        @keyframes autoScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .guides-auto-track:hover {
+            animation-play-state: paused;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .guide-auto-card { 
+                flex: 0 0 180px; 
+                height: 260px; 
+            }
+            .guide-overlay { padding: 30px 12px 12px; }
+            .guide-overlay h4 { font-size: 1rem; }
+        }
+    </style>
+@endpush
+
+@section('content')
+
+    <div class="dashboard-container">
+        <h1 class="text-center mb-4 fw-bold text-primary">Dashboard Tổng Quát</h1>
+
+        <div class="metric-row">
+            <div class="stat-card" style="background: linear-gradient(135deg, #1cc88a 0%, #17a673 100%);">
+                <p>Tổng Doanh Thu</p>
+                <p>{{ number_format($totalRevenue, 0, ',', '.') }} VNĐ</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);">
+                <p>Tổng số Tours</p>
+                <p>{{ number_format($totalTours) }} Tours</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #36b9cc 0%, #2c9faf 100%);">
+                <p>Tổng Đơn Đặt Chỗ</p>
+                <p>{{ number_format($totalBookings) }} Đơn</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #e74a3b 0%, #c43329 100%);">
+                <p>Tổng Người Dùng</p>
+                <p>{{ number_format($totalUsers) }} Người</p>
+            </div>
+        </div>
+
+        <div class="top-data-row">
+            
+            <div class="chart-box">
+                <h2>💳 Tỷ Lệ Thanh Toán (%)</h2>
+                <div class="pie-chart-wrapper"> 
+                    <div class="loading-placeholder" id="payment-loading">Đang tải biểu đồ thanh toán...</div>
+                    <canvas id="paymentChart" style="display: none;"></canvas>
                 </div>
             </div>
-        @endforeach
-    </div>
 
-    {{-- Nhóm: Biểu đồ thanh toán + Bảng tour được đặt nhiều --}}
-    <div class="charts-row combined-card">
-        <div class="table-box top-tours">
-            <label>🔥Top 5 Tour Nổi Bật</label>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tiêu Đề</th>
-                        <th>Điểm Đến</th>
-                        <th>Số Lượt Đặt</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($topBookedTours as $tour)
+            <div class="table-box">
+                <h2>🏆 Top 5 Tour Được Đặt Nhiều Nhất</h2>
+                <table>
+                    <thead>
                         <tr>
-                            <td>{{ $tour->tieuDe }}</td>
-                            <td>{{ $tour->diemDen }}</td>
-                            <td>{{ $tour->total_bookings }}</td>
+                            <th>#</th>
+                            <th>Tiêu đề Tour</th>
+                            <th>Lượt đặt</th>
                         </tr>
-                    @empty
-                        <tr><td colspan="3" class="text-center">Không có dữ liệu.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach($topBookedTours as $index => $tour)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $tour->tieuDe }}</td>
+                            <td>{{ number_format($tour->total_bookings) }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            
         </div>
 
-        <div class="chart-box small-chart centered-content">
-            <label>Tỷ Lệ Phương Thức Thanh Toán (%)</label>
-            @if (!empty($paymentChart['data']['labels']))
-                <canvas id="paymentChart" height="300" style="max-height: 300px;"></canvas>
+        <!-- PHẦN MỚI: HƯỚNG DẪN VIÊN HOẠT ĐỘNG - TỰ ĐỘNG TRƯỢT -->
+        <div class="guides-auto-section">
+            <h2> Hướng Dẫn Viên Hoạt Động</h2>
+
+            @if($activeHuongDanViens->count() > 0)
+                <div class="guides-auto-carousel">
+                    <div class="guides-auto-track" id="guidesAutoTrack">
+                        @foreach($activeHuongDanViens as $hdv)
+                        <div class="guide-auto-card">
+                            <img src="{{ $hdv->avatar_url }}" alt="{{ $hdv->hoTen }}">
+                            <div class="guide-overlay">
+                                <h4>{{ $hdv->hoTen }}</h4>
+                                <p>{{ $hdv->chuyen_tours_count }} chuyến</p>
+                            </div>
+                        </div>
+                        @endforeach
+
+                        <!-- LẶP LẠI ĐỂ TẠO HIỆU ỨNG VÔ HẠN -->
+                        @foreach($activeHuongDanViens as $hdv)
+                        <div class="guide-auto-card">
+                            <img src="{{ $hdv->avatar_url }}" alt="{{ $hdv->hoTen }}">
+                            <div class="guide-overlay">
+                                <h4>{{ $hdv->hoTen }}</h4>
+                                <p>{{ $hdv->chuyen_tours_count }} chuyến</p>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
             @else
-                <p class="text-center text-muted">Không có dữ liệu phương thức thanh toán.</p>
+                <p class="text-center text-muted py-4">Chưa có hướng dẫn viên nào đang hoạt động.</p>
             @endif
         </div>
+
+        <div class="bottom-chart-row">
+            <div class="chart-box">
+                <h2 id="revenue-title">📈 Doanh Thu Theo Tháng</h2>
+                {{-- THÊM WRAPPER ĐỂ THU NHỎ CHIỀU CAO --}}
+                <div class="revenue-chart-wrapper">
+                    <div class="loading-placeholder" id="revenue-loading">Đang tải biểu đồ doanh thu...</div>
+                    <canvas id="revenueChart" style="display: none;"></canvas>
+                </div>
+            </div>
+        </div>
+        
     </div>
 
-    <div class="table-box">
-        <h3>🚌 Tour Đang Hoạt Động</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Tiêu Đề</th>
-                    <th>Điểm Đến</th>
-                    <th>Giá Người Lớn</th>
-                    <th>Giá Trẻ Em</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($toursDangHoatDong as $tour)
-                    <tr>
-                        <td>{{ $tour->tieuDe }}</td>
-                        <td>{{ $tour->diemDen }}</td>
-                        <td>{{ number_format($tour->giaNguoiLon ?? 0) }} VNĐ</td>
-                        <td>{{ number_format($tour->giaTreEm ?? 0) }} VNĐ</td>
-                    </tr>
-                @empty
-                    <tr><td colspan="4" class="text-center">Không có tour đang hoạt động.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    <!-- BIỂU ĐỒ DOANH THU TO Ở DƯỚI CÙNG -->
-    <div class="chart-box big-chart">
-        <h3>📈 Biểu Đồ Doanh Thu Theo Tháng</h3>
-        @if (array_sum($revenueChart['data']['datasets'][0]['data']) > 0)
-            <canvas id="revenueChart" height="150"></canvas>
-        @else
-            <p class="text-center text-muted">Không có dữ liệu doanh thu để hiển thị.</p>
-        @endif
-    </div>
-</div>
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+    
+    <script>
+        Chart.register(ChartDataLabels);
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
+        const chartDataUrl = '{{ route('admin.dashboard.charts') }}';
+        const formatCurrency = (value) => numeral(value).format('0,0') + ' VND';
 
-    Chart.register(ChartDataLabels); // Đăng ký plugin
+        // Hàm vẽ biểu đồ Doanh thu (Bar Chart)
+        function drawRevenueChart(data) {
+            document.getElementById('revenue-loading').style.display = 'none';
+            document.getElementById('revenueChart').style.display = 'block';
+            document.getElementById('revenue-title').textContent = `📈 Doanh Thu Theo Tháng (Năm ${data.currentYear})`;
 
-    const revenueCtx = document.getElementById("revenueChart");
-    if (revenueCtx) {
-        new Chart(revenueCtx, @json($revenueChart));
-    } else {
-        console.log('Không tìm thấy revenueChart canvas.');
-    }
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Doanh thu (VND)',
+                        data: data.data,
+                        backgroundColor: 'rgba(78, 115, 223, 0.7)', 
+                        borderColor: 'rgba(78, 115, 223, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    // Tắt tỷ lệ khung hình để biểu đồ thu nhỏ theo height của revenue-chart-wrapper (350px)
+                    maintainAspectRatio: false, 
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Doanh thu' },
+                            ticks: {
+                                callback: (value) => numeral(value).format('0a')
+                            }
+                        },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (context) => context.dataset.label + ': ' + formatCurrency(context.parsed.y) } },
+                        datalabels: { display: false }
+                    }
+                }
+            });
+        }
+        
+        // Hàm vẽ biểu đồ Thanh toán (Pie Chart)
+        function drawPaymentChart(data) {
+            document.getElementById('payment-loading').style.display = 'none';
+            document.getElementById('paymentChart').style.display = 'block';
 
-    const paymentCtx = document.getElementById("paymentChart");
-    if (paymentCtx) {
-        new Chart(paymentCtx, @json($paymentChart));
-    } else {
-        console.log('Không tìm thấy paymentChart canvas.');
-    }
-});
-</script>
-@endpush
+            const paymentCtx = document.getElementById('paymentChart').getContext('2d');
+            new Chart(paymentCtx, {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: ['#4e73df', '#1cc88a', '#f63eedff', '#e74a3b', '#36b9cc'],
+                        hoverBackgroundColor: ['#2e59d9', '#17a673', '#f63eedff', '#be2617', '#2c9faf'],
+                        hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    // Tắt tỷ lệ khung hình để biểu đồ thu nhỏ theo height của pie-chart-wrapper (300px)
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: { callbacks: { label: (context) => context.label + ': ' + context.formattedValue + ' %' } },
+                        datalabels: {
+                            color: '#fff',
+                            formatter: (value) => value + ' %',
+                            font: { weight: 'bold', size: 14 }
+                        }
+                    }
+                }
+            });
+        }
 
-@push('styles')
-<style>
+        // --- Hàm tải dữ liệu biểu đồ bằng AJAX ---
+        function loadChartData() {
+            fetch(chartDataUrl)
+                .then(response => {
+                    if (!response.ok) { throw new Error('Network response was not ok'); }
+                    return response.json();
+                })
+                .then(data => {
+                    drawPaymentChart(data.paymentChart);
+                    drawRevenueChart(data.revenueChart);
+                })
+                .catch(error => {
+                    console.error('Lỗi tải dữ liệu biểu đồ:', error);
+                    document.getElementById('revenue-loading').innerHTML = 'Lỗi tải dữ liệu. Vui lòng thử lại.';
+                    document.getElementById('payment-loading').innerHTML = 'Lỗi tải dữ liệu. Vui lòng thử lại.';
+                });
+        }
 
-.charts-row label {
-  display: block;             
-  text-align: center;         
-  font-size: 22px;            
-  font-weight: bold;          
-  margin: 10px 0;    
-  color: red;
+        document.addEventListener('DOMContentLoaded', loadChartData);
+    </script>
 
-}        
+    <script>
+        function scrollCarousel(direction) {
+            const wrapper = document.getElementById('guidesWrapper');
+            const cardWidth = 240; // 220 + 20 gap
+            wrapper.scrollLeft += direction * cardWidth;
+        }
 
-.dashboard-container {
-    padding: 30px;
-    font-family: "Inter", sans-serif;
-    background: #f5f7fa;
-    min-height: 100vh;
-    color: #2c3e50;
-}
-
-.title {
-    text-align: center;
-    font-size: 2rem;
-    color: #34495e;
-    margin-bottom: 30px;
-    font-weight: 700;
-}
-
-.alert {
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-weight: 500;
-}
-.alert.success {
-    background-color: #e6f7ee;
-    color: #389e67;
-    border: 1px solid #b7ebc7;
-}
-.alert.error {
-    background-color: #fff1f0;
-    color: #f5222d;
-    border: 1px solid #ffccc7;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 20px;
-}
-.stat-card {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background: white;
-    border-radius: 12px;
-    padding: 18px 22px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    border-top: 5px solid var(--color);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-}
-.stat-card .icon { font-size: 1.8rem; color: var(--color); }
-.stat-card .info p { margin: 0; font-size: 0.9rem; color: #7f8c8d; }
-.stat-card .info h3 { margin: 4px 0 0; color: #2c3e50; font-weight: 700; }
-
-.charts-row {
-    display: flex;
-    align-items: stretch;
-    gap: 25px;
-    margin-top: 40px;
-}
-.charts-row.combined-card {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.charts-row.combined-card .chart-box.small-chart {
-    flex: 1; 
-    padding: 0; 
-    background: none; 
-    box-shadow: none;
-    border-radius: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-/* === CSS CĂN GIỮA BIỂU ĐỒ === */
-.charts-row.combined-card .chart-box.small-chart.centered-content {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-.charts-row.combined-card .chart-box.small-chart.centered-content h3 {
-    border-bottom: none;
-    margin-bottom: 20px;
-    font-size: 1.1rem;
-    color: #34495e;
-    font-weight: 700;
-    width: 100%;
-}
-.charts-row.combined-card .chart-box.small-chart canvas {
-    max-height: 250px;
-    width: 100%;
-}
-/* ============================= */
-
-.charts-row.combined-card .table-box.top-tours {
-    flex: 1.5; 
-    padding: 0; 
-    background: none; 
-    box-shadow: none;
-    border-radius: 0;
-    border-right: 1px solid #e0e6ed;
-    padding-right: 25px;
-    padding-left: 0;
-    display: flex;
-    flex-direction: column;
-}
-.charts-row.combined-card .table-box.top-tours h3 {
-    border-bottom: 2px solid #ecf0f1;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    color: #34495e;
-    font-weight: 700;
-}
-
-.table-box {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    margin-top: 25px;
-    display: flex;
-    flex-direction: column;
-}
-.table-box h3 {
-    margin-bottom: 15px;
-    font-weight: 700;
-    color: #2980b9;
-}
-.table-box table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #dcdde1;
-}
-.table-box th, .table-box td {
-    padding: 10px;
-    border: 1px solid #dcdde1;
-    text-align: left;
-    font-size: 0.9rem;
-}
-.table-box th {
-    background: #4a69bd;
-    color: white;
-    font-weight: 600;
-}
-.table-box tr:nth-child(even) { background: #f8f9fb; }
-.table-box tr:hover { background: #e8f4ff; }
-
-.chart-box.big-chart {
-    background: white;
-    padding: 25px;
-    border-radius: 14px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    margin-top: 40px;
-}
-.chart-box.big-chart h3 {
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #34495e;
-}
-
-@media (max-width: 1000px) {
-    .charts-row {
-        flex-direction: column;
-    }
-    .charts-row.combined-card {
-        padding: 20px;
-    }
-    .charts-row.combined-card .table-box.top-tours {
-        border-right: none;
-        border-bottom: 1px solid #e0e6ed;
-        padding-right: 0;
-        padding-bottom: 20px;
-        margin-bottom: 20px;
-    }
-    .charts-row.combined-card .chart-box.small-chart {
-        padding-left: 0;
-    }
-    .charts-row.combined-card .chart-box.small-chart canvas {
-        max-height: 300px;
-    }
-}
-</style>
+        // Tự động ẩn nút khi đến đầu/cuối
+        document.getElementById('guidesWrapper')?.addEventListener('scroll', function() {
+            const wrapper = this;
+            const prevBtn = document.querySelector('.carousel-btn.prev');
+            const nextBtn = document.querySelector('.carousel-btn.next');
+            
+            prevBtn.style.opacity = wrapper.scrollLeft <= 0 ? 0.3 : 1;
+            nextBtn.style.opacity = (wrapper.scrollLeft >= wrapper.scrollWidth - wrapper.clientWidth - 10) ? 0.3 : 1;
+        });
+    </script>
 @endpush
