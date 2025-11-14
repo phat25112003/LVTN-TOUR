@@ -147,13 +147,12 @@ class TongQuatController extends Controller
 
         // 7️⃣ Trả về view
         return view('admin.tongquat.index', compact(
-            'admin',
+            'admin',));
         // THÊM: Chỉ lấy HDV Hoạt động
         $activeHuongDanViens = HuongDanVien::where('trangThai', 'HoatDong')
                                        ->withCount('chuyenTours')
                                        ->orderBy('hoTen')
                                        ->get();
-        );
 
         // CHỈ TRUYỀN DỮ LIỆU TĨNH
         return view('admin.tongquat.index', compact(
@@ -161,15 +160,6 @@ class TongQuatController extends Controller
             'totalBookings',
             'totalRevenue',
             'totalUsers',
-            'totalReviews',
-            'totalPromotions',
-            'totalCategories',
-            'totalInvoices',
-            'revenueChart',
-            'paymentChart',
-            'toursDangHoatDong',
-            'topBookedTours'
-        ));
             'topBookedTours',
             'activeHuongDanViens',
             'admin'

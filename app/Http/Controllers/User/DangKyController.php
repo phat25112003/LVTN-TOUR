@@ -22,10 +22,7 @@ class DangKyController extends Controller
             'matKhau' => 'required|string|min:8|confirmed',
             'soDienThoai' => 'required|string|max:15',
             'gioiTinh' => 'required|in:Nam,Nữ,Khác',
-<<<<<<< HEAD
             'diaChi' => 'nullable|string|max:255',
-=======
->>>>>>> 558f8d9a959838049afa7e59c23074b6b7e3cfad
         ]);
 
         // Create a new user
@@ -36,10 +33,7 @@ class DangKyController extends Controller
         $user->matKhau = bcrypt($request->matKhau);
         $user->soDienThoai = $request->soDienThoai;
         $user->gioiTinh = $request->gioiTinh;
-<<<<<<< HEAD
         $user->diaChi = $request->diaChi;
-=======
->>>>>>> 558f8d9a959838049afa7e59c23074b6b7e3cfad
         $user->tinhTrang = 1; // Default status
         $user->save();
 
