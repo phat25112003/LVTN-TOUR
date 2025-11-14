@@ -19,7 +19,6 @@
                                 : asset('images/avatars/default.jpg') }}" 
                             alt="Avatar" 
                             class="avatar-user">
-                            
                         </div>
                         <div class="user-details">
                             <h5>{{ $nguoiDung->hoTen }}</h5>

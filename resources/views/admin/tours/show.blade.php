@@ -276,7 +276,13 @@
                             <small class="text-muted">(Còn {{ $chuyen->soLuongToiDa - $chuyen->soLuongDaDat }} chỗ)</small>
                         </p>
                         @if($chuyen->huongDanVien)
-                            <p><strong>HDV:</strong> {{ $chuyen->huongDanVien }}</p>
+                            <p><strong>HDV:</strong> {{ $chuyen->huongDanVien->hoTen }}
+                                @if($chuyen->huongDanVien->soDienThoai)
+                                    <small class="text-muted">({{ $chuyen->huongDanVien->soDienThoai }})</small>
+                                @endif
+                            </p>
+                        @else
+                            <p><strong>HDV:</strong> <em class="text-muted">Chưa chỉ định</em></p>
                         @endif
                         @if($chuyen->phuongTien)
                             <p><strong>Phương tiện:</strong> {{ $chuyen->phuongTien }}</p>

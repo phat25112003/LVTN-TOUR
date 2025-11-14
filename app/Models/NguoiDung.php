@@ -32,7 +32,6 @@ class NguoiDung extends Authenticatable
         return $this->hasMany(DatCho::class, 'maNguoiDung');
     }
 
-    // Mối quan hệ với bảng lịch sử (lichSu) - giả định tên bảng là lich_su
     public function lichSu()
     {
         return $this->hasMany(LichSu::class, 'maNguoiDung');

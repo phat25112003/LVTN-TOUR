@@ -18,8 +18,6 @@ class DatCho extends Model
         'maTour',
         'maChuyen',
         'ngayDat',
-        'ngayKhoiHanh',
-        'ngayKetThuc',
         'tongGia',
         'diaChi',           
         'soDienThoai',      
@@ -54,7 +52,7 @@ class DatCho extends Model
         return $this->hasOne(ThanhToan::class, 'maDatCho');
     }
 
-    public function chuyen()
+    public function chuyentour()
     {
         return $this->belongsTo(ChuyenTour::class, 'maChuyen', 'maChuyen');
     }

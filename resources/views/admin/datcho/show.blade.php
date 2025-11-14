@@ -36,8 +36,8 @@
                         <div class="info-section">
                             <h5 class="section-title text-company">THÔNG TIN CÔNG TY</h5>
                             <table class="data-detail-table">
-                                <tr><td>Tên:</td><td>Công ty TNHH Du Lịch ABC</td></tr>
-                                <tr><td>Địa chỉ:</td><td>123 Đường Láng, Hà Nội</td></tr>
+                                <tr><td>Tên:</td><td>Công ty TNHH Du Lịch TravelTime</td></tr>
+                                <tr><td>Địa chỉ:</td><td>123 Đường Cao Lỗ, Quận 8, TPHCM</td></tr>
                                 <tr><td>Điện thoại:</td><td>1900 1234</td></tr>
                                 <tr><td>Email:</td><td>info@dulichabc.com</td></tr>
                                 <tr><td>Website:</td><td>www.dulichabc.com</td></tr>
@@ -58,50 +58,68 @@
 
                     <div class="section-divider"></div>
 
+                    {{-- THÔNG TIN TOUR & CHUYẾN ĐI --}}
                     <h5 class="section-title text-tour">THÔNG TIN TOUR & CHUYẾN ĐI</h5>
                     <div class="grid-2-columns details-spacing">
                         <div class="info-section">
-                            <p><strong>Tên Tour:</strong> 
+                            <p class="info-line"><strong>Tên Tour:</strong> 
                                 <span class="text-company bold">{{ $datCho->tour->tieuDe ?? 'N/A' }}</span>
                             </p>
-                            <p><strong>Mã Tour:</strong> {{ $datCho->maTour }}</p>
-                            <p><strong>Mã Chuyến:</strong> 
+                            <p class="info-line"><strong>Mã Tour:</strong> {{ $datCho->maTour }}</p>
+                            <p class="info-line"><strong>Mã Chuyến:</strong> 
                                 <span class="chip chip-highlight bold">
-                                    {{ $datCho->maChuyen ?? '—' }}
+                                    #00{{ $datCho->maChuyen ?? '—' }}
                                 </span>
                             </p>
-                            <p><strong>Điểm Khởi Hành:</strong> 
-                                <span class="text-customer">{{ $datCho->chuyen->diemKhoiHanh ?? 'N/A' }}</span>
+                            <p class="info-line"><strong>Điểm Khởi Hành:</strong> 
+                                <span class="text-customer">
+                                    {{ $datCho->chuyentour?->diemKhoiHanh ?? 'N/A' }}
+                                </span>
                             </p>
-                            <p><strong>Hướng Dẫn Viên:</strong> {{ $datCho->chuyen->huongDanVien ?? 'Chưa phân công' }}</p>
-                            <p><strong>Phương Tiện:</strong> {{ $datCho->chuyen->phuongTien ?? 'N/A' }}</p>
+                            <p class="info-line"><strong>Hướng Dẫn Viên:</strong> 
+                                {{ $datCho->chuyentour?->huongdanvien?->hoTen ?? 'Chưa phân công' }}
+                            </p>
+                            <p class="info-line"><strong>Phương Tiện:</strong> 
+                                {{ $datCho->chuyentour?->phuongTien ?? 'N/A' }}
+                            </p>
                         </div>
+
                         <div class="info-section">
-                            <p><strong>Ngày Khởi Hành:</strong> 
-                                <span class="text-danger bold">
-                                    {{ \Carbon\Carbon::parse($datCho->chuyen->ngayBatDau ?? $datCho->ngayKhoiHanh)->format('d/m/Y') }}
-                                </span>
-                            </p>
-                            <p><strong>Ngày Kết Thúc:</strong> 
-                                {{ \Carbon\Carbon::parse($datCho->chuyen->ngayKetThuc ?? $datCho->ngayKetThuc)->format('d/m/Y') }}
-                            </p>
-                            <p><strong>Thời gian:</strong> 
-                                {{ \Carbon\Carbon::parse($datCho->chuyen->ngayBatDau ?? $datCho->ngayKhoiHanh)->diffInDays(
-                                    \Carbon\Carbon::parse($datCho->chuyen->ngayKetThuc ?? $datCho->ngayKetThuc)
-                                ) + 1 }} ngày
-                            </p>
-                            <p><strong>Số lượng:</strong> 
-                                {{ $datCho->chuyen->soLuongDaDat ?? 0 }} / {{ $datCho->chuyen->soLuongToiDa ?? 0 }} khách
-                            </p>
-                            <p><strong>Tình trạng:</strong>
+                            @if($datCho->chuyentour)
                                 @php
-                                    $tinhTrangChuyen = $datCho->chuyen->tinhTrangChuyen ?? 'N/A';
-                                    $classChuyen = $tinhTrangChuyen === 'HoatDong' ? 'chip-success' : 'chip-danger';
+                                    $start = \Carbon\Carbon::parse($datCho->chuyentour->ngayBatDau);
+                                    $end = \Carbon\Carbon::parse($datCho->chuyentour->ngayKetThuc);
+                                    $days = $start->diffInDays($end) + 1;
                                 @endphp
-                                <span class="chip {{ $classChuyen }}">
-                                    {{ $tinhTrangChuyen === 'HoatDong' ? 'Đang hoạt động' : 'Ngừng chạy' }}
-                                </span>
-                            </p>
+
+                                <p class="info-line"><strong>Ngày Khởi Hành:</strong> 
+                                    <span class="text-danger bold">{{ $start->format('d/m/Y') }}</span>
+                                </p>
+                                <p class="info-line"><strong>Ngày Kết Thúc:</strong> 
+                                    {{ $end->format('d/m/Y') }}
+                                </p>
+                                <p class="info-line"><strong>Thời gian:</strong> 
+                                    <span class="bold">
+                                        {{ $datCho->tour->thoiGian ?? 'N/A' }}
+                                    </span>
+                                </p>
+                                <p class="info-line"><strong>Số lượng:</strong> 
+                                    {{ $datCho->chuyentour->soLuongDaDat ?? 0 }} / 
+                                    {{ $datCho->chuyentour->soLuongToiDa ?? 0 }} khách
+                                </p>
+                                <p class="info-line"><strong>Tình trạng:</strong>
+                                    @php
+                                        $tinhTrang = $datCho->chuyentour->tinhTrangChuyen ?? 'N/A';
+                                        $class = $tinhTrang === 'HoatDong' ? 'chip-success' : 'chip-danger';
+                                        $text = $tinhTrang === 'HoatDong' ? 'Đang hoạt động' : 'Ngừng chạy';
+                                    @endphp
+                                    <span class="chip {{ $class }}">{{ $text }}</span>
+                                </p>
+                            @else
+                                <p class="info-line text-danger">
+                                    Không tìm thấy chuyến tour (maChuyen: {{ $datCho->maChuyen }})
+                                </p>
+                            @endif
                         </div>
                     </div>
 
@@ -501,6 +519,67 @@
         .btn-action {
             width: 100%;
         }
+    }
+
+    .info-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px dashed var(--color-border-light);
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    .info-line:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .info-line strong {
+        min-width: 140px;
+        color: var(--color-text-medium);
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .info-line .chip {
+        margin-left: 8px;
+    }
+
+    /* Đảm bảo 2 cột bằng nhau */
+    .grid-2-columns > .info-section {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .grid-2-columns > .info-section > .info-line {
+        flex: 1;
+    }
+
+    /* Responsive: mobile thì xếp dọc */
+    @media (max-width: 768px) {
+        .info-line {
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            padding: 8px 0;
+        }
+        .info-line strong {
+            min-width: auto;
+            margin-bottom: 4px;
+        }
+        .info-line .chip {
+            margin-left: 0;
+            margin-top: 4px;
+        }
+    }
+    .grid-2-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: stretch;
     }
 </style>
 @endsection

@@ -51,8 +51,20 @@
                         {{ $datCho->soNguoiLon + $datCho->soTreEm + $datCho->soEmBe }}
                     </td>
 
-                    <td>{{ \Carbon\Carbon::parse($datCho->ngayKhoiHanh)->format('d/m/Y') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($datCho->ngayKetThuc)->format('d/m/Y') }}</td>
+                    <td>
+                        @if($datCho->chuyentour)
+                            {{ \Carbon\Carbon::parse($datCho->chuyentour->ngayBatDau)->format('d/m/Y') }}
+                        @else
+                            <span class="text-muted">Chưa chọn chuyến</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($datCho->chuyentour)
+                            {{ \Carbon\Carbon::parse($datCho->chuyentour->ngayKetThuc)->format('d/m/Y') }}
+                        @else
+                            <span class="text-muted">Chưa chọn chuyến</span>
+                        @endif
+                    </td>
 
                     {{-- TỔNG GIÁ --}}
                     <td>{{ number_format($datCho->tongGia) }} VND</td>

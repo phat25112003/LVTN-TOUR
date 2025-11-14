@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\TourController;
-use App\Http\Controllers\TourPublicController;
+// use App\Http\Controllers\TourPublicController;
 use App\Http\Controllers\Admin\NguoiDungController;
 use App\Http\Controllers\Admin\DatChoController; 
 use App\Http\Controllers\Admin\KhuyenMaiController;
@@ -14,6 +14,7 @@ use App\Http\Controllers\User\TourUserController;
 use App\Http\Controllers\User\DatTourController;
 use App\Http\Controllers\User\UserAuthController;
 use App\Http\Controllers\User\DangKyController; 
+use App\Http\Controllers\Admin\HuongDanVienController;
 
 
 
@@ -112,7 +113,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{maDanhMuc}', 'update')->name('update');
         Route::delete('/{maDanhMuc}', 'destroy')->name('destroy');
     });
-    
+
+    // Route cho HuongDanVienController
+    Route::controller(HuongDanVienController::class)
+           ->prefix('huongdanvien')
+           ->name('huongdanvien.')
+           ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{maHDV}/edit', 'edit')->name('edit');
+        Route::put('/{maHDV}', 'update')->name('update');
+        Route::delete('/{maHDV}', 'destroy')->name('destroy');
+        Route::get('/{maHDV}', 'show')->name('show');
+    });
 });
 
 // routes/web.php

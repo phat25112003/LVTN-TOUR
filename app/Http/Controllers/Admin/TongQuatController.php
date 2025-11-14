@@ -9,6 +9,7 @@ use App\Models\DatCho;
 use App\Models\HoaDon;
 use App\Models\NguoiDung;
 use App\Models\ThanhToan;
+use App\Models\HuongDanVien;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -35,6 +36,12 @@ class TongQuatController extends Controller
             ->take(5)
             ->get();
 
+        // THÊM: Chỉ lấy HDV Hoạt động
+        $activeHuongDanViens = HuongDanVien::where('trangThai', 'HoatDong')
+                                       ->withCount('chuyenTours')
+                                       ->orderBy('hoTen')
+                                       ->get();
+
         // CHỈ TRUYỀN DỮ LIỆU TĨNH
         return view('admin.tongquat.index', compact(
             'totalTours',
@@ -42,8 +49,10 @@ class TongQuatController extends Controller
             'totalRevenue',
             'totalUsers',
             'topBookedTours',
+            'activeHuongDanViens',
             'admin'
         ));
+
     }
 
     public function getChartData()

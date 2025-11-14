@@ -12,7 +12,7 @@ class ChuyenTour extends Model
 
     protected $fillable = [
         'maTour', 'ngayBatDau', 'ngayKetThuc', 'diemKhoiHanh',
-        'huongDanVien', 'phuongTien', 'soLuongToiDa', 'soLuongDaDat',
+        'maHDV', 'phuongTien', 'soLuongToiDa', 'soLuongDaDat',
         'tinhTrangChuyen', 'ghiChu'
     ];
 
@@ -26,11 +26,17 @@ class ChuyenTour extends Model
     {
         return $this->belongsTo(Tour::class, 'maTour', 'maTour');
     }
-// app/Models/ChuyenTour.php
-    public function gia()
+
+    public function giaTour()
     {
         return $this->hasOne(GiaTour::class, 'maChuyen', 'maChuyen');
     }
+
+    public function huongDanVien()
+    {
+        return $this->belongsTo(HuongDanVien::class, 'maHDV', 'maHDV');
+    }
+
     public function datChos()
     {
         return $this->hasMany(DatCho::class, 'maChuyen', 'maChuyen');

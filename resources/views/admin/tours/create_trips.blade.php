@@ -5,6 +5,7 @@
 <div class="container-fluid mt-4">
     <h3 class="text-center mb-4 fw-bold text-primary">
         Tạo Chuyến Cho Tour: {{ $tour->tieuDe }}
+        <small class="text-muted d-block">(Thời gian: {{ $tour->thoiGian }})</small>
     </h3>
 
     <form action="{{ route('admin.tours.storeTrips', $tour->maTour) }}" method="POST" id="tripForm">
@@ -23,10 +24,11 @@
                             <div class="col-md-3">
                                 <label class="fw-bold">Ngày bắt đầu <span class="text-danger">*</span></label>
                                 <input type="date" name="ngayBatDau[]" class="form-control" required>
+                                <small class="text-danger d-block mt-1 error-ngay"></small> <!-- SỬA: error-msg → error-ngay -->
                             </div>
                             <div class="col-md-3">
                                 <label class="fw-bold">Ngày kết thúc <span class="text-danger">*</span></label>
-                                <input type="date" name="ngayKetThuc[]" class="form-control" required>
+                                <input type="date" name="ngayKetThuc[]" class="form-control" required readonly>
                             </div>
                             <div class="col-md-3">
                                 <label class="fw-bold">Điểm khởi hành <span class="text-danger">*</span></label>
@@ -35,6 +37,29 @@
                             <div class="col-md-3">
                                 <label class="fw-bold">Số chỗ tối đa <span class="text-danger">*</span></label>
                                 <input type="number" name="soLuongToiDa[]" class="form-control" min="1" required>
+                            </div>
+                        </div>
+
+                        <!-- HƯỚNG DẪN VIÊN - DROPDOWN -->
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-4">
+                                <label class="fw-bold">Hướng dẫn viên</label>
+                                <select name="maHDV[]" class="form-select">
+                                    <option value="">-- Chọn HDV --</option>
+                                    @foreach($huongDanViens as $hdv)
+                                        <option value="{{ $hdv->maHDV }}">
+                                            {{ $hdv->hoTen }} @if($hdv->soDienThoai) ({{ $hdv->soDienThoai }}) @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="fw-bold">Phương tiện</label>
+                                <input type="text" name="phuongTien[]" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="fw-bold">Ghi chú</label>
+                                <input type="text" name="ghiChu[]" class="form-control">
                             </div>
                         </div>
 
@@ -54,22 +79,7 @@
                             </div>
                         </div>
 
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-4">
-                                <label class="fw-bold">Hướng dẫn viên</label>
-                                <input type="text" name="huongDanVien[]" class="form-control">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="fw-bold">Phương tiện</label>
-                                <input type="text" name="phuongTien[]" class="form-control">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="fw-bold">Ghi chú</label>
-                                <input type="text" name="ghiChu[]" class="form-control">
-                            </div>
-                        </div>
-
-                                                <!-- TRẠNG THÁI CHUYẾN -->
+                        <!-- TRẠNG THÁI CHUYẾN -->
                         <div class="row g-3 mt-3">
                             <div class="col-md-4">
                                 <label class="fw-bold text-info">Trạng thái chuyến</label>
@@ -95,10 +105,11 @@
                         <div class="col-md-3">
                             <label class="fw-bold">Ngày bắt đầu <span class="text-danger">*</span></label>
                             <input type="date" name="ngayBatDau[]" class="form-control" required>
+                            <small class="text-danger d-block mt-1 error-ngay"></small> <!-- SỬA: error-msg → error-ngay -->
                         </div>
                         <div class="col-md-3">
                             <label class="fw-bold">Ngày kết thúc <span class="text-danger">*</span></label>
-                            <input type="date" name="ngayKetThuc[]" class="form-control" required>
+                            <input type="date" name="ngayKetThuc[]" class="form-control" required readonly>
                         </div>
                         <div class="col-md-3">
                             <label class="fw-bold">Điểm khởi hành <span class="text-danger">*</span></label>
@@ -109,6 +120,29 @@
                             <input type="number" name="soLuongToiDa[]" class="form-control" min="1" required>
                         </div>
                     </div>
+
+                    <!-- HƯỚNG DẪN VIÊN - DROPDOWN -->
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-4">
+                                <label class="fw-bold">Hướng dẫn viên</label>
+                                <select name="maHDV[]" class="form-select">
+                                    <option value="">-- Chọn HDV --</option>
+                                    @foreach($huongDanViens as $hdv)
+                                        <option value="{{ $hdv->maHDV }}">
+                                            {{ $hdv->hoTen }} @if($hdv->soDienThoai) ({{ $hdv->soDienThoai }}) @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="fw-bold">Phương tiện</label>
+                                <input type="text" name="phuongTien[]" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="fw-bold">Ghi chú</label>
+                                <input type="text" name="ghiChu[]" class="form-control">
+                            </div>
+                        </div>
 
                     <!-- PHẦN GIÁ -->
                     <div class="row g-3 mt-3 border-top pt-3 bg-light p-2 rounded">
@@ -123,21 +157,6 @@
                         <div class="col-md-4">
                             <label class="text-danger fw-bold">Giá người lớn</label>
                             <input type="number" name="giaNguoiLon[]" class="form-control" min="0" step="0.01" placeholder="0.00" required>
-                        </div>
-                    </div>
-
-                    <div class="row g-3 mt-2">
-                        <div class="col-md-4">
-                            <label class="fw-bold">Hướng dẫn viên</label>
-                            <input type="text" name="huongDanVien[]" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="fw-bold">Phương tiện</label>
-                            <input type="text" name="phuongTien[]" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="fw-bold">Ghi chú</label>
-                            <input type="text" name="ghiChu[]" class="form-control">
                         </div>
                     </div>
 
@@ -163,56 +182,148 @@
         </div>
     </form>
 </div>
+@endsection
 
 @push('scripts')
 <script>
+    // === TÍNH SỐ NGÀY TỪ thoiGian (PHP → JS) ===
+    const thoiGianStr = "{{ $tour->thoiGian }}".toLowerCase();
+    let soNgayTour = 1;
+    if (thoiGianStr.includes('trong ngày')) {
+        soNgayTour = 1;
+    } else {
+        const match = thoiGianStr.match(/(\d+)\s*ngày/);
+        soNgayTour = match ? parseInt(match[1]) : 1;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
     let tripCount = 1;
 
+    // === XỬ LÝ NGÀY BẮT ĐẦU ===
+    function handleNgayBatDau(e) {
+        const input = e.target;
+        const tripItem = input.closest('.trip-item');
+        const ngayBatDau = input.value;
+        const ngayKetThucInput = tripItem.querySelector('input[name="ngayKetThuc[]"]');
+        let errorEl = tripItem.querySelector('.error-ngay'); // SỬA: error-msg → error-ngay
+
+        if (!errorEl) {
+            errorEl = document.createElement('small');
+            errorEl.className = 'text-danger d-block mt-1 error-ngay';
+            input.parentNode.appendChild(errorEl);
+        }
+
+        errorEl.textContent = '';
+        ngayKetThucInput.value = '';
+
+        if (!ngayBatDau) return;
+
+        // if (ngayBatDau < today) {
+        //     errorEl.className = 'text-danger d-block mt-1 error-ngay';
+        //     errorEl.textContent = 'Không được chọn ngày trong quá khứ!';
+        //     return;
+        // }
+
+        const start = new Date(ngayBatDau);
+        const end = new Date(start);
+        end.setDate(start.getDate() + soNgayTour - 1);
+
+        const endStr = end.toISOString().split('T')[0];
+        ngayKetThucInput.value = endStr;
+
+        errorEl.className = 'text-success d-block mt-1';
+        // errorEl.textContent = `Kết thúc: ${end.toLocaleDateString('vi-VN')} (tổng ${soNgayTour} ngày)`;
+    }
+
+    // === THÊM CHUYẾN MỚI ===
     document.getElementById('addTrip').addEventListener('click', function () {
         tripCount++;
         const template = document.getElementById('tripTemplate').content.cloneNode(true);
-        template.querySelector('.trip-number').textContent = `Chuyến ${tripCount}`;
-        template.querySelector('.remove-trip').classList.remove('d-none');
-        template.querySelector('select[name="tinhTrangChuyen[]"]').value = 'HoatDong'; // Mặc định
-        document.getElementById('tripContainer').appendChild(template);
+        const tripItem = template.querySelector('.trip-item');
+
+        tripItem.querySelector('.trip-number').textContent = `Chuyến ${tripCount}`;
+        tripItem.querySelector('.remove-trip').classList.remove('d-none');
+        tripItem.querySelectorAll('input, select').forEach(el => el.value = '');
+
+        const ngayBatDauInput = tripItem.querySelector('input[name="ngayBatDau[]"]');
+        ngayBatDauInput.addEventListener('change', handleNgayBatDau);
+
+        document.getElementById('tripContainer').appendChild(tripItem);
         updateRemoveButtons();
     });
 
+    // === XÓA CHUYẾN ===
     document.addEventListener('click', function (e) {
         if (e.target && e.target.classList.contains('remove-trip')) {
-            e.target.closest('.trip-item').remove();
-            tripCount--;
-            updateTripNumbers();
-            updateRemoveButtons();
+            if (document.querySelectorAll('.trip-item').length > 1) {
+                e.target.closest('.trip-item').remove();
+                tripCount--;
+                updateTripNumbers();
+                updateRemoveButtons();
+            }
         }
     });
 
+    // === CẬP NHẬT SỐ THỨ TỰ ===
     function updateTripNumbers() {
-        document.querySelectorAll('.trip-number').forEach((el, index) => {
-            el.textContent = `Chuyến ${index + 1}`;
+        document.querySelectorAll('.trip-number').forEach((el, i) => {
+            el.textContent = `Chuyến ${i + 1}`;
         });
     }
 
+    // === ẨN/HIỆN NÚT XÓA ===
     function updateRemoveButtons() {
         const items = document.querySelectorAll('.trip-item');
-        items.forEach((item, index) => {
+        items.forEach((item, i) => {
             const btn = item.querySelector('.remove-trip');
-            if (items.length === 1) {
-                btn.classList.add('d-none');
-            } else {
-                btn.classList.remove('d-none');
-            }
+            btn.classList.toggle('d-none', items.length === 1);
         });
     }
 
+    // === GẮN SỰ KIỆN CHO CHUYẾN ĐẦU TIÊN ===
+    document.querySelector('input[name="ngayBatDau[]"]').addEventListener('change', handleNgayBatDau);
+
+    // === KIỂM TRA TRƯỚC KHI GỬI FORM ===
+    document.getElementById('tripForm').addEventListener('submit', function (e) {
+        const items = document.querySelectorAll('.trip-item');
+        let hasError = false;
+
+        items.forEach((item, index) => {
+            const ngayBatDau = item.querySelector('input[name="ngayBatDau[]"]').value;
+            const ngayKetThuc = item.querySelector('input[name="ngayKetThuc[]"]').value;
+
+            if (!ngayBatDau || !ngayKetThuc) return;
+
+            const start = new Date(ngayBatDau);
+            const end = new Date(ngayKetThuc);
+            const diffDays = (end - start) / (1000 * 60 * 60 * 24) + 1;
+
+            if (diffDays > soNgayTour) {
+                hasError = true;
+                let errorEl = item.querySelector('.error-ngay'); // SỬA: error-ngay
+                if (!errorEl) {
+                    errorEl = document.createElement('small');
+                    errorEl.className = 'text-danger d-block mt-1 error-ngay';
+                    item.querySelector('input[name="ngayBatDau[]"]').parentNode.appendChild(errorEl);
+                }
+                errorEl.textContent = `Chuyến ${index + 1}: Chỉ được tối đa ${soNgayTour} ngày! (Hiện tại: ${diffDays} ngày)`;
+            }
+        });
+
+        if (hasError) {
+            e.preventDefault();
+            alert('Vui lòng sửa lỗi ngày trước khi lưu!');
+        }
+    });
+
+    // === KHỞI TẠO ===
     updateRemoveButtons();
 </script>
 @endpush
 
 @push('styles')
 <style>
-    /* BỎ TẤT CẢ HIỆU ỨNG HOVER */
-    .card, .form-control, .form-control:focus, .btn, .trip-item, input, select, textarea {
+    .card, .form-control, .btn, .trip-item, input, select, textarea {
         transition: none !important;
         box-shadow: none !important;
     }
@@ -229,4 +340,3 @@
     }
 </style>
 @endpush
-@endsection

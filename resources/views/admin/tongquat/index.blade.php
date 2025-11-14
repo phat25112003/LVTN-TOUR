@@ -72,6 +72,103 @@
             background-color: #f7f7f7;
             border-radius: 6px;
         }
+        /* === CAROUSEL TỰ ĐỘNG TRƯỢT - KHÔNG NÚT === */
+        .guides-auto-section {
+            margin: 50px 0;
+            overflow: hidden;
+        }
+        .guides-auto-section h2 {
+            font-size: 1.4rem;
+            color: #343a40;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+            position: relative;
+        }
+        .guides-auto-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: #007bff;
+        }
+
+        .guides-auto-carousel {
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .guides-auto-track {
+            display: flex;
+            width: max-content;
+            animation: autoScroll 25s linear infinite;
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .guide-auto-card {
+            flex: 0 0 240px;
+            height: 320px;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+        .guide-auto-card:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        .guide-auto-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .guide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 40px 16px 16px;
+            text-align: center;
+        }
+        .guide-overlay h4 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+        }
+        .guide-overlay p {
+            margin: 4px 0 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* TỰ ĐỘNG TRƯỢT */
+        @keyframes autoScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .guides-auto-track:hover {
+            animation-play-state: paused;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .guide-auto-card { 
+                flex: 0 0 180px; 
+                height: 260px; 
+            }
+            .guide-overlay { padding: 30px 12px 12px; }
+            .guide-overlay h4 { font-size: 1rem; }
+        }
     </style>
 @endpush
 
@@ -131,6 +228,40 @@
                 </table>
             </div>
             
+        </div>
+
+        <!-- PHẦN MỚI: HƯỚNG DẪN VIÊN HOẠT ĐỘNG - TỰ ĐỘNG TRƯỢT -->
+        <div class="guides-auto-section">
+            <h2> Hướng Dẫn Viên Hoạt Động</h2>
+
+            @if($activeHuongDanViens->count() > 0)
+                <div class="guides-auto-carousel">
+                    <div class="guides-auto-track" id="guidesAutoTrack">
+                        @foreach($activeHuongDanViens as $hdv)
+                        <div class="guide-auto-card">
+                            <img src="{{ $hdv->avatar_url }}" alt="{{ $hdv->hoTen }}">
+                            <div class="guide-overlay">
+                                <h4>{{ $hdv->hoTen }}</h4>
+                                <p>{{ $hdv->chuyen_tours_count }} chuyến</p>
+                            </div>
+                        </div>
+                        @endforeach
+
+                        <!-- LẶP LẠI ĐỂ TẠO HIỆU ỨNG VÔ HẠN -->
+                        @foreach($activeHuongDanViens as $hdv)
+                        <div class="guide-auto-card">
+                            <img src="{{ $hdv->avatar_url }}" alt="{{ $hdv->hoTen }}">
+                            <div class="guide-overlay">
+                                <h4>{{ $hdv->hoTen }}</h4>
+                                <p>{{ $hdv->chuyen_tours_count }} chuyến</p>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            @else
+                <p class="text-center text-muted py-4">Chưa có hướng dẫn viên nào đang hoạt động.</p>
+            @endif
         </div>
 
         <div class="bottom-chart-row">
@@ -254,5 +385,23 @@
         }
 
         document.addEventListener('DOMContentLoaded', loadChartData);
+    </script>
+
+    <script>
+        function scrollCarousel(direction) {
+            const wrapper = document.getElementById('guidesWrapper');
+            const cardWidth = 240; // 220 + 20 gap
+            wrapper.scrollLeft += direction * cardWidth;
+        }
+
+        // Tự động ẩn nút khi đến đầu/cuối
+        document.getElementById('guidesWrapper')?.addEventListener('scroll', function() {
+            const wrapper = this;
+            const prevBtn = document.querySelector('.carousel-btn.prev');
+            const nextBtn = document.querySelector('.carousel-btn.next');
+            
+            prevBtn.style.opacity = wrapper.scrollLeft <= 0 ? 0.3 : 1;
+            nextBtn.style.opacity = (wrapper.scrollLeft >= wrapper.scrollWidth - wrapper.clientWidth - 10) ? 0.3 : 1;
+        });
     </script>
 @endpush
