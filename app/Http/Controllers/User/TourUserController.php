@@ -13,66 +13,11 @@ class TourUserController extends Controller
      */
     public function index()
     {
-<<<<<<< HEAD
         $tours = Tour::with('hinhanh','chuyentour')->get();
-=======
-        $tours = Tour::with('hinhanh')->get();
->>>>>>> 558f8d9a959838049afa7e59c23074b6b7e3cfad
         $danhmucs = DanhMuc::all();
         return view('user.index', compact('tours', 'danhmucs'));
     }
 
-<<<<<<< HEAD
-=======
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
->>>>>>> 558f8d9a959838049afa7e59c23074b6b7e3cfad
     public function search(Request $request)
     {
         $query = $request->input('query');

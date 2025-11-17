@@ -33,7 +33,7 @@
                     <input type="hidden" id="child-input" name="treEm" value="0">
                     <input type="hidden" id="baby-input" name="emBe" value="0">
                     <input type="hidden" id="grand-total-input" name="tongGia" value="0">
-                    <input type="hidden" name="ngayKhoiHanh" value="{{ $tour->chuyentour->first()->ngayBatDau }}">
+                    <input type="hidden" name="ngayBatDau" value="{{ $tour->chuyentour->first()->ngayBatDau }}">
                     <input type="hidden" name="ngayKetThuc" value="{{ $tour->chuyentour->first()->ngayKetThuc }}">
                     <input type="hidden" name="maChuyen" id="maChuyen-input" value="">
                     <input type="hidden" name="maTour" value="{{ $tour->maTour }}">
@@ -200,7 +200,7 @@
                 <div class="booking-details">
                   <div class="detail-row">
                     <span>Ngày Bắt Đầu:</span>
-                    <span class="ngayKhoiHanhDisplay">--/--/----</span>
+                    <span class="ngayBatDauDisplay">--/--/----</span>
                   </div>
                   <div class="detail-row">
                     <span>Ngày Kết Thúc:</span>
@@ -322,31 +322,31 @@
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', function () {
 
-    // --- Hiển thị lỗi (toast đỏ) ---
-    @if ($errors->any())
-        let errorMsg = `{!! implode('\n', $errors->all()) !!}`;
-        document.getElementById('toastMessage').textContent = errorMsg;
-        var errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
-        errorToast.show();
-    @endif
+      // --- Hiển thị lỗi (toast đỏ) ---
+      @if ($errors->any())
+          let errorMsg = `{!! implode('\n', $errors->all()) !!}`;
+          document.getElementById('toastMessage').textContent = errorMsg;
+          var errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+          errorToast.show();
+      @endif
 
-    @if (session('error'))
-        document.getElementById('toastMessage').textContent = "{{ session('error') }}";
-        var errorToast2 = new bootstrap.Toast(document.getElementById('errorToast'));
-        errorToast2.show();
-    @endif
+      @if (session('error'))
+          document.getElementById('toastMessage').textContent = "{{ session('error') }}";
+          var errorToast2 = new bootstrap.Toast(document.getElementById('errorToast'));
+          errorToast2.show();
+      @endif
 
 
-    // --- Hiển thị thành công (toast xanh lá) ---
-    @if (session('success'))
-        document.getElementById('successMessage').textContent = "{{ session('success') }}";
-        var successToast = new bootstrap.Toast(document.getElementById('successToast'));
-        successToast.show();
-    @endif
+      // --- Hiển thị thành công (toast xanh lá) ---
+      @if (session('success'))
+          document.getElementById('successMessage').textContent = "{{ session('success') }}";
+          var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+          successToast.show();
+      @endif
 
-});
+  });
 </script>
 
 <script src="{{ asset('assets/js/counter.js') }}"></script>

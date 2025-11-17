@@ -27,34 +27,7 @@ public function index()
 
     // Lấy tất cả đặt chỗ kèm tour và chuyến tour
     $datCho = $user->datCho()->with('tour', 'chuyenTour')->orderByDesc('ngayDat')->get();
-
-    $trungThoiGian = [];
-
-    foreach ($datCho as $i => $d1) {
-        if (!$d1->chuyenTour) continue; // bỏ qua nếu chưa có chuyến tour
-
-        $start1 = Carbon::parse($d1->chuyenTour->ngayKhoiHanh);
-        $end1   = Carbon::parse($d1->chuyenTour->ngayKetThuc);
-
-        foreach ($datCho as $j => $d2) {
-            if ($i < $j && $d2->chuyenTour) {
-                $start2 = Carbon::parse($d2->chuyenTour->ngayKhoiHanh);
-                $end2   = Carbon::parse($d2->chuyenTour->ngayKetThuc);
-
-                // Kiểm tra trùng thời gian
-                if ($start1->lte($end2) && $end1->gte($start2)) {
-                    $trungThoiGian[] = "{$d1->tour->tieuDe} và {$d2->tour->tieuDe}";
-                }
-            }
-        }
-    }
-
-    $canhBao = null;
-    if (!empty($trungThoiGian)) {
-        $canhBao = "⚠️ Bạn có các tour trùng thời gian: " . implode(', ', $trungThoiGian);
-    }
-
-    return view('user.thongtinuser', compact('user', 'datCho', 'canhBao'));
+    return view('user.thongtinuser', compact('user', 'datCho'));
 }
 public function destroy($maDatCho)
     {

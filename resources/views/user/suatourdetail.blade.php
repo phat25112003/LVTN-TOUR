@@ -34,7 +34,7 @@
                     <input type="hidden" id="child-input" name="treEm" value="0">
                     <input type="hidden" id="baby-input" name="emBe" value="0">
                     <input type="hidden" id="grand-total-input" name="tongGia" value="0">
-                    <input type="hidden" name="ngayKhoiHanh" value="{{ $ngayKhoiHanh_Laravel }}">
+                    <input type="hidden" name="ngayBatDau" value="{{ $ngayBatDau_Laravel }}">
                     <input type="hidden" name="ngayKetThuc" value="{{ $ngayKetThuc_Laravel }}">
                     <input type="hidden" name="maChuyen" id="maChuyen-input" value="{{ $datcho->maChuyen }}">
                     <input type="hidden" name="maTour" value="{{ $tour->maTour }}">
@@ -211,7 +211,7 @@
                 <div class="booking-details">
                   <div class="detail-row">
                     <span>Ngày Bắt Đầu:</span>
-                      <span class="ngayKhoiHanhDisplay">{{ $ngayKhoiHanh_Display }}</span>
+                      <span class="ngayBatDauDisplay">{{ $ngayBatDau_Display }}</span>
                   </div>
                   <div class="detail-row">
                     <span>Ngày Kết Thúc:</span>
@@ -318,6 +318,33 @@
     baby:  {{ $gia->emBe }}
   };
   window.tourId = '{{ $tour->maTour }}';
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+      // --- Hiển thị lỗi (toast đỏ) ---
+      @if ($errors->any())
+          let errorMsg = `{!! implode('\n', $errors->all()) !!}`;
+          document.getElementById('toastMessage').textContent = errorMsg;
+          var errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+          errorToast.show();
+      @endif
+
+      @if (session('error'))
+          document.getElementById('toastMessage').textContent = "{{ session('error') }}";
+          var errorToast2 = new bootstrap.Toast(document.getElementById('errorToast'));
+          errorToast2.show();
+      @endif
+
+
+      // --- Hiển thị thành công (toast xanh lá) ---
+      @if (session('success'))
+          document.getElementById('successMessage').textContent = "{{ session('success') }}";
+          var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+          successToast.show();
+      @endif
+
+  });
 </script>
 <script src="{{ asset('assets/js/counter.js') }}"></script>
 

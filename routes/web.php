@@ -118,20 +118,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{maDanhMuc}', 'update')->name('update');
         Route::delete('/{maDanhMuc}', 'destroy')->name('destroy');
     });
-
-    
-});
-Route::get('/tours/{maTour}', [TourDetailController::class, 'show'])->name('tour.detail');
-
-
-// Trang chủ
-Route::get('/', [TourUserController::class, 'index'])->name('home');
-
-// Danh sách tour / tìm kiếm tour
-Route::get('/tours', [TourUserController::class, 'search'])->name('tour.list');
-
-Route::controller(DatTourController::class)->middleware('auth:web')->prefix('user')->name('dattour.')->group(function () {
-    // Route cho HuongDanVienController
+        // Route cho HuongDanVienController
     Route::controller(HuongDanVienController::class)
            ->prefix('huongdanvien')
            ->name('huongdanvien.')
@@ -144,17 +131,18 @@ Route::controller(DatTourController::class)->middleware('auth:web')->prefix('use
         Route::delete('/{maHDV}', 'destroy')->name('destroy');
         Route::get('/{maHDV}', 'show')->name('show');
     });
+    
 });
-
-// routes/web.php
-Route::post('/admin/datcho/{maDatCho}/send-invoice', [DatChoController::class, 'sendInvoice'])
-     ->name('admin.datcho.sendInvoice');
-
 Route::get('/tours/{maTour}', [TourDetailController::class, 'show'])->name('tour.detail');
 
+
+// Trang chủ
+Route::get('/', [TourUserController::class, 'index'])->name('home');
+
+// Danh sách tour / tìm kiếm tour
 Route::get('/tours', [TourUserController::class, 'search'])->name('tour.list');
 
-Route::controller(DatTourController::class)->prefix('user')->name('dattour.')->group(function () {
+Route::controller(DatTourController::class)->middleware('auth:web')->prefix('user')->name('dattour.')->group(function () {
     Route::get('/', 'index')->name('index');
     Route::get('create/{maTour}', 'create')->name('create');
     Route::post('/', 'store')->name('store');

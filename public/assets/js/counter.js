@@ -57,10 +57,10 @@ document.addEventListener('DOMContentLoaded', function () {
     initialView: 'dayGridMonth',
     locale: 'vi',
     timeZone: 'local',
+    displayEventTime: false,  // Ẩn hoàn toàn phần giờ
     height: 'auto',
     events: `/api/tour-dates/${window.tourId}`,
     eventDidMount: function (info) {
-    info.el.style.backgroundColor = '#f95e4d'; // màu cam
     info.el.style.borderColor = '#f95e4d';
     info.el.style.transition = 'all 0.2s ease';
     info.el.style.transition = 'background-color 0.3s ease';},
@@ -98,20 +98,20 @@ document.addEventListener('DOMContentLoaded', function () {
       return `${day}/${month}/${year}`; // 10/11/2025
     }
     // Cập nhật ngày
-const ngayKhoiHanh_Laravel = formatDateForLaravel(info.event.startStr);
+const ngayBatDau_Laravel = formatDateForLaravel(info.event.startStr);
 const ngayKetThuc_Laravel = formatDateForLaravel(props.ngayKetThuc);
 
-const ngayKhoiHanh_Display = formatDateForDisplay(info.event.startStr);
+const ngayBatDau_Display = formatDateForDisplay(info.event.startStr);
 const ngayKetThuc_Display = formatDateForDisplay(props.ngayKetThuc);
 
 // Cập nhật input hidden (gửi lên server)
-document.querySelector('input[name="ngayKhoiHanh"]').value = ngayKhoiHanh_Laravel;
+document.querySelector('input[name="ngayBatDau"]').value = ngayBatDau_Laravel;
 document.querySelector('input[name="ngayKetThuc"]').value = ngayKetThuc_Laravel;
 
 // Cập nhật hiển thị cho người dùng
-const ngayBatDauEl = document.querySelector('.ngayKhoiHanhDisplay');
+const ngayBatDauEl = document.querySelector('.ngayBatDauDisplay');
 const ngayKetThucEl = document.querySelector('.ngayKetThucDisplay');
-if (ngayBatDauEl) ngayBatDauEl.textContent = ngayKhoiHanh_Display;
+if (ngayBatDauEl) ngayBatDauEl.textContent = ngayBatDau_Display;
 if (ngayKetThucEl) ngayKetThucEl.textContent = ngayKetThuc_Display;
     // Cập nhật lại tổng tiền với giá mới
     updateTotal();

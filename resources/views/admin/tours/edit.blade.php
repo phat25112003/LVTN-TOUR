@@ -154,7 +154,7 @@
             border: 1px solid #ddd;
         }
     </style>
-@endsection
+
         <div class="mt-3">
             <label class="form-label">Thêm hình ảnh mới</label>
             <input type="file" name="hinhAnh[]" multiple class="form-control" accept="image/*">

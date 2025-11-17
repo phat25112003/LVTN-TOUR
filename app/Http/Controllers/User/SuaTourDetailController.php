@@ -9,6 +9,8 @@ use App\Models\Tour;
 use App\Models\ChuyenTour;
 use App\Models\GiaTour;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class SuaTourDetailController extends Controller
 {
@@ -27,14 +29,14 @@ public function index($maDatCho)
 
     $gia = $chuyenHienTai?->giatour ?? $tour->giaTour->first();
 
-    $ngayKhoiHanh_Laravel = $chuyenHienTai
+    $ngayBatDau_Laravel = $chuyenHienTai
         ? \Carbon\Carbon::parse($chuyenHienTai->ngayBatDau)->format('Y-m-d')
         : '';
     $ngayKetThuc_Laravel = $chuyenHienTai
         ? \Carbon\Carbon::parse($chuyenHienTai->ngayKetThuc)->format('Y-m-d')
         : '';
 
-    $ngayKhoiHanh_Display = $chuyenHienTai
+    $ngayBatDau_Display = $chuyenHienTai
         ? \Carbon\Carbon::parse($chuyenHienTai->ngayBatDau)->format('d/m/Y')
         : '--/--/----';
     $ngayKetThuc_Display = $chuyenHienTai
@@ -46,9 +48,9 @@ public function index($maDatCho)
         'tour',
         'chuyenHienTai',
         'gia',
-        'ngayKhoiHanh_Laravel',
+        'ngayBatDau_Laravel',
         'ngayKetThuc_Laravel',
-        'ngayKhoiHanh_Display',
+        'ngayBatDau_Display',
         'ngayKetThuc_Display'
     ));
 }
@@ -59,36 +61,72 @@ public function update(Request $request, $maDatCho)
         return redirect()->route('user.login')->with('error', 'Vui lòng đăng nhập.');
     }
 
-    // Validate đầy đủ (bổ sung ngày + maChuyen)
     $request->validate([
         'nguoiLon' => 'required|integer|min:1',
         'treEm'    => 'required|integer|min:0',
         'emBe'     => 'required|integer|min:0',
-        'address'  => 'required|string',
-        'phone'    => 'required|string',
-        'phuongThucThanhToan' => 'required|string',
-        
-        // BẮT BUỘC THÊM 3 TRƯỜNG NÀY
-        'ngayKhoiHanh' => 'required|date',
-        'ngayKetThuc'  => 'required|date|after_or_equal:ngayKhoiHanh',
+        'address'  => 'required|string|max:255',
+        'phone'    => 'required|string|max:20',
+        'phuongThucThanhToan' => 'required|in:momo,paypal,tại văn phòng',
         'maChuyen'     => 'required|exists:chuyentour,maChuyen',
     ]);
 
+    $user = Auth::guard('web')->user();
     $datcho = DatCho::findOrFail($maDatCho);
 
-    // Kiểm tra chuyến tour có thuộc tour này không (bảo mật)
-    $chuyen = ChuyenTour::where('maChuyen', $request->maChuyen)
-                        ->where('maTour', $datcho->maTour)
-                        ->with('giatour')
-                        ->firstOrFail();
+    // Kiểm tra quyền sở hữu đơn đặt chỗ
+    if ($datcho->maNguoiDung !== $user->maNguoiDung) {
+        return redirect()->back()->with('error', 'Bạn không có quyền sửa đơn này.');
+    }
 
-    $gia = $chuyen->giatour;
+    // Lấy chuyến tour mới người dùng chọn
+    $chuyenMoi = ChuyenTour::where('maChuyen', $request->maChuyen)
+                            ->where('maTour', $datcho->maTour)
+                            ->firstOrFail();
 
-    $tongGia = $gia->nguoiLon * $request->nguoiLon
-             + $gia->treEm   * $request->treEm
-             + $gia->emBe    * $request->emBe;
+    $startMoi = Carbon::parse($chuyenMoi->ngayBatDau);
+    $endMoi   = Carbon::parse($chuyenMoi->ngayKetThuc);
 
-    // CẬP NHẬT ĐẦY ĐỦ – THÊM 3 TRƯỜNG QUAN TRỌNG
+    // === KIỂM TRA TRÙNG THỜI GIAN VỚI CÁC TOUR KHÁC (TRỪ CHÍNH ĐƠN NÀY) ===
+    $datChoKhac = DB::table('datcho')
+        ->join('chuyentour', 'datcho.maChuyen', '=', 'chuyentour.maChuyen')
+        ->join('tour', 'datcho.maTour', '=', 'tour.maTour')
+        ->where('datcho.maNguoiDung', $user->maNguoiDung)
+        ->where('datcho.maDatCho', '!=', $maDatCho) // Loại trừ chính đơn đang sửa
+        ->select('tour.tieuDe', 'chuyentour.ngayBatDau', 'chuyentour.ngayKetThuc')
+        ->get();
+
+    $trungVoi = [];
+
+    foreach ($datChoKhac as $d) {
+        $start = Carbon::parse($d->ngayBatDau);
+        $end   = Carbon::parse($d->ngayKetThuc);
+
+        // Nếu có bất kỳ ngày nào trùng nhau → chặn
+        if ($startMoi->lte($end) && $endMoi->gte($start)) {
+            $trungVoi[] = $d->tieuDe;
+        }
+    }
+
+    if (!empty($trungVoi)) {
+        $danhSach = implode(', ', $trungVoi);
+        return redirect()->back()
+            ->with('error', "Không thể cập nhật! Chuyến tour mới trùng thời gian với tour đã đặt: $danhSach")
+            ->withInput();
+    }
+
+    // === TÍNH LẠI GIÁ ===
+    $gia = $chuyenMoi->giatour;
+
+    if (!$gia) {
+        return redirect()->back()->with('error', 'Chuyến tour chưa có bảng giá.');
+    }
+
+    $tongGia = $gia->nguoiLon * $request->nguoiLon +
+               $gia->treEm   * $request->treEm +
+               $gia->emBe    * $request->emBe;
+
+    // === CẬP NHẬT THÔNG TIN ===
     $datcho->update([
         'soNguoiLon'          => $request->nguoiLon,
         'soTreEm'             => $request->treEm,
@@ -97,14 +135,10 @@ public function update(Request $request, $maDatCho)
         'diaChi'              => $request->address,
         'soDienThoai'         => $request->phone,
         'phuongThucThanhToan' => $request->phuongThucThanhToan,
-
-        // 3 DÒNG QUAN TRỌNG NHẤT – BẠN ĐÃ THIẾU!
-        'ngayKhoiHanh'        => $request->ngayKhoiHanh,  // 2025-11-15
-        'ngayKetThuc'         => $request->ngayKetThuc,   // 2025-11-17
         'maChuyen'            => $request->maChuyen,
     ]);
 
     return redirect()->route('user.thongtinuser')
-                     ->with('success', 'Cập nhật đặt tour thành công.');
+        ->with('success', 'Cập nhật thông tin đặt tour thành công!');
 }
 }
