@@ -16,6 +16,7 @@ use App\Http\Controllers\User\UserAuthController;
 use App\Http\Controllers\User\DangKyController; 
 use App\Http\Controllers\User\ThongTinUserController;
 use App\Http\Controllers\User\SuaTourDetailController;
+use App\Http\Controllers\User\GoogleLoginCOntroller;
 
 
 // Route công khai
@@ -165,3 +166,6 @@ Route::controller(SuaTourDetailController::class)->middleware('auth:web')->prefi
 });
 
 Route::delete('user/thongtin/{maDatCho}', [ThongTinUserController::class, 'destroy'])->name('user.thongtinuser.destroy');
+
+Route::get('auth/google', [GoogleLoginCOntroller::class, 'redirectToGoogle'])->name('google.login');
+Route::get('auth/google/callback', [GoogleLoginCOntroller::class, 'handleGoogleCallback'])->name('google.callback');

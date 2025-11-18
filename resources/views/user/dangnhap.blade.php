@@ -57,7 +57,9 @@
             <div class="text-center mt-4">
               <p>Chưa có tài khoản? <a href="{{ route('user.dangky') }}">Đăng ký ngay</a></p>
             </div>
-            
+            <div class="text-center mt-3">
+              <a href="{{ route('google.login') }}" class="btn btn-danger w-100">Đăng nhập với Google</a>
+            </div>
 
           </form>
 
@@ -74,5 +76,13 @@
   <!-- Scroll Top -->
 @include('layout.preloader')
 </body>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    @if (session('error'))
+        alert("{{ session('error') }}");
+    @endif
+});
+</script>
+
 
 </html>
