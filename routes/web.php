@@ -17,7 +17,7 @@ use App\Http\Controllers\User\DangKyController;
 use App\Http\Controllers\User\ThongTinUserController;
 use App\Http\Controllers\User\SuaTourDetailController;
 use App\Http\Controllers\User\GoogleLoginCOntroller;
-
+use App\Http\Controllers\User\KhuyenMaiUserController;
 
 // Route công khai
 use App\Http\Controllers\Admin\HuongDanVienController;
@@ -169,3 +169,5 @@ Route::delete('user/thongtin/{maDatCho}', [ThongTinUserController::class, 'destr
 
 Route::get('auth/google', [GoogleLoginCOntroller::class, 'redirectToGoogle'])->name('google.login');
 Route::get('auth/google/callback', [GoogleLoginCOntroller::class, 'handleGoogleCallback'])->name('google.callback');
+
+Route::post('/khuyenmai/apply', [KhuyenMaiUserController::class, 'apply'])->name('khuyenmai.apply');

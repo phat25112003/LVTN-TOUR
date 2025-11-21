@@ -30,7 +30,7 @@
                 </div>
                 <div class="card-content">
                   <p>Họ và tên:</p>
-                  <h4>{{ $user->tenDangNhap }}</h4>
+                  <h4>{{ $user->hoTen }}</h4>
                 </div>
               </div>
 

@@ -168,7 +168,7 @@
                     <div class="form-actions">
                       <button type="submit" class="btn btn-primary btn-lg">
                         <i class="bi bi-check-circle"></i>
-                        Hoàn tất Đặt Tour
+                        Hoàn tất Cập nhật Tour
                       </button>
                     </div>
                   </div>
@@ -194,7 +194,7 @@
               </div>
               <div class="summary-content">
                 <div class="selected-tour">
-                  <img src="{{ asset('storage/' . $tour->hinhanh->first()->duongDanHinh) }}" alt="Tour" class="img-fluid">
+                  <img src="{{ asset('storage/' . optional($tour->hinhanh->first())->duongDanHinh ?? 'images/no-image.jpg') }}"alt="Tour" class="img-fluid">
                   <div class="tour-info">
                     <h5>{{ $tour->tieuDe }}</h5>
                     <p>{{ $tour->thoiGian }}</p>

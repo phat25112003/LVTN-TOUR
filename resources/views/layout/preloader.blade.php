@@ -12,3 +12,4 @@
   <!-- Main JS File -->
   <script src="{{ asset('assets/js/main.js') }}"></script>
   <script src="{{ asset('assets/js/payment.js') }}"></script>
+  

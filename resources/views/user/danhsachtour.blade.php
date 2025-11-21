@@ -90,7 +90,7 @@
                       <span><i class="bi bi-star-fill"></i> 4.7</span>
                     </div>
                     <div class="tour-pricing">
-                      <span class="price">{{ $tour->giaNguoiLon }}Đ</span>
+                      <span class="price">{{ number_format($tour->giatour->first()->nguoiLon, 0, ',', '.') }}₫</span>
                       <span class="per">/người</span>
                       
                     </div>

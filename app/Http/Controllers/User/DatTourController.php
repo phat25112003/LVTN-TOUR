@@ -11,6 +11,9 @@ use App\Models\ChuyenTour;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\ThanhToan;
+use App\Models\KhuyenMai;
+use App\Models\KhuyenMaiSuDung;
 
 class DatTourController extends Controller
 {
@@ -83,12 +86,16 @@ public function store(Request $request)
         'treEm' => 'required|integer|min:0',
         'emBe' => 'required|integer|min:0',
         'phuongThucThanhToan' => 'required|in:momo,paypal,tại văn phòng',
+
+        // === phần mới cho mã khuyến mãi ===
+        'maKM' => 'nullable|exists:khuyenmai,maKM',
+        'giaGiam' => 'nullable|numeric|min:0',
     ]);
 
     $user = Auth::guard('web')->user();
     $maChuyenMoi = $validated['maChuyen'];
 
-    // LẤY NGÀY CỦA CHUYẾN ĐANG ĐẶT
+    // === LẤY NGÀY CỦA CHUYẾN ===
     $chuyenMoi = DB::table('chuyentour')
         ->where('maChuyen', $maChuyenMoi)
         ->select('ngayBatDau', 'ngayKetThuc')
@@ -101,26 +108,19 @@ public function store(Request $request)
     $startMoi = Carbon::parse($chuyenMoi->ngayBatDau);
     $endMoi   = Carbon::parse($chuyenMoi->ngayKetThuc);
 
-    // LẤY TẤT CẢ CHUYẾN ĐÃ ĐẶT (XÁC NHẬN) CỦA USER + NGÀY TỪ CHUYENTOUR
-    $datCho = DB::table('datcho')
+    // === KIỂM TRA TRÙNG CHUYẾN ===
+    $datChoDaDat = DB::table('datcho')
         ->join('chuyentour', 'datcho.maChuyen', '=', 'chuyentour.maChuyen')
         ->join('tour', 'datcho.maTour', '=', 'tour.maTour')
         ->where('datcho.maNguoiDung', $user->maNguoiDung)
-        ->where('datcho.maChuyen', '!=', $maChuyenMoi) // loại trừ chính nó
-        ->select(
-            'tour.tieuDe',
-            'chuyentour.ngayBatDau',
-            'chuyentour.ngayKetThuc'
-        )
+        ->where('datcho.maChuyen', '!=', $maChuyenMoi)
+        ->select('tour.tieuDe', 'chuyentour.ngayBatDau', 'chuyentour.ngayKetThuc')
         ->get();
 
-    // KIỂM TRA TRÙNG (gọn như đoạn bạn gửi)
     $trungVoi = [];
-
-    foreach ($datCho as $d) {
+    foreach ($datChoDaDat as $d) {
         $start = Carbon::parse($d->ngayBatDau);
         $end   = Carbon::parse($d->ngayKetThuc);
-
         if ($startMoi->lte($end) && $endMoi->gte($start)) {
             $trungVoi[] = $d->tieuDe;
         }
@@ -138,18 +138,29 @@ public function store(Request $request)
         return response()->json(['success' => false, 'message' => 'Chưa có bảng giá.'], 400);
     }
 
-    $tongGia = $validated['nguoiLon'] * $gia->nguoiLon +
-               $validated['treEm']   * $gia->treEm +
-               $validated['emBe']    * $gia->emBe;
+    $tongGiaGoc = 
+        $validated['nguoiLon'] * $gia->nguoiLon +
+        $validated['treEm'] * $gia->treEm +
+        $validated['emBe'] * $gia->emBe;
+
+    // --- ÁP DỤNG MÃ GIẢM GIÁ ---
+    $tongGiaSauGiam = $tongGiaGoc;
+    $giaGiam = $request->giaGiam ?? 0;
+    $maKM = $request->maKM ?? null;
+
+    if ($maKM && $giaGiam > 0) {
+        // đảm bảo không âm
+        $tongGiaSauGiam = max(0, $tongGiaGoc - $giaGiam);
+    }
 
     // === LƯU ĐẶT CHỖ ===
-    DatCho::create([
+    $datCho = DatCho::create([
         'maNguoiDung' => $user->maNguoiDung,
         'hoTen' => $validated['hoTen'],
         'maChuyen' => $maChuyenMoi,
         'maTour' => $validated['maTour'],
         'ngayDat' => now(),
-        'tongGia' => $tongGia,
+        'tongGia' => $tongGiaSauGiam,
         'phuongThucThanhToan' => $validated['phuongThucThanhToan'],
         'xacNhan' => 0,
         'diaChi' => $request->address ?? $user->diaChi ?? null,
@@ -160,8 +171,34 @@ public function store(Request $request)
         'soEmBe' => $validated['emBe'],
     ]);
 
+    // === NẾU CÓ MÃ KHUYẾN MÃI → LƯU LỊCH SỬ SỬ DỤNG ===
+    if ($maKM && $giaGiam > 0) {
+        \App\Models\KhuyenMaiSuDung::create([
+            'maKM' => $maKM,
+            'maDatCho' => $datCho->maDatCho,
+            'maNguoiDung' => $user->maNguoiDung,
+            'giaGiam' => $giaGiam,
+        ]);
+
+        // tăng lượt sử dụng
+        \App\Models\KhuyenMai::where('maKM', $maKM)
+            ->increment('soLuotDaDung');
+    }
+
+    // === TẠO BẢN GHI THANH TOÁN ===
+    ThanhToan::create([
+        'maDatCho' => $datCho->maDatCho,
+        'maNguoiDung' => $user->maNguoiDung,
+        'phuongThucThanhToan' => $validated['phuongThucThanhToan'],
+        'soTien' => $tongGiaSauGiam,
+        'tinhTrangThanhToan' => null,
+        'maGiaoDich' => null,
+        'ngayThanhToan' => now(),
+    ]);
+
     return redirect()
             ->route('dattour.create', $validated['maTour'])
             ->with('success', 'Đặt tour thành công!');
-    }
+}
+
 }

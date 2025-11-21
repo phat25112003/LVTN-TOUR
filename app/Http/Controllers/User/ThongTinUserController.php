@@ -32,7 +32,7 @@ public function index()
 public function destroy($maDatCho)
     {
         $datcho = Auth::user()->datCho()->findOrFail($maDatCho);
-        
+        $datcho->thanhToan()->delete();
         $datcho->delete();
 
         return redirect()->route('user.thongtinuser')

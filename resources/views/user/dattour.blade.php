@@ -155,6 +155,52 @@
                   </div>
 
                   <div class="step-content">
+<div class="mt-4">
+    <div class="input-group input-group-lg">
+        <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-ticket-perforated-fill text-primary"></i>
+        </span>
+        <input 
+            type="text" 
+            id="promo-code-input" 
+            class="form-control border-start-0" 
+            placeholder="Nhập mã giảm giá" 
+            style="text-transform: uppercase; font-weight: 600;"
+            autocomplete="off"
+        >
+        <button 
+            type="button" 
+            id="apply-promo-btn" 
+            class="btn btn-outline-primary"
+        >
+            <span class="apply-text">Áp dụng</span>
+            <span class="applied-text d-none">
+                <i class="bi bi-check-lg"></i> Đã áp dụng
+            </span>
+        </button>
+    </div>
+
+    <!-- Thông báo + Nút GỠ MÃ -->
+    <div class="form-text mt-2">
+        <small id="promo-success" class="text-success d-none">
+            <i class="bi bi-check-circle-fill"></i> 
+            Đã áp dụng mã <strong id="applied-code"></strong>
+            <button 
+                type="button" 
+                id="remove-promo-btn" 
+                class="btn btn-sm btn-outline-danger ms-2 border-0"
+                title="Gỡ mã giảm giá"
+            >
+                <i class="bi bi-x-circle-fill"></i> Gỡ mã
+            </button>
+        </small>
+        <small id="promo-error" class="text-danger d-none"></small>
+    </div>
+
+    <!-- Hidden inputs gửi form -->
+    <input type="hidden" name="maKM" id="maKM-input" value="">
+    <input type="hidden" name="giaGiam" id="giaGiam-input" value="0">
+</div>
                     <div class="terms-conditions">
                       <div class="form-check">
                         <input type="checkbox" name="terms_agreement" id="terms-agreement" class="form-check-input" required="">
@@ -216,39 +262,56 @@
                   <input type="hidden" id="child-price" value="{{ $tour->giaTour->first()->treEm }}">
                   <input type="hidden" id="baby-price" value="{{ $tour->giaTour->first()->emBe }}">
                   <input type="hidden" id="slot" value="{{ $tour->chuyentour->first()->soLuongToiDa }}">
-                  <h6>Chi Tiết Giá</h6>
-                  <div class="price-row">
-                    <span>Giá người lớn</span>
-                    <span id="adult-total"></span>
-                  </div>
+                <h6>Chi Tiết Giá</h6>
 
-
-                  <div class="price-row">
-                    <span>Giá trẻ em</span>
-                    <span id="child-total"></span>
-                  </div>
-                  <div class="price-row">
-                    <span>Giá em bé</span>
-                    <span id="baby-total"></span>
-                  </div>
-                  <!-- <div class="price-row">
-                    <span>Travel Insurance</span>
-                    <span>$89</span>
-                  </div>
-                  <div class="price-row">
-                    <span>Airport Transfer</span>
-                    <span>$45</span>
-                  </div>
-                  <div class="price-row">
-                    <span>Taxes &amp; Fees</span>
-                    <span>$156</span>
-                  </div> -->
-                  <div class="price-total">
-                    <span>Tổng tiền</span>
-                    <span id="grand-total"></span>
-                  </div>
+                <!-- Người lớn -->
+                <div class="price-row" id="adult-price-row">
+                    <span>Người lớn <small class="text-muted" id="adult-count-display">× 1</small></span>
+                    <span>
+                        <span id="adult-unit-price"></span> × 
+                        <strong id="adult-count-strong">1</strong> = 
+                        <strong id="adult-total" class="text-primary"></strong>
+                    </span>
                 </div>
 
+                <!-- Trẻ em -->
+                <div class="price-row" id="child-price-row" style="display: none;">
+                    <span>Trẻ em (6-11 tuổi) <small class="text-muted" id="child-count-display"></small></span>
+                    <span>
+                        <span id="child-unit-price"></span> × 
+                        <strong id="child-count-strong">0</strong> = 
+                        <strong id="child-total" class="text-primary">0 ₫</strong>
+                    </span>
+                </div>
+
+                <!-- Em bé -->
+                <div class="price-row" id="baby-price-row" style="display: none;">
+                    <span>Em bé (2-5 tuổi) <small class="text-muted" id="baby-count-display"></small></span>
+                    <span>
+                        <span id="baby-unit-price"></span> × 
+                        <strong id="baby-count-strong">0</strong> = 
+                        <strong id="baby-total" class="text-primary">0 ₫</strong>
+                    </span>
+                </div>
+
+                <!-- Tổng cộng -->
+                <div class="price-row fw-bold border-top pt-2 mt-2">
+                    <span>Tổng tiền</span>
+                    <span id="grand-total" class="fs-5 text-danger">0 ₫</span>
+                </div>
+
+                <!-- Giảm giá -->
+                <div class="price-row text-success fw-bold d-none" id="discount-row">
+                    <span>Giảm giá:</span>
+                    <span id="discount-amount">-0 ₫</span>
+                </div>
+
+                <!-- Tổng thanh toán -->
+                <div class="price-row border-top pt-2 mt-2 bg-light rounded px-3 py-2">
+                    <span class="fs-5 fw-bold">Tổng thanh toán:</span>
+                    <span id="final-total" class="fs-4 fw-bold text-danger">0 ₫</span>
+                </div>
+                </div>
                 <div class="payment-security">
                   <div class="security-badges">
                     <i class="bi bi-shield-check"></i>
@@ -350,6 +413,7 @@
 </script>
 
 <script src="{{ asset('assets/js/counter.js') }}"></script>
+<script src="{{ asset('assets/js/discount.js') }}"></script>
 
 </body>
 

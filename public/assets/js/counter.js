@@ -24,23 +24,59 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   // Cập nhật tổng tiền
-  function updateTotal() {
-    const total =
-      counts.adult * currentPrices.adult +
-      counts.child * currentPrices.child +
-      counts.baby * currentPrices.baby;
+window.updateTotal = function () {
+    const total = counts.adult * currentPrices.adult +
+                  counts.child * currentPrices.child +
+                  counts.baby * currentPrices.baby;
 
-    document.getElementById('adult-total').textContent = formatCurrency(counts.adult * currentPrices.adult);
-    document.getElementById('child-total').textContent = formatCurrency(counts.child * currentPrices.child);
-    document.getElementById('baby-total').textContent = formatCurrency(counts.baby * currentPrices.baby);
-    document.getElementById('grand-total').textContent = formatCurrency(total);
+    const format = (amount) => new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND'
+    }).format(amount);
 
-    // Cập nhật hidden inputs
+    // Cập nhật Người lớn
+    document.getElementById('adult-unit-price').textContent = format(currentPrices.adult);
+    document.getElementById('adult-count-strong').textContent = counts.adult;
+    document.getElementById('adult-total').textContent = format(counts.adult * currentPrices.adult);
+    document.getElementById('adult-count-display').textContent = `× ${counts.adult}`;
+
+    // Cập nhật Trẻ em
+    const childRow = document.getElementById('child-price-row');
+    if (counts.child > 0) {
+        childRow.style.display = 'flex';
+        document.getElementById('child-unit-price').textContent = format(currentPrices.child);
+        document.getElementById('child-count-strong').textContent = counts.child;
+        document.getElementById('child-total').textContent = format(counts.child * currentPrices.child);
+        document.getElementById('child-count-display').textContent = `× ${counts.child}`;
+    } else {
+        childRow.style.display = 'none';
+    }
+
+    // Cập nhật Em bé
+    const babyRow = document.getElementById('baby-price-row');
+    if (counts.baby > 0) {
+        babyRow.style.display = 'flex';
+        document.getElementById('baby-unit-price').textContent = format(currentPrices.baby);
+        document.getElementById('baby-count-strong').textContent = counts.baby;
+        document.getElementById('baby-total').textContent = format(counts.baby * currentPrices.baby);
+        document.getElementById('baby-count-display').textContent = `× ${counts.baby}`;
+    } else {
+        babyRow.style.display = 'none';
+    }
+
+    // Tổng tiền & Tổng thanh toán
+    document.getElementById('grand-total').textContent = format(total);
+
+    const currentDiscount = window.currentDiscount || 0;
+    const finalTotal = Math.max(0, total - currentDiscount);
+    document.getElementById('final-total').textContent = format(finalTotal);
+
+    // Hidden inputs
+    document.getElementById('grand-total-input').value = total;
     document.getElementById('adult-input').value = counts.adult;
     document.getElementById('child-input').value = counts.child;
     document.getElementById('baby-input').value = counts.baby;
-    document.getElementById('grand-total-input').value = total;
-  }
+};
 
   // Format tiền tệ
   function formatCurrency(amount) {

@@ -13,6 +13,7 @@ class ThanhToan extends Model
     protected $table = 'thanhtoan';
     protected $primaryKey = 'maThanhToan'; // Giả định
     protected $fillable = [
+        'maNguoiDung',
         'maDatCho',
         'phuongThucThanhToan',
         'soTien',

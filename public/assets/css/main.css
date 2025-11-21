@@ -8155,3 +8155,49 @@ section,
   color: #999;
   margin-top: 20px;
 }
+
+/* ==================== MÀU CHỦ ĐẠO #f95e4d CHO CHI TIẾT GIÁ ==================== */
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 15px;
+}
+
+/* Màu cam chủ đạo cho đơn giá và thành tiền */
+#adult-total,
+#child-total,
+#baby-total,
+#grand-total,
+#final-total {
+    color: #f95e4d !important;
+    font-weight: 600;
+}
+
+/* Tổng thanh toán nổi bật nhất */
+#final-total {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+}
+
+/* Dòng giảm giá giữ màu xanh lá để nổi bật */
+#discount-row #discount-amount {
+    color: #28a745 !important;
+    font-weight: 600;
+}
+
+/* Khi có giảm giá → tổng tiền cũ gạch ngang nhẹ */
+#grand-total.has-discount {
+    text-decoration: line-through;
+    color: #999 !important;
+    font-weight: normal !important;
+}
+
+/* Tô màu số lượng */
+#adult-count-strong,
+#child-count-strong,
+#baby-count-strong {
+    color: #f95e4d;
+    font-weight: 600;
+}
