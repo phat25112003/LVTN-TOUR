@@ -37,7 +37,7 @@
                             </td>
                             <td><strong>{{ $hdv->hoTen }}</strong></td>
                             <td>{{ $hdv->soDienThoai }}</td>
-                            <td>{{ $hdv->email ?? '<em class="text-muted">—</em>' }}</td>
+                            <td>{{ $hdv->email ?? 'Chưa có' }}</td>
                             <td>
                                 <span class="status-badge {{ $hdv->trangThai == 'HoatDong' ? 'status-active' : 'status-inactive' }}">
                                     {{ $hdv->trangThai == 'HoatDong' ? 'Hoạt động' : 'Nghỉ' }}

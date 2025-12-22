@@ -67,4 +67,18 @@ class DatCho extends Model
     {
         return number_format($this->tongGia) . '₫';
     }
+    
+    public function khuyenMaiDaDung() 
+    {
+        return $this->hasMany(KhuyenMaiSuDung::class, 'maDatCho', 'maDatCho');
+    }
+
+    public function khuyenmai()
+    {
+        return $this->hasMany(KhuyenMaiSuDung::class, 'maDatCho', 'maDatCho');
+    }
+    public function khachThamGia()
+    {
+        return $this->hasMany(KhachThamGia::class, 'maDatCho', 'maDatCho');
+    }
 }

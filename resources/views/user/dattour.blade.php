@@ -70,7 +70,7 @@
                 </div>
                 <div id="calendar" style="max-width:900px;margin:30px auto;"></div>
 
-                <div class="booking-step" id="step-3">
+                <div class="booking-step d-none" id="step-3">
                   <div class="step-header">
                     <h3>Hành Khách</h3>
                     <p>Vui Lòng Nhập Số Lượng Hành Khách</p>
@@ -113,10 +113,122 @@
                             </label>
                           </div>
                         </div>
-                      </div>   
+                      </div>  
+                      <ul id="traveler-list" class="list-unstyled"></ul>
+                        <template id="tpl-adult">
+                          <li class="traveler-item mb-3 p-3 border rounded">
+                            <h5 class="traveler-title"></h5>
+
+                            <div class="row g-2">
+
+                              <div class="col-5">
+                                <label class="form-label mb-1">Họ tên</label>
+                                <input type="text" class="form-control" name="hoTenKhach[]" placeholder="Họ tên" required>
+                              </div>
+
+                              <div class="col-2">
+                                <label class="form-label mb-1">Giới tính</label>
+                                <select class="form-control" name="gioiTinh[]">
+                                  <option value="Nam">Nam</option>
+                                  <option value="Nu">Nữ</option>
+                                </select>
+                              </div>
+
+                              <div class="col-2">
+                                <label class="form-label mb-1">Tuổi</label>
+                                <input type="number" class="form-control" name="tuoi[]" value="18" min="12" required>
+                              </div>
+
+                              <div class="col-3">
+                                <label class="form-label mb-1">Phòng đơn</label>
+
+                                <div class="d-flex align-items-center gap-2">
+                                  <!-- toggle -->
+                                  <label class="switch m-0">
+                                    <input type="checkbox" class="phong-don-checkbox" name="phongDon[]" value="1">
+                                    <span class="slider round"></span>
+                                  </label>
+
+                                  <!-- hiển thị giá -->
+                                  <span class="phong-don-price text-danger fw-bold small">
+                                    {{ number_format($tour->giaPhongDon, 0, ',', '.') }} ₫
+                                  </span>
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                            <input type="hidden" name="loaiKhach[]" value="adult">
+                          </li>
+                        </template>
+                        <template id="tpl-child">
+                          <li class="traveler-item mb-3 p-3 border rounded">
+                            <h5 class="traveler-title"></h5>
+
+                            <div class="row g-2">
+
+                              <div class="col-6">
+                                <label class="form-label mb-1">Họ tên</label>
+                                <input type="text" class="form-control" name="hoTenKhach[]" required>
+                              </div>
+
+                              <div class="col-3">
+                                <label class="form-label mb-1">Giới tính</label>
+                                <select class="form-control" name="gioiTinh[]">
+                                  <option value="Nam">Nam</option>
+                                  <option value="Nu">Nữ</option>
+                                </select>
+                              </div>
+
+                              <div class="col-3">
+                                <label class="form-label mb-1">Tuổi</label>
+                                <input type="number" class="form-control" name="tuoi[]" value="7" min="2" max="12" required>
+                              </div>
+
+                            </div>
+
+                            <input type="hidden" name="loaiKhach[]" value="child">
+                            <input type="hidden" name="phongDon[]" value="0">
+                          </li>
+                        </template>
+                        <template id="tpl-baby">
+                          <li class="traveler-item mb-3 p-3 border rounded">
+                            <h5 class="traveler-title"></h5>
+
+                            <div class="row g-2">
+
+                              <div class="col-6">
+                                <label class="form-label mb-1">Họ tên</label>
+                                <input type="text" class="form-control" name="hoTenKhach[]" required>
+                              </div>
+
+                              <div class="col-3">
+                                <label class="form-label mb-1">Giới tính</label>
+                                <select class="form-control" name="gioiTinh[]">
+                                  <option value="Nam">Nam</option>
+                                  <option value="Nu">Nữ</option>
+                                </select>
+                              </div>
+
+                              <div class="col-3">
+                                <label class="form-label mb-1">Tuổi</label>
+                                <input type="number" class="form-control" name="tuoi[]" value="1" min="0" max="2" required>
+                              </div>
+
+                            </div>
+
+                            <input type="hidden" name="loaiKhach[]" value="baby">
+                            <input type="hidden" name="phongDon[]" value="0">
+                          </li>
+                        </template>
                   </div>
                 </div>
-                <div class="booking-step" id="step-4">
+
+
+
+
+                <div class="booking-step d-none" id="step-4">
                   <div class="step-header">
                     <h3>Phương thức thanh toán</h3>
                     <p>Vui lòng lựa chọn phương thúc thanh toán của bạn</p>
@@ -124,7 +236,7 @@
 
                   <div class="step-content">
                     <div class="payment-methods">
-                      <div class="payment-method active">
+                      <div class="payment-method">
                         <input type="radio" name="phuongThucThanhToan" id="credit-card" value="momo" >
                         <label for="credit-card">
                           <i class="bi bi-credit-card"></i>
@@ -148,59 +260,59 @@
                     </div>
                   </div>
                 </div>
-                <div class="booking-step" id="step-5">
+                <div class="booking-step d-none" id="step-5">
                   <div class="step-header">
                     <h3>Kiểm tra &amp; Xác nhận đơn đặt</h3>
                     <p>Vui lòng xem lại thông tin đặt tour của bạn trước khi xác nhận</p>
                   </div>
 
                   <div class="step-content">
-<div class="mt-4">
-    <div class="input-group input-group-lg">
-        <span class="input-group-text bg-white border-end-0">
-            <i class="bi bi-ticket-perforated-fill text-primary"></i>
-        </span>
-        <input 
-            type="text" 
-            id="promo-code-input" 
-            class="form-control border-start-0" 
-            placeholder="Nhập mã giảm giá" 
-            style="text-transform: uppercase; font-weight: 600;"
-            autocomplete="off"
-        >
-        <button 
-            type="button" 
-            id="apply-promo-btn" 
-            class="btn btn-outline-primary"
-        >
-            <span class="apply-text">Áp dụng</span>
-            <span class="applied-text d-none">
-                <i class="bi bi-check-lg"></i> Đã áp dụng
-            </span>
-        </button>
-    </div>
+                  <div class="mt-4">
+                      <div class="input-group input-group-lg">
+                          <span class="input-group-text bg-white border-end-0">
+                              <i class="bi bi-ticket-perforated-fill text-primary"></i>
+                          </span>
+                          <input 
+                              type="text" 
+                              id="promo-code-input" 
+                              class="form-control border-start-0" 
+                              placeholder="Nhập mã giảm giá" 
+                              style="text-transform: uppercase; font-weight: 600;"
+                              autocomplete="off"
+                          >
+                          <button 
+                              type="button" 
+                              id="apply-promo-btn" 
+                              class="btn btn-outline-primary"
+                          >
+                              <span class="apply-text">Áp dụng</span>
+                              <span class="applied-text d-none">
+                                  <i class="bi bi-check-lg"></i> Đã áp dụng
+                              </span>
+                          </button>
+                      </div>
 
-    <!-- Thông báo + Nút GỠ MÃ -->
-    <div class="form-text mt-2">
-        <small id="promo-success" class="text-success d-none">
-            <i class="bi bi-check-circle-fill"></i> 
-            Đã áp dụng mã <strong id="applied-code"></strong>
-            <button 
-                type="button" 
-                id="remove-promo-btn" 
-                class="btn btn-sm btn-outline-danger ms-2 border-0"
-                title="Gỡ mã giảm giá"
-            >
-                <i class="bi bi-x-circle-fill"></i> Gỡ mã
-            </button>
-        </small>
-        <small id="promo-error" class="text-danger d-none"></small>
-    </div>
+                      <!-- Thông báo + Nút GỠ MÃ -->
+                      <div class="form-text mt-2">
+                          <small id="promo-success" class="text-success d-none">
+                              <i class="bi bi-check-circle-fill"></i> 
+                              Đã áp dụng mã <strong id="applied-code"></strong>
+                              <button 
+                                  type="button" 
+                                  id="remove-promo-btn" 
+                                  class="btn btn-sm btn-outline-danger ms-2 border-0"
+                                  title="Gỡ mã giảm giá"
+                              >
+                                  <i class="bi bi-x-circle-fill"></i> Gỡ mã
+                              </button>
+                          </small>
+                          <small id="promo-error" class="text-danger d-none"></small>
+                      </div>
 
-    <!-- Hidden inputs gửi form -->
-    <input type="hidden" name="maKM" id="maKM-input" value="">
-    <input type="hidden" name="giaGiam" id="giaGiam-input" value="0">
-</div>
+                      <!-- Hidden inputs gửi form -->
+                      <input type="hidden" name="maKM" id="maKM-input" value="">
+                      <input type="hidden" name="giaGiam" id="giaGiam-input" value="0">
+                  </div>
                     <div class="terms-conditions">
                       <div class="form-check">
                         <input type="checkbox" name="terms_agreement" id="terms-agreement" class="form-check-input" required="">
@@ -233,14 +345,6 @@
                   <div class="tour-info">
                     <h5>{{ $tour->tieuDe }}</h5>
                     <p>{{ $tour->thoiGian }}</p>
-                    <div class="tour-rating">
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-half"></i>
-                      <span>4.8 (324 reviews)</span>
-                    </div>
                   </div>
                 </div>
                 <div class="booking-details">
@@ -256,6 +360,10 @@
                     <span>Mã chuyến:</span>
                     <span id="ma-chuyen-display">-</span>
                   </div>
+                  <div class="detail-row">
+                    <span>Số chỗ còn lại:</span>
+                    <span id="so-slot-display">-</span>
+                  </div>
                 </div>
                 <div class="price-breakdown">
                   <input type="hidden" id="adult-price" value="{{ $tour->giaTour->first()->nguoiLon }}">
@@ -264,53 +372,53 @@
                   <input type="hidden" id="slot" value="{{ $tour->chuyentour->first()->soLuongToiDa }}">
                 <h6>Chi Tiết Giá</h6>
 
-                <!-- Người lớn -->
-                <div class="price-row" id="adult-price-row">
-                    <span>Người lớn <small class="text-muted" id="adult-count-display">× 1</small></span>
-                    <span>
-                        <span id="adult-unit-price"></span> × 
-                        <strong id="adult-count-strong">1</strong> = 
-                        <strong id="adult-total" class="text-primary"></strong>
-                    </span>
-                </div>
+                  <!-- Người lớn -->
+                  <div class="price-row" id="adult-price-row">
+                      <span>Người lớn <small class="text-muted" id="adult-count-display">× 1</small></span>
+                      <span>
+                          <span id="adult-unit-price"></span> × 
+                          <strong id="adult-count-strong">1</strong> = 
+                          <strong id="adult-total" class="text-primary"></strong>
+                      </span>
+                  </div>
 
-                <!-- Trẻ em -->
-                <div class="price-row" id="child-price-row" style="display: none;">
-                    <span>Trẻ em (6-11 tuổi) <small class="text-muted" id="child-count-display"></small></span>
-                    <span>
-                        <span id="child-unit-price"></span> × 
-                        <strong id="child-count-strong">0</strong> = 
-                        <strong id="child-total" class="text-primary">0 ₫</strong>
-                    </span>
-                </div>
+                  <!-- Trẻ em -->
+                  <div class="price-row" id="child-price-row" style="display: none;">
+                      <span>Trẻ em (6-11 tuổi) <small class="text-muted" id="child-count-display"></small></span>
+                      <span>
+                          <span id="child-unit-price"></span> × 
+                          <strong id="child-count-strong">0</strong> = 
+                          <strong id="child-total" class="text-primary">0 ₫</strong>
+                      </span>
+                  </div>
 
-                <!-- Em bé -->
-                <div class="price-row" id="baby-price-row" style="display: none;">
-                    <span>Em bé (2-5 tuổi) <small class="text-muted" id="baby-count-display"></small></span>
-                    <span>
-                        <span id="baby-unit-price"></span> × 
-                        <strong id="baby-count-strong">0</strong> = 
-                        <strong id="baby-total" class="text-primary">0 ₫</strong>
-                    </span>
-                </div>
+                  <!-- Em bé -->
+                  <div class="price-row" id="baby-price-row" style="display: none;">
+                      <span>Em bé (2-5 tuổi) <small class="text-muted" id="baby-count-display"></small></span>
+                      <span>
+                          <span id="baby-unit-price"></span> × 
+                          <strong id="baby-count-strong">0</strong> = 
+                          <strong id="baby-total" class="text-primary">0 ₫</strong>
+                      </span>
+                  </div>
 
-                <!-- Tổng cộng -->
-                <div class="price-row fw-bold border-top pt-2 mt-2">
-                    <span>Tổng tiền</span>
-                    <span id="grand-total" class="fs-5 text-danger">0 ₫</span>
-                </div>
+                  <!-- Tổng cộng -->
+                  <div class="price-row fw-bold border-top pt-2 mt-2">
+                      <span>Tổng tiền</span>
+                      <span id="grand-total" class="fs-5 text-danger">0 ₫</span>
+                  </div>
 
-                <!-- Giảm giá -->
-                <div class="price-row text-success fw-bold d-none" id="discount-row">
-                    <span>Giảm giá:</span>
-                    <span id="discount-amount">-0 ₫</span>
-                </div>
+                  <!-- Giảm giá -->
+                  <div class="price-row text-success fw-bold d-none" id="discount-row">
+                      <span>Giảm giá:</span>
+                      <span id="discount-amount">-0 ₫</span>
+                  </div>
 
-                <!-- Tổng thanh toán -->
-                <div class="price-row border-top pt-2 mt-2 bg-light rounded px-3 py-2">
-                    <span class="fs-5 fw-bold">Tổng thanh toán:</span>
-                    <span id="final-total" class="fs-4 fw-bold text-danger">0 ₫</span>
-                </div>
+                  <!-- Tổng thanh toán -->
+                  <div class="price-row border-top pt-2 mt-2 bg-light rounded px-3 py-2">
+                      <span class="fs-5 fw-bold">Tổng thanh toán:</span>
+                      <span id="final-total" class="fs-4 fw-bold text-danger">0 ₫</span>
+                  </div>
                 </div>
                 <div class="payment-security">
                   <div class="security-badges">
@@ -325,8 +433,8 @@
               </div>
 
               <div class="help-section">
-                <h6>Need Help?</h6>
-                <p>Our travel experts are here to assist you</p>
+                <h6>Cần tư vấn?</h6>
+                <p>Hãy liên hệ với chúng tôi qua</p>
                 <div class="contact-info">
                   <div class="contact-item">
                     <i class="bi bi-telephone"></i>
@@ -378,7 +486,8 @@
   window.initialPrices = {
     adult: {{ $tour->giaTour->first()->nguoiLon }},
     child: {{ $tour->giaTour->first()->treEm }},
-    baby: {{ $tour->giaTour->first()->emBe }}
+    baby: {{ $tour->giaTour->first()->emBe }},
+    phongDon: {{ $tour->giaPhongDon }},
   };
 
   window.tourId = '{{ $tour->maTour }}';

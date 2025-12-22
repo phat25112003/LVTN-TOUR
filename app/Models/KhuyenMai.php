@@ -134,18 +134,39 @@ class KhuyenMai extends Model
     // Tính tiền giảm thực tế
     public function tinhGiaGiam($tongTien)
     {
+        // ===============================
+        // KM giảm theo số tiền cố định
+        // ===============================
         if ($this->loaiKM === 'fixed') {
-            return min($this->giaTri, $tongTien);
+            // giảm tối đa bằng tổng tiền
+            $giam = min($this->giaTri, $tongTien);
+
+            // nếu có giới hạn tối đa -> áp dụng
+            if (!empty($this->giaTriToiDa)) {
+                $giam = min($giam, $this->giaTriToiDa);
+            }
+
+            return $giam;
         }
 
+        // ===============================
+        // KM giảm theo %
+        // ===============================
         if ($this->loaiKM === 'percent') {
-            $giam = $tongTien * $this->giaTri / 100;
-            // if ($this->giaTriToiDa) {
-            //     $giam = min($giam, $this->giaTriToiDa);
-            // }
+            $giam = $tongTien * ($this->giaTri / 100);
+
+            // áp dụng trần giảm tối đa (giaTriToiDa)
+            if (!empty($this->giaTriToiDa)) {
+                $giam = min($giam, $this->giaTriToiDa);
+            }
+
             return round($giam);
         }
 
+        // ===============================
+        // loại freeservice hoặc không hợp lệ
+        // ===============================
         return 0;
     }
+
 }

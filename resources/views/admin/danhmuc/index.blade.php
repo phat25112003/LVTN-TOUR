@@ -3,16 +3,22 @@
 @section('content')
 <div class="container-fluid mt-4">
 
-    <h3 class="text-center mb-4 fw-bold text-primary">Quản lý Danh mục</h3>
+{{-- Thay toàn bộ đoạn này --}}
+<h3 class="text-center mb-4 fw-bold text-primary">Quản lý Danh mục</h3>
 
-    @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+@if (session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
 
-    {{-- Sử dụng class mới nếu bạn muốn thay đổi màu nút Add --}}
+<div>
     <a href="{{ route('admin.danhmuc.create') }}" class="add-btn">
         + Thêm Danh mục
     </a>
+
+    <a href="{{ route('admin.diadiem.index') }}" class="view-btn">
+        Xem địa điểm
+    </a>
+</div>
 
     {{-- Thay class table-striped bằng class mới --}}
     <table class="category-admin-table">

@@ -1,4 +1,3 @@
-{{-- resources/views/admin/tours/edit_trips.blade.php --}}
 @extends('admin.layouts.dashboard')
 
 @section('content')

@@ -13,11 +13,39 @@ class TourUserController extends Controller
      */
     public function index()
     {
-        $tours = Tour::with('hinhanh','chuyentour')->get();
-        $danhmucs = DanhMuc::all();
-        return view('user.index', compact('tours', 'danhmucs'));
-    }
+        $today = now()->toDateString();
 
+        // 1. Tour mới nhất theo maTour
+        $latestTours = Tour::with(['hinhAnh','chuyentour','danhmuc'])
+            ->orderBy('maTour','desc')
+            ->take(6)
+            ->get();
+
+        // 2. Tour có chuyến sắp khởi hành
+        $upcomingTours = Tour::whereHas('chuyentour', function($q) use ($today) {
+            $q->where('ngayBatDau', '>=', $today);
+        })
+        ->with(['hinhanh', 'chuyentour' => function($q) use ($today){
+            $q->where('ngayBatDau', '>=', $today)
+              ->orderBy('ngayBatDau', 'asc');
+        }])
+        ->get()
+        ->sortBy(function($tour){
+            return optional($tour->chuyentour->first())->ngayBatDau;
+        })
+        ->values() // reset key
+        ->take(8);
+
+
+        $danhmucs = DanhMuc::all();
+
+        return view('user.index', [
+            'latestTours' => $latestTours,
+            'upcomingTours' => $upcomingTours,
+            'danhmucs' => $danhmucs
+        ]);
+
+    }
     public function search(Request $request)
     {
         $query = $request->input('query');

@@ -36,7 +36,7 @@ return [
             'throttle' => 60,
         ],
         'nguoidung' => [
-            'provider' => 'users',
+            'provider' => 'nguoidung',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

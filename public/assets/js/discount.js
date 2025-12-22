@@ -1,8 +1,5 @@
-// assets/js/discount.js (phiên bản đã sửa – hoạt động đúng)
-
+// discount.js
 document.addEventListener("DOMContentLoaded", function () {
-
-    // Không lấy giá cố định nữa! Giá sẽ được lấy từ booking-calendar.js
     const grandTotalInput = document.getElementById("grand-total-input");
     const finalTotalTag = document.getElementById("final-total");
 
@@ -19,16 +16,23 @@ document.addEventListener("DOMContentLoaded", function () {
     const maKMInput = document.getElementById("maKM-input");
     const giamGiaInput = document.getElementById("giaGiam-input");
 
-    // Biến toàn cục để booking-calendar.js có thể đọc
+    // ⭐ BIẾN LƯU THÔNG TIN KHUYẾN MÃI
+    window.discountInfo = {
+        type: null,     // 'percent' hoặc 'fixed'
+        value: 0,       // Giá trị % hoặc số tiền cố định
+        maKM: null,
+        tenKM: null,
+        max: 0
+    };
+
     window.currentDiscount = 0;
 
-    // Helper
-    function formatMoney(value) {
-        return value.toLocaleString("vi-VN") + " ₫";
+    function formatMoney(amount) {
+        return amount.toLocaleString("vi-VN") + " ₫";
     }
 
-    function showError(message) {
-        promoError.textContent = message;
+    function showError(msg) {
+        promoError.textContent = msg;
         promoError.classList.remove("d-none");
         promoSuccess.classList.add("d-none");
     }
@@ -38,11 +42,28 @@ document.addEventListener("DOMContentLoaded", function () {
         promoError.textContent = "";
     }
 
-    // Hàm cập nhật hiển thị giảm giá + tổng cuối cùng
-    function applyDiscountVisual() {
-        const grandTotal = parseInt(grandTotalInput.value) || 0;
-        const finalTotal = Math.max(0, grandTotal - window.currentDiscount);
+    // ⭐ TÍNH LẠI GIẢM GIÁ KHI SỐ LƯỢNG NGƯỜI THAY ĐỔI
+    window.recalculateDiscount = function () {
+        const total = parseInt(grandTotalInput.value) || 0;
+        let discount = 0;
 
+        // ⭐ 1) TÍNH GIẢM GIÁ THÔ
+        if (window.discountInfo.type === 'percent' && window.discountInfo.value > 0) {
+            discount = Math.floor(total * window.discountInfo.value / 100);
+        } 
+        else if (window.discountInfo.type === 'fixed' && window.discountInfo.value > 0) {
+            discount = window.discountInfo.value;
+        }
+
+        // ⭐ 2) GIỚI HẠN BỞI giá trị tối đa (giaTriToiDa)
+        if (window.discountInfo.max > 0) {
+            discount = Math.min(discount, window.discountInfo.max);
+        }
+
+        // ⭐ 3) GIỚI HẠN BỞI TỔNG TIỀN
+        window.currentDiscount = Math.min(discount, total);
+
+        // ⭐ 4) Cập nhật giao diện
         if (window.currentDiscount > 0) {
             discountAmountTag.textContent = "- " + formatMoney(window.currentDiscount);
             discountRow.classList.remove("d-none");
@@ -50,114 +71,127 @@ document.addEventListener("DOMContentLoaded", function () {
             discountRow.classList.add("d-none");
         }
 
-        finalTotalTag.textContent = formatMoney(finalTotal);
-    }
+        // ⭐ 5) cập nhật hidden inputs để gửi về server
+        giamGiaInput.value = window.currentDiscount;
+        maKMInput.value = window.discountInfo.maKM || "";
 
-    // Gọi lại updateTotal từ booking-calendar.js (nếu có)
-    function refreshTotal() {
-        if (typeof window.updateTotal === "function") {
-            window.updateTotal();
-        }
-        applyDiscountVisual();
-    }
+        return window.currentDiscount;
+    };
+    // ⭐ HÀM REFRESH TỔNG TIỀN CHÍNH - CHỈ TÍNH GIẢM GIÁ VÀ CẬP NHẬT TỔNG CUỐI
+    window.refreshTotal = function () {
+        // ⭐ QUAN TRỌNG: KHÔNG GỌI updateDisplay Ở ĐÂY
+        
+        // Tính lại giảm giá dựa trên tổng tiền mới
+        window.recalculateDiscount();
 
-    // Áp dụng mã khuyến mãi
+        const grandTotal = parseInt(grandTotalInput.value) || 0;
+        const final = Math.max(0, grandTotal - window.currentDiscount);
+
+        // Cập nhật tổng thanh toán cuối cùng
+        finalTotalTag.textContent = formatMoney(final);
+    };
+
+    // ===================== APPLY KHUYẾN MÃI =====================
     applyBtn.addEventListener("click", function () {
         clearError();
-
         const code = promoInput.value.trim().toUpperCase();
+
         if (!code) {
             showError("Vui lòng nhập mã giảm giá.");
             return;
         }
 
         applyBtn.disabled = true;
-        const applyTextEl = applyBtn.querySelector(".apply-text");
-        const origText = applyTextEl ? applyTextEl.textContent : null;
-        if (applyTextEl) applyTextEl.textContent = "Đang kiểm tra...";
 
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        const requestData = {
+            code: code,
+            maTour: window.tourId,
+            maChuyen: document.getElementById("maChuyen-input").value || null,
+            tongTien: parseInt(grandTotalInput.value) || 0,
+            maNguoiDung: window.userId ?? null,
+        };
+
+        console.log("Đang áp dụng mã:", code, requestData);
 
         fetch("/khuyenmai/apply", {
             method: "POST",
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "X-CSRF-TOKEN": csrfToken
+                "X-CSRF-TOKEN": csrfToken,
             },
-            body: JSON.stringify({
-                code: code,
-                maTour: window.tourId,
-                maChuyen: document.getElementById("maChuyen-input").value || null,
-                tongTien: parseInt(grandTotalInput.value) || 0,
-                maNguoiDung: window.userId ?? null
-            })
+            body: JSON.stringify(requestData),
         })
-        .then(res => res.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log("Kết quả áp dụng mã:", data);
+            
             if (!data.success) {
                 showError(data.message || "Mã giảm giá không hợp lệ.");
+                
+                // Reset thông tin khuyến mãi
+                window.discountInfo = { type: null, value: 0, maKM: null, tenKM: null };
                 window.currentDiscount = 0;
-                maKMInput.value = "";
-                giamGiaInput.value = 0;
-                discountRow.classList.add("d-none");
-                refreshTotal();
+                
+                window.refreshTotal();
                 return;
             }
 
-            // Thành công → lưu discount
-            window.currentDiscount = parseInt(data.giaGiam ?? 0);
-            maKMInput.value = data.maKM ?? "";
-            giamGiaInput.value = window.currentDiscount;
-            appliedCodeTag.textContent = code;
+            // ⭐ LƯU THÔNG TIN KHUYẾN MÃI ĐỂ TÍNH TOÁN LẠI SAU NÀY
+            window.discountInfo = {
+                type: data.type,        // 'percent' hoặc 'fixed'
+                value: data.giaTri,     // Giá trị % hoặc số tiền
+                max: data.giaTriToiDa ?? 0, 
+                maKM: data.maKM,
+                tenKM: data.tenKM
+            };
 
+            appliedCodeTag.textContent = code;
+            if (data.tenKM) {
+                appliedCodeTag.textContent = `${code} - ${data.tenKM}`;
+            }
+            
             promoSuccess.classList.remove("d-none");
             promoError.classList.add("d-none");
 
-            // Quan trọng: Gọi lại hàm tính tổng từ booking-calendar.js
-            refreshTotal();
+            // ⭐ TÍNH TOÁN VÀ HIỂN THỊ LẠI VỚI THÔNG TIN MỚI
+            window.refreshTotal();
         })
-        .catch(err => {
-            console.error(err);
-            showError("Lỗi kết nối, vui lòng thử lại.");
-            window.currentDiscount = 0;
-            maKMInput.value = "";
-            giamGiaInput.value = 0;
-            discountRow.classList.add("d-none");
-            refreshTotal();
+        .catch(error => {
+            console.error("Lỗi kết nối:", error);
+            showError("Lỗi kết nối máy chủ: " + error.message);
         })
         .finally(() => {
             applyBtn.disabled = false;
-            if (applyTextEl && origText) applyTextEl.textContent = origText;
         });
     });
 
-// ==================== NÚT GỠ MÃ GIẢM GIÁ ====================
-const removePromoBtn = document.getElementById("remove-promo-btn");
+    // ===================== GỠ MÃ =====================
+    const removePromoBtn = document.getElementById("remove-promo-btn");
+    if (removePromoBtn) {
+        removePromoBtn.addEventListener("click", function () {
+            // Reset hoàn toàn
+            window.discountInfo = { type: null, value: 0, maKM: null, tenKM: null };
+            window.currentDiscount = 0;
 
-if (removePromoBtn) {
-    removePromoBtn.addEventListener("click", function () {
-        // Reset toàn bộ
-        window.currentDiscount = 0;
-        document.getElementById("maKM-input").value = "";
-        document.getElementById("giaGiam-input").value = 0;
+            discountRow.classList.add("d-none");
+            discountAmountTag.textContent = "-0 ₫";
+            promoSuccess.classList.add("d-none");
+            appliedCodeTag.textContent = "";
 
-        // Ẩn dòng giảm giá
-        document.getElementById("discount-row").classList.add("d-none");
-        document.getElementById("discount-amount").textContent = "-0 ₫";
+            promoInput.value = "";
 
-        // Ẩn thông báo thành công + xóa mã đã hiển thị
-        document.getElementById("promo-success").classList.add("d-none");
-        document.getElementById("applied-code").textContent = "";
+            window.refreshTotal();
+            promoInput.focus();
+        });
+    }
 
-        // Xóa text trong ô nhập mã
-        document.getElementById("promo-code-input").value = "";
-
-        // Cập nhật lại tổng tiền
-        refreshTotal();
-
-        // Focus lại ô nhập để khách nhập mã khác
-        document.getElementById("promo-code-input").focus();
-    });
-}
+    // ⭐ KHỞI TẠO BAN ĐẦU
+    window.refreshTotal();
 });

@@ -20,6 +20,38 @@
       <div class="container">
         <div class="contact-wrapper">
           <div class="contact-info-panel">
+            <form id="avatarForm" action="{{ route('user.updateAvatar') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
+                <div class="avatar-wrapper text-center mb-3">
+                    <div class="avatar-box position-relative mx-auto">
+                      @php
+                          $avatar = $user->avatar;
+
+                          if ($avatar) {
+                              if (filter_var($avatar, FILTER_VALIDATE_URL)) {
+                                  // Avatar Google
+                                  $avatarUrl = $avatar;
+                              } else {
+                                  // Avatar upload
+                                  $avatarUrl = asset('storage/avatar-users/' . $avatar);
+                              }
+                          } else {
+                              $avatarUrl = asset('assets/img/default-avatar.png');
+                          }
+                      @endphp
+
+                      <img src="{{ $avatarUrl }}" class="avatar-img rounded-circle" alt="Avatar">
+
+                        <!-- Nút upload -->
+                        <label for="avatarInput" class="change-avatar-btn">
+                            <i class="bi bi-camera-fill"></i>
+                        </label>
+                        <input type="file" id="avatarInput" name="avatar" class="d-none" accept="image/*">
+                    </div>
+                </div>
+
+            </form>
             <div class="contact-info-header">
               <h3>Thông tin người dùng</h3>
             </div>
@@ -66,18 +98,15 @@
             </div>
 
             <div class="social-links-panel">
-              <h5>Follow Us</h5>
+              <h5>Sửa thông tin cá nhân</h5>
               <div class="social-icons">
-                <a href="#"><i class="bi bi-facebook"></i></a>
-                <a href="#"><i class="bi bi-twitter-x"></i></a>
-                <a href="#"><i class="bi bi-instagram"></i></a>
-                <a href="#"><i class="bi bi-linkedin"></i></a>
-                <a href="#"><i class="bi bi-youtube"></i></a>
+                <a href="#"><i class="bi bi-gear" data-bs-toggle="modal" data-bs-target="#editUserModal"></i></a>
               </div>
             </div>
+            
           </div>
           <div class="booked-tours-section mt-4">
-            <h3 class="section-title">Các tour bạn đã đặt</h3>
+            <h3 class="section-title">Lịch sử đặt tour</h3>
 
             @forelse($datCho as $index => $dat)
               <div class="tour-card mb-3 shadow-sm rounded">
@@ -134,9 +163,18 @@
                     <form action="{{ route('user.thongtinuser.destroy', ['maDatCho' => $dat->maDatCho]) }}" method="POST" class="d-inline">
                       @csrf
                       @method('DELETE')
-                      <button type="submit" class="btn btn-lg " onclick="return confirm('Bạn có chắc chắn muốn xóa tour này không?');">
+                      <button type="submit" class="btn btn-danger btn-lg " onclick="return confirm('Bạn có chắc chắn muốn xóa tour này không?');">
                         <i class="bi bi-trash3-fill"></i>
                       </button>
+                    </form>
+                    <form action="{{ route('user.thanhtoan') }}" method="POST" class="d-inline">
+                        @csrf
+                        <input type="hidden" name="maDatCho" value="{{ $dat->maDatCho }}">
+                        <input type="hidden" name="tongGia" value="{{ $dat->tongGia }}">
+                        <input type="hidden" name="phuongThuc" value="{{ $dat->phuongThucThanhToan }}">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-credit-card-fill"></i>
+                        </button>
                     </form>
                   </div>
                 </div>
@@ -147,6 +185,54 @@
           </div>
 
         </div>
+        <!-- Modal chỉnh sửa thông tin người dùng -->
+        <div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              
+              <div class="modal-header">
+                <h5 class="modal-title">Cập nhật thông tin</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <form action="{{ route('user.suathongtinuser') }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <div class="modal-body">
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Họ tên</label>
+                    <input type="text" name="hoTen" class="form-control" value="{{ $user->hoTen }}" required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" name="soDienThoai" class="form-control" value="{{ $user->soDienThoai }}">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ $user->email }}" required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Địa chỉ</label>
+                    <input type="text" name="diaChi" class="form-control" value="{{ $user->diaChi }}">
+                  </div>
+
+                </div>
+
+                <div class="modal-footer">
+                  <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                  <button class="btn btn-primary" type="submit">Lưu thay đổi</button>
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+
       </div>
     </section><!-- /Contact Section -->
 
@@ -212,5 +298,25 @@ document.addEventListener('DOMContentLoaded', function () {
   <!-- Preloader -->
     @include('layout.preloader')
 </body>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('avatarInput');
+    const avatarImg = document.querySelector('.avatar-img');
+
+    input.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                avatarImg.src = e.target.result; // preview ngay lập tức
+            }
+            reader.readAsDataURL(this.files[0]);
+
+            // AUTO submit form upload
+            document.getElementById('avatarForm').submit();
+        }
+    });
+});
+</script>
+
 
 </html>
