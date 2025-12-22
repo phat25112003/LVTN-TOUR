@@ -9,13 +9,12 @@
             <a href="index.html" class="logo d-flex align-items-center mb-4">
               <span class="sitename">TravelTime</span>
             </a>
-            <p class="mb-4">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae. Donec velit neque auctor sit amet aliquam vel ullamcorper sit amet ligula.</p>
 
             <div class="newsletter-form">
-              <h5>Stay Updated</h5>
+              <h5>Tra cứu booking</h5>
               <form action="forms/newsletter.php" method="post" class="php-email-form">
                 <div class="input-group">
-                  <input type="email" name="email" class="form-control" placeholder="Enter your email" required="">
+                  <input type="email" name="email" class="form-control" placeholder="Nhập mã booking của quý khách" required="">
                   <button type="submit" class="btn-subscribe">
                     <i class="bi bi-send"></i>
                   </button>
@@ -28,7 +27,7 @@
           </div>
         </div>
 
-        <div class="col-lg-2 col-6">
+        <!-- <div class="col-lg-2 col-6">
           <div class="footer-links">
             <h4>Company</h4>
             <ul>
@@ -52,17 +51,17 @@
               <li><a href="#"><i class="bi bi-chevron-right"></i> Cybersecurity</a></li>
             </ul>
           </div>
-        </div>
+        </div> -->
 
         <div class="col-lg-4">
           <div class="footer-contact">
-            <h4>Get in Touch</h4>
+            <h4>Thông tin liên hệ</h4>
             <div class="contact-item">
               <div class="contact-icon">
                 <i class="bi bi-geo-alt"></i>
               </div>
               <div class="contact-info">
-                <p>2847 Maple Avenue<br>Los Angeles, CA 90210<br>United States</p>
+                <p>180 Cao Lỗ, Phường, Quận 8, Thành phố Hồ Chí Minh</p>
               </div>
             </div>
 
@@ -71,7 +70,7 @@
                 <i class="bi bi-telephone"></i>
               </div>
               <div class="contact-info">
-                <p>+1 (555) 987-6543</p>
+                <p>09123456789</p>
               </div>
             </div>
 
@@ -80,7 +79,7 @@
                 <i class="bi bi-envelope"></i>
               </div>
               <div class="contact-info">
-                <p>contact@example.com</p>
+                <p>vutrungnguyen1101@gmail.com</p>
               </div>
             </div>
 
@@ -102,7 +101,7 @@
         <div class="row align-items-center">
           <div class="col-lg-6">
             <div class="copyright">
-              <p>© <span>Copyright</span> <strong class="px-1 sitename">MyWebsite</strong> <span>All Rights Reserved</span></p>
+              <p>© <span>Copyright</span> <strong class="px-1 sitename">TravelTime</strong> <span>All Rights Reserved</span></p>
             </div>
           </div>
           <div class="col-lg-6">

@@ -44,7 +44,6 @@
             <li><a href="{{ route('admin.nguoidung.index') }}" class="{{ request()->routeIs('admin.nguoidung.index') ? 'active' : '' }}"><i class="fa-solid fa-users"></i> Quản lý người dùng</a></li>
             <li><a href="{{ route('admin.datcho.index') }}" class="{{ request()->routeIs('admin.datcho.index') ? 'active' : '' }}"><i class="fa-solid fa-ticket"></i>Quản lý đặt tour</a></li>
             <li><a href="{{ route('admin.khuyenmai.index') }}" class="{{ request()->routeIs('admin.khuyenmai.index') ? 'active' : '' }}"><i class="fa-solid fa-gift"></i> Khuyến mãi</a></li>
-            <li><a href="#"><i class="fa-solid fa-comments"></i> Tin nhắn</a></li>
 
             <form action="{{ route('admin.logout') }}" method="POST" class="logout-form text-center">
                 @csrf

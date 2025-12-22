@@ -68,15 +68,25 @@
             </div>
         </div>
 
-        <div class="mb-3">
+        <div class="mt-3">
             <label class="form-label">Thêm hình ảnh mới</label>
-            <input type="file" name="hinhAnh[]" multiple class="form-control">
+            <input type="file" name="hinhAnh[]" multiple class="form-control" accept="image/*">
+            <small class="text-muted">Tối đa 5MB/ảnh</small>
         </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn-success">Lưu Thay Đổi</button>
-            <button type="submit" name="updateSchedule" value="1" class="btn-schedule">Cập nhật lịch trình</button>
-            <a href="{{ route('admin.tours.index') }}" class="btn-cancel">Hủy</a>
+        <!-- NÚT HÀNH ĐỘNG -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success">Lưu Thay Đổi</button>
+
+            <a href="{{ route('admin.tours.editSchedule', $tour->maTour) }}" class="btn btn-success">
+                Sửa Lịch Trình
+            </a>
+
+            <a href="{{ route('admin.tours.editTrips', $tour->maTour) }}" class="btn btn-success">
+                Sửa Chuyến
+            </a>
+
+            <a href="{{ route('admin.tours.index') }}" class="btn btn-secondary btn-lg px-5">Hủy</a>
         </div>
     </form>
 </div>
@@ -155,26 +165,5 @@
         }
     </style>
 
-        <div class="mt-3">
-            <label class="form-label">Thêm hình ảnh mới</label>
-            <input type="file" name="hinhAnh[]" multiple class="form-control" accept="image/*">
-            <small class="text-muted">Tối đa 5MB/ảnh</small>
-        </div>
 
-        <!-- NÚT HÀNH ĐỘNG -->
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-success">Lưu Thay Đổi</button>
-
-            <a href="{{ route('admin.tours.editSchedule', $tour->maTour) }}" class="btn btn-success">
-                Sửa Lịch Trình
-            </a>
-
-            <a href="{{ route('admin.tours.editTrips', $tour->maTour) }}" class="btn btn-success">
-                Sửa Chuyến
-            </a>
-
-            <a href="{{ route('admin.tours.index') }}" class="btn btn-secondary btn-lg px-5">Hủy</a>
-        </div>
-    </form>
-</div>
 @endsection

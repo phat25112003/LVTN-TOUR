@@ -164,7 +164,7 @@
                         <div class="date-option">
                           <div class="date-info">
                             <span class="month">Giá Trẻ Em</span>
-                            <span class="dates"> 5 > 13 tuổi  </span>
+                            <span class="dates"> 5 - 13 tuổi  </span>
                           </div>
                           <div class="date-details">
                             <span class="price">{{ number_format($tourdetail->giatour->first()->treEm, 0, ',', '.') }}₫</span>
@@ -177,7 +177,7 @@
                         <div class="date-option">
                           <div class="date-info">
                             <span class="month">Giá Em Bé</span>
-                            <span class="dates"> 2 - 6 tuổi </span>
+                            <span class="dates"> 2 - 5 tuổi </span>
                           </div>
                           <div class="date-details">
                             <span class="price">{{ number_format($tourdetail->giatour->first()->emBe, 0, ',', '.') }}₫</span>
@@ -361,27 +361,108 @@
 
             </div>
         </div>
+        <div class="comments-container">
+            @auth
+            <div class="comments-header">
+                <h2>Đánh giá & Bình luận</h2>
+                <p>Chia sẻ trải nghiệm của bạn về tour du lịch</p>
+            </div>
+            
+            <div class="comment-form">
+                <form action="{{ route('tour.binhluan.store', ['tour' => $tourdetail->maTour]) }}" method="POST">
+                    @csrf
+                    <div class="form-group">
+                        <label for="rating"></label>
+                        <label for="noi_dung">Nội dung bình luận:</label>
+                        <textarea name="noiDung" id="noi_dung" placeholder="Hãy chia sẻ cảm nhận của bạn về tour này..." required></textarea>
+                        <div class="form-group">
+                        <div class="rating-container">
+                            <div class="star-rating">
+                                <input type="radio" id="star5" name="danhGia" value="5" checked>
+                                <label for="star5">★</label>
+                                <input type="radio" id="star4" name="danhGia" value="4">
+                                <label for="star4">★</label>
+                                <input type="radio" id="star3" name="danhGia" value="3">
+                                <label for="star3">★</label>
+                                <input type="radio" id="star2" name="danhGia" value="2">
+                                <label for="star2">★</label>
+                                <input type="radio" id="star1" name="danhGia" value="1">
+                                <label for="star1">★</label>
+                            </div>
+                        </div>
+                    </div>                
+                    <button type="submit" class="submit-btn">
+                        <span>Gửi đánh giá</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+            @endauth
+            <div class="comments-list">
+                <h3>Bình luận từ khách hàng</h3>
+                
+                @if(count($tourdetail->binhluan) > 0)
+                    @foreach($tourdetail->binhluan as $binhluan)
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="user-info">
+                                    <div class="user-avatar">
+                                        {{ substr($binhluan->nguoiDung->hoTen, 0, 1) }}
+                                    </div>
+                                    <div class="user-name">{{ $binhluan->nguoiDung->hoTen }}</div>
+                                </div>
+                                <div class="rating-stars">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= $binhluan->danhGia)
+                                            ★
+                                        @else
+                                            ☆
+                                        @endif
+                                    @endfor
+                                    <span>({{ $binhluan->danhGia }} sao)</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                {{ $binhluan->noidung }}
+                            </div>
+                            <div class="comment-date">
+                                {{ $binhluan->created_at->format('d/m/Y H:i') }}
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="no-comments">
+                        <p>Chưa có bình luận nào. Hãy là người đầu tiên đánh giá!</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+
         <!-- Visual Gallery -->
         <div class="visual-gallery">
-          <h2>Moments to Remember</h2>
+          <h2>Khoảnh Khắc Hành Trình</h2>
           <div class="gallery-grid">
             <div class="gallery-piece large">
               <a href="{{ asset('storage/' . optional($tourdetail->hinhanh->first())->duongDanHinh) }}" class="glightbox">
                 <img src="{{ asset('storage/' . optional($tourdetail->hinhanh->first())->duongDanHinh) }}" alt="Italian Countryside" class="img-fluid" loading="lazy">
               </a>
             </div>
-            @foreach ($tourdetail->hinhanh->skip(1)->take(4) as $ha)
+            @foreach ($tourdetail->hinhanh->skip(1)->take(20) as $ha)
             <div class="gallery-piece">
               <a href="{{ asset('storage/' . $ha->duongDanHinh) }}" class="glightbox">
                 <img src="{{ asset('storage/' . $ha->duongDanHinh) }}" alt="Local Cuisine" class="img-fluid" loading="lazy">
               </a>
             </div>
             @endforeach
-            <div class="gallery-piece medium">
+            <!-- <div class="gallery-piece medium">
               <a href="{{ asset('assets/img/travel/tour-10.webp') }}" class="glightbox">
                 <img src="{{ asset('storage/' . optional($tourdetail->hinhanh->skip(5)->first())->duongDanHinh ?? 'assets/img/travel/default-image.jpg') }}" alt="Scenic Landscapes" class="img-fluid" loading="lazy">
               </a>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -413,7 +494,6 @@
 
   <!-- Preloader -->
   @include('layout.preloader')  
-
 </body>
 
 </html>

@@ -43,7 +43,7 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Số CCCD</label>
-                <input type="text" name="soCCCD" class="form-control" value="{{ old('soCCCD') }}" maxlength="20">
+                <input type="text" name="soCCCD" class="form-control" value="{{ old('soCCCD') }}" maxlength="20" required>
             </div>
             <div class="form-group">
                 <label>Ngày sinh</label>
@@ -71,7 +71,7 @@
 
         <div class="mb-3">
             <label class="form-label">Ghi chú <span class="text-danger">*</span></label>
-            <textarea name="ghiChu" rows="4" class="form-control" required>{{ old('ghiChu') }}</textarea>
+            <textarea name="ghiChu" rows="4" class="form-control" >{{ old('ghiChu') }}</textarea>
         </div>
 
         <div class="form-group">

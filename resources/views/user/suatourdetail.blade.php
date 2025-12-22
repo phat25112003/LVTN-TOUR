@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 @include('layout.head')
+
+
 <body class="booking-page">
 
   @include('layout.header')
@@ -34,10 +36,15 @@
                     <input type="hidden" id="child-input" name="treEm" value="0">
                     <input type="hidden" id="baby-input" name="emBe" value="0">
                     <input type="hidden" id="grand-total-input" name="tongGia" value="0">
+                    <input type="hidden" id="base-total-input" value="0">
                     <input type="hidden" name="ngayBatDau" value="{{ $ngayBatDau_Laravel }}">
                     <input type="hidden" name="ngayKetThuc" value="{{ $ngayKetThuc_Laravel }}">
                     <input type="hidden" name="maChuyen" id="maChuyen-input" value="{{ $datcho->maChuyen }}">
                     <input type="hidden" name="maTour" value="{{ $tour->maTour }}">
+                    <input type="hidden" id="maKM-display" value="{{ $kmUsed->maKM ?? '' }}">
+                    <input type="hidden" id="loaiKM-input" value="{{ $kmUsed->khuyenmai->loaiKM ?? '' }}">
+                    <input type="hidden" id="giaTriKM-input" value="{{ $kmUsed->khuyenmai->giaTri ?? 0 }}">
+
                   </div>
                   <div class="step-content">
                     <div class="row">
@@ -57,13 +64,13 @@
                       <div class="col-md-6">
                         <div class="form-group">
                           <label for="phone">Số Điện Thoại</label>
-                          <input type="tel" name="phone" id="phone" class="form-control" value="{{ Auth::check() ? Auth::user()->soDienThoai : '' }}" required="">
+                          <input type="tel" name="phone" id="phone" class="form-control" value="{{ old('phone', $datcho->soDienThoai) }}" required="">
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group">
                           <label for="nationality">Địa chỉ</label>
-                          <input type="text" name="address" id="address" class="form-control" value="{{ Auth::check() ? Auth::user()->diaChi : '' }}" required="">
+                          <input type="text" name="address" id="address" class="form-control" value="{{ old('address', $datcho->diaChi) }}" required="">
                         </div>
                       </div>
                     </div>
@@ -81,7 +88,7 @@
                       <div class="add-on-item">
                         <div class="add-on-header">
                           <label for="travel-insurance row align-items-center">
-                              <strong class="col-lg-6">Người lớn (> 18 tuổi)</strong>
+                              <strong class="col-lg-6">Người lớn (> 13 tuổi)</strong>
                               <div class="counter col-lg-6 ">
                                 <button type="button" class="btn-minus" data-target="adult">-</button>
                                 <span id="adult-count">{{ $datcho->soNguoiLon }}</span>
@@ -93,7 +100,7 @@
                         <div class="add-on-item">
                           <div class="add-on-header">
                             <label for="airport-transfer row align-items-center">
-                              <strong class="col-lg-6"> Trẻ em ( 6-12 tuổi )</strong>
+                              <strong class="col-lg-6"> Trẻ em ( 5 - 13tuổi )</strong>
                               <div class="counter col-lg-6">
                                 <button type="button" class="btn-minus" data-target="child">-</button>
                                 <span id="child-count">{{ $datcho->soTreEm }}</span>
@@ -105,7 +112,7 @@
                         <div class="add-on-item">
                           <div class="add-on-header">
                             <label for="airport-transfer row align-items-center">
-                              <strong class="col-lg-6">Em bé (> 2 tuổi)</strong>
+                              <strong class="col-lg-6">Em bé (2 - 5 tuổi)</strong>
                               <div class="counter col-lg-6">
                                 <button type="button" class="btn-minus" data-target="baby">-</button>
                                 <span id="baby-count">{{ $datcho->soEmBe }}</span>
@@ -114,6 +121,114 @@
                             </label>
                           </div>
                         </div>
+                        <ul id="traveler-list" class="list-unstyled"></ul>
+                          <template id="tpl-adult">
+                            <li class="traveler-item mb-3 p-3 border rounded">
+                              <h5 class="traveler-title"></h5>
+
+                              <div class="row g-2">
+
+                                <div class="col-5">
+                                  <label class="form-label mb-1">Họ tên</label>
+                                  <input type="text" class="form-control" name="hoTenKhach[]" placeholder="Họ tên" required>
+                                </div>
+
+                                <div class="col-2">
+                                  <label class="form-label mb-1">Giới tính</label>
+                                  <select class="form-control" name="gioiTinh[]">
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nu">Nữ</option>
+                                  </select>
+                                </div>
+
+                                <div class="col-2">
+                                  <label class="form-label mb-1">Tuổi</label>
+                                  <input type="number" class="form-control" name="tuoi[]" value="18" min="12" required>
+                                </div>
+
+                                <div class="col-3">
+                                  <label class="form-label mb-1">Phòng đơn</label>
+
+                                  <div class="d-flex align-items-center gap-2">
+                                    <!-- toggle -->
+                                    <label class="switch m-0">
+                                      <input type="checkbox" class="phong-don-checkbox" name="phongDon[]" value="1">
+                                      <span class="slider round"></span>
+                                    </label>
+
+                                    <!-- hiển thị giá -->
+                                    <span class="phong-don-price text-danger fw-bold small">
+                                      {{ number_format($tour->giaPhongDon, 0, ',', '.') }} ₫
+                                    </span>
+                                  </div>
+
+                                </div>
+
+                              </div>
+
+                              <input type="hidden" name="loaiKhach[]" value="adult">
+                            </li>
+                          </template>
+                          <template id="tpl-child">
+                            <li class="traveler-item mb-3 p-3 border rounded">
+                              <h5 class="traveler-title"></h5>
+
+                              <div class="row g-2">
+
+                                <div class="col-6">
+                                  <label class="form-label mb-1">Họ tên</label>
+                                  <input type="text" class="form-control" name="hoTenKhach[]" required>
+                                </div>
+
+                                <div class="col-3">
+                                  <label class="form-label mb-1">Giới tính</label>
+                                  <select class="form-control" name="gioiTinh[]">
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nu">Nữ</option>
+                                  </select>
+                                </div>
+
+                                <div class="col-3">
+                                  <label class="form-label mb-1">Tuổi</label>
+                                  <input type="number" class="form-control" name="tuoi[]" value="7" min="2" max="12" required>
+                                </div>
+
+                              </div>
+
+                              <input type="hidden" name="loaiKhach[]" value="child">
+                              <input type="hidden" name="phongDon[]" value="0">
+                            </li>
+                          </template>
+                          <template id="tpl-baby">
+                            <li class="traveler-item mb-3 p-3 border rounded">
+                              <h5 class="traveler-title"></h5>
+
+                              <div class="row g-2">
+
+                                <div class="col-6">
+                                  <label class="form-label mb-1">Họ tên</label>
+                                  <input type="text" class="form-control" name="hoTenKhach[]" required>
+                                </div>
+
+                                <div class="col-3">
+                                  <label class="form-label mb-1">Giới tính</label>
+                                  <select class="form-control" name="gioiTinh[]">
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nu">Nữ</option>
+                                  </select>
+                                </div>
+
+                                <div class="col-3">
+                                  <label class="form-label mb-1">Tuổi</label>
+                                  <input type="number" class="form-control" name="tuoi[]" value="1" min="0" max="2" required>
+                                </div>
+
+                              </div>
+
+                              <input type="hidden" name="loaiKhach[]" value="baby">
+                              <input type="hidden" name="phongDon[]" value="0">
+                            </li>
+                          </template>
                       </div>   
                   </div>
                 </div>
@@ -150,11 +265,60 @@
                   </div>
                 </div>
                 <div class="booking-step" id="step-5">
+                  <input type="hidden" id="giaTriToiDa-input" value="{{ $kmUsed->khuyenmai->giaTriToiDa ?? 0 }}">
                   <div class="step-header">
                     <h3>Kiểm tra &amp; Xác nhận đơn đặt</h3>
                     <p>Vui lòng xem lại thông tin đặt tour của bạn trước khi xác nhận</p>
                   </div>
+                <div class="mt-4">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-ticket-perforated-fill text-primary"></i>
+                        </span>
+                        <input 
+                            type="text" 
+                            name="maKM"
+                            id="maKM-input" 
+                            class="form-control border-start-0" 
+                            placeholder="Nhập mã giảm giá" 
+                            style="text-transform: uppercase; font-weight: 600;"
+                            autocomplete="off"
+                            value="{{ $kmUsed->khuyenmai->code ?? '' }}"
+                            readonly
+                        >
+                        <!-- <button 
+                            type="button" 
+                            id="apply-promo-btn" 
+                            class="btn btn-outline-primary"
+                        >
+                            <span class="apply-text">Áp dụng</span>
+                            <span class="applied-text d-none">
+                                <i class="bi bi-check-lg"></i> Đã áp dụng
+                            </span>
+                        </button> -->
+                    </div>
 
+                    <!-- Thông báo + Nút GỠ MÃ -->
+                    <div class="form-text mt-2">
+                        <small id="promo-success" class="text-success d-none">
+                            <i class="bi bi-check-circle-fill"></i> 
+                            Đã áp dụng mã <strong id="applied-code"></strong>
+                            <!-- <button 
+                                type="button" 
+                                id="remove-promo-btn" 
+                                class="btn btn-sm btn-outline-danger ms-2 border-0"
+                                title="Gỡ mã giảm giá"
+                              >
+                                <i class="bi bi-x-circle-fill"></i> Gỡ mã
+                            </button> -->
+                        </small>
+                        <small id="promo-error" class="text-danger d-none"></small>
+                    </div>
+
+                    <!-- Hidden inputs gửi form -->
+                    <input type="hidden" name="maKM" id="maKM-input" value="{{ $kmUsed->maKM ?? '' }}">
+                    <input type="hidden" name="giaGiam" id="giaGiam-input" value="{{ $kmUsed->giaGiam ?? 0 }}">
+                </div>
                   <div class="step-content">
                     <div class="terms-conditions">
                       <div class="form-check">
@@ -221,6 +385,10 @@
                     <span>Mã chuyến:</span>
                     <span id="ma-chuyen-display">{{ $datcho->maChuyen ?? 'N/A' }}</span>
                   </div>
+                  <div class="detail-row">
+                    <span>Số chỗ còn lại:</span>
+                    <span id="so-slot-display">{{ $soChoConLai }}</span>
+                  </div>
                 </div>
                 <div class="price-breakdown">
                   <input type="hidden" id="adult-price" value="{{ $gia->nguoiLon }}">
@@ -228,34 +396,52 @@
                   <input type="hidden" id="baby-price" value="{{ $gia->emBe }}">
                   <input type="hidden" id="slot" value="{{ $tour->chuyentour->first()->soLuongToiDa }}">
                   <h6>Chi Tiết Giá</h6>
-                  <div class="price-row">
-                    <span>Giá người lớn</span>
-                    <span id="adult-total"></span>
-                  </div>
-                  <div class="price-row">
-                    <span>Giá trẻ em</span>
-                    <span id="child-total"></span>
-                  </div>
-                  <div class="price-row">
-                    <span>Giá em bé</span>
-                    <span id="baby-total"></span>
-                  </div>
-                  <!-- <div class="price-row">
-                    <span>Travel Insurance</span>
-                    <span>$89</span>
-                  </div>
-                  <div class="price-row">
-                    <span>Airport Transfer</span>
-                    <span>$45</span>
-                  </div>
-                  <div class="price-row">
-                    <span>Taxes &amp; Fees</span>
-                    <span>$156</span>
-                  </div> -->
-                  <div class="price-total">
+                  <!-- Người lớn -->
+                <div class="price-row" id="adult-price-row">
+                    <span>Người lớn <small class="text-muted" id="adult-count-display">× 1</small></span>
+                    <span>
+                        <span id="adult-unit-price"></span> × 
+                        <strong id="adult-count-strong">1</strong> = 
+                        <strong id="adult-total" class="text-primary"></strong>
+                    </span>
+                </div>
+
+                <!-- Trẻ em -->
+                <div class="price-row" id="child-price-row" style="display: none;">
+                    <span>Trẻ em (6-11 tuổi) <small class="text-muted" id="child-count-display"></small></span>
+                    <span>
+                        <span id="child-unit-price"></span> × 
+                        <strong id="child-count-strong">0</strong> = 
+                        <strong id="child-total" class="text-primary">0 ₫</strong>
+                    </span>
+                </div>
+
+                <!-- Em bé -->
+                <div class="price-row" id="baby-price-row" style="display: none;">
+                    <span>Em bé (2-5 tuổi) <small class="text-muted" id="baby-count-display"></small></span>
+                    <span>
+                        <span id="baby-unit-price"></span> × 
+                        <strong id="baby-count-strong">0</strong> = 
+                        <strong id="baby-total" class="text-primary">0 ₫</strong>
+                    </span>
+                </div>
+
+                <!-- Tổng cộng -->
+                <div class="price-row fw-bold border-top pt-2 mt-2">
                     <span>Tổng tiền</span>
-                    <span id="grand-total"></span>
-                  </div>
+                    <span id="grand-total" class="fs-5 text-danger">0 ₫</span>
+                </div>
+
+                <!-- Giảm giá -->
+                <div class="price-row text-success fw-bold d-none" id="discount-row">
+                    <span>Giảm giá:</span>
+                    <span id="discount-amount">-0 ₫</span>
+                </div>
+
+                <!-- Tổng thanh toán -->
+                <div class="price-row border-top pt-2 mt-2 bg-light rounded px-3 py-2">
+                    <span class="fs-5 fw-bold">Tổng thanh toán:</span>
+                    <span id="final-total" class="fs-4 fw-bold text-danger">0 ₫</span>
                 </div>
 
                 <div class="payment-security">
@@ -315,39 +501,54 @@
   window.initialPrices = {
     adult: {{ $gia->nguoiLon }},
     child: {{ $gia->treEm }},
-    baby:  {{ $gia->emBe }}
+    baby:  {{ $gia->emBe }},
+    phongDon: {{ $tour->giaPhongDon }}
   };
   window.tourId = '{{ $tour->maTour }}';
+  window.khachThamGia = @json($khachthamgia);
+  window.soNguoiDaDat = {{ $datcho->soNguoiLon + $datcho->soTreEm + $datcho->soEmBe }};
 </script>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+// HIỂN THỊ TOAST LỖI & THÀNH CÔNG – HOẠT ĐỘNG 100% VỚI TOAST CỦA BẠN
+document.addEventListener('DOMContentLoaded', function () {
 
-      // --- Hiển thị lỗi (toast đỏ) ---
-      @if ($errors->any())
-          let errorMsg = `{!! implode('\n', $errors->all()) !!}`;
-          document.getElementById('toastMessage').textContent = errorMsg;
-          var errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
-          errorToast.show();
-      @endif
+    // Lấy các element toast (đúng ID bạn đang dùng)
+    const errorToastEl     = document.getElementById('errorToast');
+    const toastMessageEl   = document.getElementById('toastMessage');     // cho lỗi
 
-      @if (session('error'))
-          document.getElementById('toastMessage').textContent = "{{ session('error') }}";
-          var errorToast2 = new bootstrap.Toast(document.getElementById('errorToast'));
-          errorToast2.show();
-      @endif
+    // Kiểm tra Bootstrap đã load chưa (tránh lỗi "bootstrap is not defined")
+    if (typeof bootstrap === 'undefined') {
+        console.error('Bootstrap chưa được load! Toast sẽ không hiện.');
+        return;
+    }
 
+    // ==================== LỖI VALIDATE (Laravel $errors) ====================
+    @if ($errors->any())
+        @php
+            // Ghép tất cả lỗi thành 1 chuỗi, dùng " | " để hiển thị đẹp
+            $allErrors = implode(' | ', $errors->all());
+        @endphp
 
-      // --- Hiển thị thành công (toast xanh lá) ---
-      @if (session('success'))
-          document.getElementById('successMessage').textContent = "{{ session('success') }}";
-          var successToast = new bootstrap.Toast(document.getElementById('successToast'));
-          successToast.show();
-      @endif
+        if (toastMessageEl && errorToastEl) {
+            toastMessageEl.textContent = "{{ addslashes($allErrors) }}"; // addslashes để tránh lỗi JS khi có dấu nháy
+            const toast = new bootstrap.Toast(errorToastEl, { delay: 8000 });
+            toast.show();
+        }
+    @endif
 
-  });
+    // ==================== LỖI TỪ SESSION (session('error')) ====================
+    @if (session('error'))
+        if (toastMessageEl && errorToastEl) {
+            toastMessageEl.textContent = "{{ addslashes(session('error')) }}";
+            const toast = new bootstrap.Toast(errorToastEl, { delay: 8000 });
+            toast.show();
+        }
+    @endif
+
+});
 </script>
-<script src="{{ asset('assets/js/counter.js') }}"></script>
-
+<script src="{{ asset('assets/js/update_counter.js') }}"></script>
+<script src="{{ asset('assets/js/update_discount.js') }}"></script>
 </body>
 
 </html>

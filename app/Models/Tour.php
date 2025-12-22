@@ -17,6 +17,7 @@ class Tour extends Model
         'hinhAnh',
         'diemDen',
         'maDanhMuc',
+        'giaPhongDon',
     ];
 
     // === Relationships ===
@@ -62,4 +63,9 @@ class Tour extends Model
     {
         return $this->hasMany(ChuyenTour::class, 'maTour', 'maTour');
     }
+    public function binhluan()
+    {
+        return $this->hasMany(BinhLuan::class, 'maTour', 'maTour');
+    }
+    
 }

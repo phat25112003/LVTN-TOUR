@@ -28,10 +28,9 @@ class NguoiDungController extends Controller
     public function destroy($maNguoiDung)
     {
         $nguoiDung = NguoiDung::findOrFail($maNguoiDung);
-        $nguoiDung->danhGia()->delete();
+        $nguoiDung->binhluan()->delete();
         $nguoiDung->thanhtoan()->delete();
         $nguoiDung->datCho()->delete();
-        $nguoiDung->lichSu()->delete();
         $nguoiDung->delete();
         return redirect()->back()->with('success', 'Xóa người dùng thành công!');
     }

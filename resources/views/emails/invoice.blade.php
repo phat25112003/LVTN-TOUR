@@ -1,135 +1,184 @@
-{{-- resources/views/emails/invoice.blade.php --}}
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="utf-8">
-    <title>Hóa Đơn Điện Tử</title>
+    <title>Hóa Đơn Điện Tử #{{ str_pad($datCho->maDatCho, 6, '0', STR_PAD_LEFT) }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: DejaVu Sans, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-        .header { background: #0d6efd; color: white; padding: 30px; text-align: center; }
-        .header h1 { margin: 0; font-size: 28px; }
-        .content { padding: 30px; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f8f9fa; font-weight: 600; }
-        .total { font-size: 1.4em; font-weight: bold; color: #dc3545; }
-        .badge { padding: 6px 12px; border-radius: 50px; font-size: 0.9em; }
-        .badge-success { background: #d4edda; color: #155724; }
-        .badge-info { background: #d1ecf1; color: #0c5460; }
-        .footer { background: #f8f9fa; padding: 20px; text-align: center; font-size: 0.9em; color: #6c757d; }
+        body {margin:0;padding:0;font-family:'Inter',Arial,sans-serif;background:#f7f9fc;color:#333;line-height:1.6}
+        .container {max-width:600px;margin:40px auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.05);border:1px solid #e0e0e0}
+        .header {background:#1a1a1a;color:#fff;text-align:center;padding:30px 20px}
+        .header h1 {font-size:28px;font-weight:700;margin:0 0 5px;letter-spacing:1px;text-transform:uppercase}
+        .header .subtitle {font-size:14px;opacity:0.8;margin:0}
+        .order-code {font-family:monospace;font-weight:600;font-size:18px;color:#63b3ed;margin-top:15px;display:inline-block;padding:5px 10px;border:1px dashed #444;border-radius:4px}
+        .content {padding:30px}
+        .greeting {font-size:18px;font-weight:600;margin-bottom:15px;color:#1a1a1a}
+        .intro {font-size:14px;color:#555;margin-bottom:25px}
+        .section-title {font-size:16px;font-weight:600;margin-bottom:15px;color:#1a1a1a;border-bottom:2px solid #63b3ed;display:inline-block;padding-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+        .info-grid-table {width:100%;border-collapse:collapse;table-layout:fixed}
+        .info-grid-table td {vertical-align:top;width:50%;padding:0 10px 10px 0}
+        .info-item {padding:15px;border-bottom:1px solid #eee}
+        .info-item:last-child {border-bottom:none}
+        .info-label {font-size:12px;font-weight:500;text-transform:uppercase;color:#888;margin-bottom:3px}
+        .info-value {font-size:14px;font-weight:500;color:#333}
+        .price-table {width:100%;border-collapse:collapse;margin:25px 0;background:#f9f9f9;border:1px solid #eee;border-radius:6px;overflow:hidden}
+        .price-table td {padding:12px 15px;border-bottom:1px solid #e0e0e0;font-size:14px}
+        .price-table tr:last-child td {border-bottom:none}
+        .price-label {font-weight:400;color:#555}
+        .price-amount {text-align:right;font-weight:500;color:#333}
+        .total-original {background:#f0f0f0}
+        .discount-row {color:#d9534f;background:#fff5f5}
+        .discount-row .price-amount {color:#d9534f;font-weight:600}
+        .final-total {background:#63b3ed;color:#fff;font-weight:700;font-size:16px}
+        .final-total .price-amount {font-size:18px;color:#fff}
+        .payment-box {text-align:center;border:2px solid #63b3ed;border-radius:8px;padding:20px;background:#f0f8ff;margin:25px 0}
+        .payment-status {font-size:18px;color:#1a1a1a;font-weight:700;margin-bottom:8px}
+        .payment-method {display:inline-block;background:#1a1a1a;color:#fff;padding:8px 20px;border-radius:20px;font-size:13px}
+        .footer {background:#1a1a1a;color:#aaa;text-align:center;padding:25px 20px;font-size:12px}
+        .footer h3 {color:#fff;margin:0 0 8px;font-size:16px;font-weight:600}
+        .footer a {color:#63b3ed;text-decoration:none}
+        .text-center {text-align:center}
+        @media (max-width:600px){
+            .container {margin:0;border-radius:0;box-shadow:none}
+            .info-grid-table td {display:block;width:100%;padding-right:0}
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
         <h1>HÓA ĐƠN ĐIỆN TỬ</h1>
-        <p>Mã đặt chỗ: <strong>#{{ str_pad($datCho->maDatCho, 6, '0', STR_PAD_LEFT) }}</strong></p>
+        <p class="subtitle">TravelTime Premium Travel</p>
+        <div class="order-code">#{{ str_pad($datCho->maDatCho, 6, '0', STR_PAD_LEFT) }}</div>
     </div>
 
     <div class="content">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
-            <div>
-                <h3>Thông Tin Khách Hàng</h3>
-                <p><strong>Họ tên:</strong> {{ $datCho->hoTen ?? 'Khách vãng lai' }}</p>
-                <p><strong>Email:</strong> {{ $datCho->email }}</p>
-                <p><strong>Số ĐT:</strong> {{ $datCho->soDienThoai }}</p>
-                <p><strong>Địa chỉ:</strong> {{ $datCho->diaChi ?? 'N/A' }}</p>
-            </div>
-            <div style="text-align: right;">
-                <h3>Công ty TNHH Du Lịch TravelTime</h3>
-                <p>123 Đường Cao Lỗ, Quận 8, TPHCM</p>
-                <p>Hotline: 1900 1234</p>
-                <p>Email: info@dulichabc.com</p>
-            </div>
-        </div>
+        <div class="greeting">Kính gửi Quý khách {{ $datCho->hoTen ?? 'Quý khách' }},</div>
+        <p class="intro">
+            Cảm ơn Quý khách đã tin tưởng lựa chọn TravelTime. Dưới đây là thông tin chi tiết hóa đơn đặt tour của Quý khách.
+        </p>
 
-        <hr>
+        <!-- Thông tin hành trình -->
+        <h2 class="section-title">Thông Tin Hành Trình</h2>
+        <table class="info-grid-table">
+            <tr>
+                <td>
+                    <div class="info-item">
+                        <div class="info-label">Tên Tour</div>
+                        <div class="info-value">{{ $datCho->tour->tieuDe ?? 'N/A' }}</div>
+                    </div>
+                </td>
+                <td>
+                    <div class="info-item">
+                        <div class="info-label">Thời Gian</div>
+                        <div class="info-value">
+                            {{ $datCho->chuyentour?->ngayBatDau ? \Carbon\Carbon::parse($datCho->chuyentour->ngayBatDau)->format('d/m/Y') : '—' }}
+                            → 
+                            {{ $datCho->chuyentour?->ngayKetThuc ? \Carbon\Carbon::parse($datCho->chuyentour->ngayKetThuc)->format('d/m/Y') : '—' }}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="info-item">
+                        <div class="info-label">Điểm Khởi Hành</div>
+                        <div class="info-value">{{ $datCho->chuyentour?->diemKhoiHanh ?? 'TP. Hồ Chí Minh' }}</div>
+                    </div>
+                </td>
+                <td>
+                    <div class="info-item">
+                        <div class="info-label">Ngày Đặt</div>
+                        <div class="info-value">{{ \Carbon\Carbon::parse($datCho->ngayDat)->format('d/m/Y H:i') }}</div>
+                    </div>
+                </td>
+            </tr>
+            @if($datCho->chuyentour?->huongdanvien)
+            <tr>
+                <td colspan="2">
+                    <div class="info-item">
+                        <div class="info-label">Hướng Dẫn Viên</div>
+                        <div class="info-value">
+                            <strong>{{ $datCho->chuyentour->huongdanvien->hoTen }}</strong>
+                            <small style="color:#666">({{ $datCho->chuyentour->huongdanvien->soDienThoai }})</small>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            @endif
+        </table>
 
-        <h3>Thông Tin Tour & Chuyến Đi</h3>
-        <p><strong>Tên tour:</strong> {{ $datCho->tour->tieuDe }}</p>
-        <p><strong>Mã chuyến:</strong> <span class="badge badge-success">#00{{ $datCho->maChuyen }}</span></p>
-
-        @if($datCho->chuyentour)
-            <p><strong>Khởi hành:</strong> {{ \Carbon\Carbon::parse($datCho->chuyentour->ngayBatDau)->format('d/m/Y') }}</p>
-            <p><strong>Kết thúc:</strong> {{ \Carbon\Carbon::parse($datCho->chuyentour->ngayKetThuc)->format('d/m/Y') }}</p>
-            <p><strong>Điểm khởi hành:</strong> {{ $datCho->chuyentour->diemKhoiHanh }}</p>
-            <p><strong>Phương tiện:</strong> {{ $datCho->chuyentour->phuongTien }}</p>
-            <p><strong>Hướng dẫn viên:</strong> 
-                {{ $datCho->chuyentour->huongdanvien->hoTen ?? 'Chưa phân công' }}
-            </p>
-            <p><strong>Số chỗ:</strong> 
-                {{ $datCho->chuyentour->soLuongDaDat }} / {{ $datCho->chuyentour->soLuongToiDa }} 
-                <!-- <span class="badge badge-info">
-                    {{ $datCho->chuyentour->tinhTrangChuyen }}
-                </span> -->
-            </p>
-        @else
-            <p class="text-danger">Không tìm thấy thông tin chuyến tour.</p>
-        @endif
-
-        <h3 style="margin-top: 30px;">Chi Tiết Thanh Toán</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Loại khách</th>
-                    <th>Số lượng</th>
-                    <th>Đơn giá</th>
-                    <th>Thành tiền</th>
-                </tr>
-            </thead>
+        <!-- Bảng giá chi tiết -->
+        <h2 class="section-title">Chi Tiết Thanh Toán</h2>
+        <table class="price-table">
             <tbody>
-                @php
-                    $gia = $datCho->chuyentour?->giatour;
-                    $giaNguoiLon = $gia?->nguoiLon ?? 0;
-                    $giaTreEm    = $gia?->treEm ?? 0;
-                    $giaEmBe     = $gia?->emBe ?? 0;
-                @endphp
+                <tr>
+                    <td class="price-label">Người lớn × {{ $datCho->soNguoiLon }}</td>
+                    <td class="price-amount">{{ number_format($datCho->chuyentour?->giatour?->nguoiLon ?? 0) }}₫</td>
+                </tr>
+                <tr>
+                    <td class="price-label">Trẻ em × {{ $datCho->soTreEm }}</td>
+                    <td class="price-amount">{{ number_format($datCho->chuyentour?->giatour?->treEm ?? 0) }}₫</td>
+                </tr>
+                <tr>
+                    <td class="price-label">Em bé × {{ $datCho->soEmBe }}</td>
+                    <td class="price-amount">{{ number_format($datCho->chuyentour?->giatour?->emBe ?? 0) }}₫</td>
+                </tr>
 
-                <tr>
-                    <td>Người lớn</td>
-                    <td style="text-align: center;">{{ $datCho->soNguoiLon }}</td>
-                    <td style="text-align: right;">{{ number_format($giaNguoiLon) }}₫</td>
-                    <td style="text-align: right;">{{ number_format($datCho->soNguoiLon * $giaNguoiLon) }}₫</td>
+                <!-- Dùng trong bảng giá -->
+                <tr class="total-original">
+                    <td class="price-label">Tổng tiền gốc</td>
+                    <td class="price-amount">{{ number_format($tongGiaGoc) }}₫</td>
                 </tr>
-                <tr>
-                    <td>Trẻ em</td>
-                    <td style="text-align: center;">{{ $datCho->soTreEm }}</td>
-                    <td style="text-align: right;">{{ number_format($giaTreEm) }}₫</td>
-                    <td style="text-align: right;">{{ number_format($datCho->soTreEm * $giaTreEm) }}₫</td>
-                </tr>
-                <tr>
-                    <td>Em bé</td>
-                    <td style="text-align: center;">{{ $datCho->soEmBe }}</td>
-                    <td style="text-align: right;">{{ number_format($giaEmBe) }}₫</td>
-                    <td style="text-align: right;">{{ number_format($datCho->soEmBe * $giaEmBe) }}₫</td>
-                </tr>
-                <tr>
-                    <td colspan="3" style="text-align: right; font-weight: bold; font-size: 1.3em; color: #dc3545;">
-                        TỔNG CỘNG:
+
+                @foreach($datCho->khuyenMaiDaDung as $km)
+                <tr class="discount-row">
+                    <td class="price-label">
+                        Ưu đãi • {{ $km->khuyenmai->code ?? 'KM#' . $km->maKM }}
+                        @if($km->khuyenmai)<small style="color:#999"> ({{ $km->khuyenmai->tenKM }})</small>@endif
                     </td>
-                    <td style="text-align: right; font-weight: bold; color: #dc3545; font-size: 1.3em;">
-                        {{ number_format($tongTienTinhToan) }}₫
-                    </td>
+                    <td class="price-amount">-{{ number_format($km->giaGiam) }}₫</td>
+                </tr>
+                @endforeach
+
+                <tr class="final-total">
+                    <td class="price-label">THÀNH TIỀN CUỐI CÙNG</td>
+                    <td class="price-amount">{{ number_format($thanhTien) }}₫</td>
                 </tr>
             </tbody>
         </table>
 
-        <div style="margin-top: 30px; padding: 15px; background: #d4edda; border-radius: 8px; text-align: center;">
-            <p><strong>Thanh toán thành công!</strong></p>
-            <p>Mã giao dịch: <strong>{{ $datCho->thanhtoan->maGiaoDich ?? 'N/A' }}</strong></p>
-            <p>Ngày thanh toán: 
-                {{ $datCho->thanhtoan->ngayThanhToan 
-                    ? \Carbon\Carbon::parse($datCho->thanhtoan->ngayThanhToan)->format('d/m/Y H:i')
-                    : 'Chưa ghi nhận' 
-                }}
+        <!-- Trạng thái thanh toán -->
+        <div class="payment-box">
+            <div class="payment-status">
+                {{ $datCho->thanhtoan?->tinhTrangThanhToan === 'Đã thanh toán' ? 'THANH TOÁN ĐÃ ĐƯỢC XÁC NHẬN' : 'ĐANG CHỜ THANH TOÁN' }}
+            </div>
+            <div class="payment-method">
+                {{ $datCho->thanhtoan?->phuongThucThanhToan 
+                    ? ucwords(str_replace('_', ' ', $datCho->thanhtoan->phuongThucThanhToan)) 
+                    : 'Thanh toán tại văn phòng' }}
+            </div>
+        </div>
+
+        <div class="text-center" style="color:#555; font-size:13px;">
+            <p>Voucher chính thức sẽ được gửi trước ngày khởi hành 3-5 ngày.</p>
+            <p style="margin-top:15px; font-size:15px; color:#333;">
+                Hotline hỗ trợ 24/7: <strong style="color:#63b3ed; font-size:18px;">1900 1234</strong>
             </p>
         </div>
     </div>
 
     <div class="footer">
-        <p>Cảm ơn quý khách đã sử dụng dịch vụ!</p>
-        <p>Hóa đơn được tạo tự động vào {{ now()->format('d/m/Y H:i') }}</p>
+        <h3>TravelTime Premium</h3>
+        <p>Tầng 15, Tòa nhà Bitexco Financial Tower, Quận 1, TP.HCM</p>
+        <p>
+            Website: <a href="https://traveltime.com">traveltime.com</a> • 
+            Email: <a href="mailto:support@traveltime.com">support@traveltime.com</a>
+        </p>
+        <p style="margin-top:10px;color:#777;">
+            © {{ date('Y') }} TravelTime – Khởi tạo hành trình.
+        </p>
     </div>
 </div>
 </body>

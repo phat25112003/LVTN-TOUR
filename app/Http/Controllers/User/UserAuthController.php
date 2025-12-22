@@ -26,15 +26,20 @@ class UserAuthController extends Controller
             ]
         );
 
+        $user = NguoiDung::where('email', $request->email)->first();
+        if ($user && $user->tinhTrang === 0) {
+            return back()->with('error', 'Tài khoản đã bị vô hiệu hóa!')
+             ->withInput($request->only('email'));
+        }
         if (Auth::guard('web')->attempt($credentials,$request->boolean('remember'))) {
             $request->session()->regenerate();
             // Authentication passed...
             return redirect()->intended('/');
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->withInput($request->only('email'));
+        return back()->with(
+            'error','Sai mật khẩu hoặc tài khoản.',
+        )->withInput($request->only('email'));
     }
 
     public function logout(Request $request)

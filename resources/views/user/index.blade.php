@@ -202,51 +202,52 @@
       <div class="container">
 
         <div class="row gy-4">
-        @foreach ($tours as $tour)
-        
-        <div class="col-lg-4 col-md-6">
-            <div class="destination-card">
-              <div class="image-wrapper">
+          @foreach ($latestTours as $tour)
+            <div class="col-lg-4 col-md-6">
+              <div class="destination-card">
+                <div class="image-wrapper">
 
-                @if ($tour->hinhanh->isNotEmpty())
-                    <img src="{{ asset('storage/' . $tour->hinhanh->first()->duongDanHinh) }}"
-                        alt="Destination"
-                        class="img-fluid">
-                @else
-                    <img src="{{ asset('assets/img/default-tour.jpg') }}"
-                        alt="No image available"
-                        class="img-fluid">
-                @endif
+                  @if ($tour->hinhanh->isNotEmpty())
+                      <img src="{{ asset('storage/' . $tour->hinhanh->first()->duongDanHinh) }}"
+                          alt="Destination"
+                          class="img-fluid">
+                  @else
+                      <img src="{{ asset('assets/img/default-tour.jpg') }}"
+                          alt="No image available"
+                          class="img-fluid">
+                  @endif
 
-                  alt="Destination" 
-                  class="img-fluid">
-                <div class="overlay">
-                  <div class="badge">Popular</div>
+                    alt="Destination" 
+                    class="img-fluid">
+                  <div class="overlay">
+                    <div class="badge">Popular</div>
+                  </div>
+                </div>
+                <div class="content">
+                  <h4>{{ $tour->tieuDe }}</h4>
+                  <p>{{ Str::before($tour->moTa, '.') }}.</p>
+                  <div class="features">
+                    <span class="feature-tag">{{ $tour->danhmuc->tenDanhMuc}}</span>
+                    <span class="feature-tag">{{ $tour->diemDen}}</span>
+                  </div>
+                  <div class="card-footer">
+                    <div class="tours-count">{{ $tour->thoiGian }}</div>
+                    <div class="tours-count">Số chỗ còn lại: {{ $tour->chuyenTour->first()->soLuongToiDa - $tour->chuyentour->first()->soLuongDaDat }}</div>
+                    <a href="{{ route('tour.detail', $tour->maTour) }}" class="explore-btn">
+                      Tìm hiểu ngay <i class="bi bi-arrow-right"></i>
+                    </a>
+                  </div>
                 </div>
               </div>
-              <div class="content">
-                <h4>{{ $tour->tieuDe }}</h4>
-                <p>{{ Str::before($tour->moTa, '.') }}.</p>
-                <div class="features">
-                  <span class="feature-tag">{{ $tour->danhmuc->tenDanhMuc}}</span>
-                </div>
-                <div class="card-footer">
-                  <div class="tours-count">{{ $tour->thoiGian }}</div>
-                  <div class="tours-count">Sô lượng còn: </div>
-                  <a href="{{ route('tour.detail', $tour->maTour) }}" class="explore-btn">
-                    Tìm hiểu ngay <i class="bi bi-arrow-right"></i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Destination Card -->
-        @endforeach
+            </div><!-- End Destination Card -->
+          @endforeach
+
         </div>
 
         <div class="destinations-cta">
           <div class="row justify-content-center">
             <div class="col-lg-8 text-center">
-              <h3>Vẫn băn khoăn chưa biết điểm đến tiếp theo của mình là đâu?</h3>
+              <h3>Vẫn băn khoăn chưa biết nên đi đâu?</h3>
               <p>Các tổng đài viên của chúng tôi sẽ giúp bạn tìm ra điểm đến hoàn hảo, phù hợp với sở thích, ngân sách và phong cách du lịch riêng của bạn.</p>
               <div class="cta-buttons">
                 <a href="{{ route('tour.list', ['query' => '']) }}" class="btn btn-primary">Xem tất cả các tour</a>
@@ -260,7 +261,53 @@
 
     </section><!-- /Featured Destinations Section -->
 
+    <!-- Featured Tours Section -->
+    <section id="featured-tours" class="featured-tours section">
 
+      <!-- Section Title -->
+      <div class="container section-title">
+        <h2>Tour sắp khởi hành</h2>
+        <div><span>Đừng bỏ lỡ</span> <span class="description-title">những tour sắp khởi hành trong tuần này</span></div>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+          <div class="row g-4">
+            @foreach ($upcomingTours as $tour)
+            @php
+              $nextTrip = $tour->chuyentour->first();
+            @endphp
+            <div class="col-xl-3 col-lg-4 col-md-6">
+              <div class="destination-card">
+                <div class="destination-overlay">
+                  <img src="{{ asset('storage/' . optional($tour->hinhanh->first())->duongDanHinh) }}"alt="{{ $tour->tieuDe }}"class="img-fluid">
+                  <div class="card-overlay">
+                    <div class="badge-container">
+                      <span class="featured-badge">Best Seller</span>
+                      <span class="price-tag">{{ number_format($nextTrip->giatour->nguoiLon, 0, ',', '.') }}₫</span>
+                    </div>
+                    <div class="card-details">
+                      <h5>{{$tour->tieuDe}}</h5>
+                      <div class="meta-info">
+                        <span><i class="bi bi-calendar3"></i>{{$tour->thoiGian}} </span>
+                        <span><i class="bi bi-geo-alt"></i>{{ $tour->diemDen}}</span>
+                      </div>
+                      <p>{{ Str::before($tour->moTa, '.') }}.</p>
+                      <div class="action-row">
+                        <a href="{{ route('tour.detail', $tour->maTour) }}" class="explore-btn">Đặt ngay</a>
+                        <span><i class="bi bi-calendar3"></i> {{ \Carbon\Carbon::parse($nextTrip->ngayBatDau)->format('d/m/Y') ?? 'N/A' }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End Tour Item -->
+            @endforeach
+          </div>
+      
+
+      </div>
+
+    </section><!-- /Featured Tours Section -->
   </main>
 @include('layout.footer')
 

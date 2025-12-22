@@ -21,6 +21,20 @@
                 @endforeach
             </select>
         </div>
+        <!-- Giữ lại từ khóa tìm kiếm khi đổi danh mục -->
+        <input type="hidden" name="search" value="{{ request('search') }}">
+    </form>
+
+    <!-- TÌM KIẾM NHỎ GỌN -->
+    <form action="{{ route('admin.tours.index') }}" method="GET" class="mb-4">
+        <div class="input-group" style="max-width: 350px;">
+            <input type="text" name="search" class="form-control" placeholder="Tìm địa điểm..."
+                value="{{ request('search') }}">
+            <button class="btn btn-primary" type="submit">Tìm</button>
+        </div>
+
+        <!-- Dòng quan trọng này: giữ lại danh mục đã chọn khi tìm kiếm -->
+        <input type="hidden" name="maDanhMuc" value="{{ request('maDanhMuc') }}">
     </form>
 
     <a href="{{ route('admin.tours.create') }}" class="add-btn">+ Thêm Tour</a>
@@ -57,5 +71,33 @@
             @endforeach
         </tbody>
     </table>
+
+    <!-- PHÂN TRANG ĐẸP, CĂN GIỮA – DÀNH CHO TOUR -->
+        @if ($tours->hasPages())
+            <div class="d-flex justify-content-center mt-4">
+                <nav>
+                    <ul class="pagination pagination-sm">
+
+                        <!-- Nút Previous -->
+                        <li class="page-item {{ $tours->onFirstPage() ? 'disabled' : '' }}">
+                            <a class="page-link" href="{{ $tours->previousPageUrl() }}" tabindex="-1">‹</a>
+                        </li>
+
+                        <!-- Các số trang -->
+                        @foreach($tours->getUrlRange(1, $tours->lastPage()) as $page => $url)
+                            <li class="page-item {{ $page == $tours->currentPage() ? 'active' : '' }}">
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            </li>
+                        @endforeach
+
+                        <!-- Nút Next -->
+                        <li class="page-item {{ $tours->hasMorePages() ? '' : 'disabled' }}">
+                            <a class="page-link" href="{{ $tours->nextPageUrl() }}">›</a>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+        @endif
 </div>
 @endsection

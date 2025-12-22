@@ -1,46 +1,62 @@
-// booking-calendar.js
+// counter.js
 
 document.addEventListener('DOMContentLoaded', function () {
   const calendarEl = document.getElementById('calendar');
 
-  // Kiểm tra xem calendar có tồn tại không
   if (!calendarEl) {
     console.error('Không tìm thấy phần tử #calendar');
     return;
   }
 
-  // Giá mặc định ban đầu (từ chuyến đầu tiên)
+  // ⭐ ẨN STEP 3 – 5 KHI VỪA VÀO TRANG
+  const step3 = document.getElementById("step-3");
+  const step4 = document.getElementById("step-4");
+  const step5 = document.getElementById("step-5");
+
+  [step3, step4, step5].forEach(step => {
+    step.classList.add("d-none");
+    step.style.opacity = 0;
+    step.style.transition = "opacity 0.5s ease";
+  });
+
   let currentPrices = {
     adult: window.initialPrices.adult,
     child: window.initialPrices.child,
     baby: window.initialPrices.baby
   };
 
-  // Số lượng hành khách
   let counts = {
     adult: parseInt(document.getElementById('adult-count').textContent) || 1,
-  child: parseInt(document.getElementById('child-count').textContent) || 0,
-  baby: parseInt(document.getElementById('baby-count').textContent) || 0
+    child: parseInt(document.getElementById('child-count').textContent) || 0,
+    baby: parseInt(document.getElementById('baby-count').textContent) || 0
   };
 
-  // Cập nhật tổng tiền
-window.updateTotal = function () {
-    const total = counts.adult * currentPrices.adult +
-                  counts.child * currentPrices.child +
-                  counts.baby * currentPrices.baby;
+  window.calculateBaseTotal = function() {
+    return counts.adult * currentPrices.adult +
+           counts.child * currentPrices.child +
+           counts.baby * currentPrices.baby;
+  };
+  window.calculatePhongDonTotal = function () {
+    const giaPhongDon = Number(window.initialPrices.phongDon);
+    const checkboxes = document.querySelectorAll(".phong-don-checkbox:checked");
+    return checkboxes.length * giaPhongDon; // truyền từ blade
+  };
+
+  window.updateDisplay = function () {
+    const baseTotal = window.calculateBaseTotal();
+    const phongDonTotal = window.calculatePhongDonTotal();
+    const grandTotal = baseTotal + phongDonTotal;
 
     const format = (amount) => new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND'
     }).format(amount);
 
-    // Cập nhật Người lớn
     document.getElementById('adult-unit-price').textContent = format(currentPrices.adult);
     document.getElementById('adult-count-strong').textContent = counts.adult;
     document.getElementById('adult-total').textContent = format(counts.adult * currentPrices.adult);
     document.getElementById('adult-count-display').textContent = `× ${counts.adult}`;
 
-    // Cập nhật Trẻ em
     const childRow = document.getElementById('child-price-row');
     if (counts.child > 0) {
         childRow.style.display = 'flex';
@@ -48,11 +64,8 @@ window.updateTotal = function () {
         document.getElementById('child-count-strong').textContent = counts.child;
         document.getElementById('child-total').textContent = format(counts.child * currentPrices.child);
         document.getElementById('child-count-display').textContent = `× ${counts.child}`;
-    } else {
-        childRow.style.display = 'none';
-    }
+    } else childRow.style.display = 'none';
 
-    // Cập nhật Em bé
     const babyRow = document.getElementById('baby-price-row');
     if (counts.baby > 0) {
         babyRow.style.display = 'flex';
@@ -60,25 +73,16 @@ window.updateTotal = function () {
         document.getElementById('baby-count-strong').textContent = counts.baby;
         document.getElementById('baby-total').textContent = format(counts.baby * currentPrices.baby);
         document.getElementById('baby-count-display').textContent = `× ${counts.baby}`;
-    } else {
-        babyRow.style.display = 'none';
-    }
+    } else babyRow.style.display = 'none';
 
-    // Tổng tiền & Tổng thanh toán
-    document.getElementById('grand-total').textContent = format(total);
+    document.getElementById('grand-total').textContent = format(grandTotal);
+    document.getElementById('grand-total-input').value = grandTotal;
 
-    const currentDiscount = window.currentDiscount || 0;
-    const finalTotal = Math.max(0, total - currentDiscount);
-    document.getElementById('final-total').textContent = format(finalTotal);
-
-    // Hidden inputs
-    document.getElementById('grand-total-input').value = total;
     document.getElementById('adult-input').value = counts.adult;
     document.getElementById('child-input').value = counts.child;
     document.getElementById('baby-input').value = counts.baby;
-};
+  };
 
-  // Format tiền tệ
   function formatCurrency(amount) {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -87,104 +91,205 @@ window.updateTotal = function () {
   }
 
   let selectedEvent = null;
+  let movedToFirstEvent = false;
 
-  // Khởi tạo FullCalendar
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
     locale: 'vi',
     timeZone: 'local',
-    displayEventTime: false,  // Ẩn hoàn toàn phần giờ
+    displayEventTime: false,
     height: 'auto',
+
+
     events: `/api/tour-dates/${window.tourId}`,
+
+    eventsSet: function(events) {
+      if (movedToFirstEvent || events.length === 0) return;
+
+      const firstEvent = events.reduce((a, b) =>
+        new Date(a.start) < new Date(b.start) ? a : b
+      );
+
+      if (firstEvent) {
+        calendar.gotoDate(firstEvent.start);
+        movedToFirstEvent = true;
+      }
+    },
+
     eventDidMount: function (info) {
-    info.el.style.borderColor = '#f95e4d';
-    info.el.style.transition = 'all 0.2s ease';
-    info.el.style.transition = 'background-color 0.3s ease';},
+      info.el.style.borderColor = '#f95e4d';
+      info.el.style.transition = 'background-color 0.3s ease';
+    },
+
     eventClick: function (info) {
-    const props = info.event.extendedProps;
+      const props = info.event.extendedProps;
 
-    // Cập nhật giá hiện tại từ chuyến được chọn
-    currentPrices = {
-      adult: props.giaNguoiLon,
-      child: props.giaTreEm,
-      baby: props.giaEmBe
-    };
-    
-    document.getElementById('ma-chuyen-display').textContent = props.maChuyen || '-';
-    const maChuyenInput = document.getElementById('maChuyen-input');
-    if (maChuyenInput) {
-      maChuyenInput.value = props.maChuyen || '';
+      currentPrices = {
+        adult: props.giaNguoiLon,
+        child: props.giaTreEm,
+        baby: props.giaEmBe
+      };
+
+      // ⭐ HIỆN STEP 3 – 5 VỚI FADE-IN + SCROLL
+      [step3, step4, step5].forEach(step => {
+        step.classList.remove("d-none");
+        setTimeout(() => { step.style.opacity = 1; }, 50); // fade-in
+      });
+
+      step3.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      document.getElementById('ma-chuyen-display').textContent = props.maChuyen || '-';
+
+      const maChuyenInput = document.getElementById('maChuyen-input');
+      if (maChuyenInput) maChuyenInput.value = props.maChuyen || '';
+
+      let slotHienThi = (props.soChoConLai ?? 0) - 1;
+      if (slotHienThi < 0) slotHienThi = 0;
+      document.getElementById('so-slot-display').textContent = slotHienThi;
+
+
+
+      function formatDateForLaravel(dateStr) {
+        const d = new Date(dateStr);
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      }
+
+      function formatDateForDisplay(dateStr) {
+        const d = new Date(dateStr);
+        return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+      }
+
+      document.querySelector('input[name="ngayBatDau"]').value = formatDateForLaravel(info.event.startStr);
+      document.querySelector('input[name="ngayKetThuc"]').value = formatDateForLaravel(props.ngayKetThuc);
+
+      const ngayBatDauEl = document.querySelector('.ngayBatDauDisplay');
+      const ngayKetThucEl = document.querySelector('.ngayKetThucDisplay');
+      if (ngayBatDauEl) ngayBatDauEl.textContent = formatDateForDisplay(info.event.startStr);
+      if (ngayKetThucEl) ngayKetThucEl.textContent = formatDateForDisplay(props.ngayKetThuc);
+
+      if (typeof window.updateDisplay === "function") window.updateDisplay();
+      if (typeof window.refreshTotal === "function") window.refreshTotal();
+
+      if (selectedEvent) {
+        selectedEvent.setProp('backgroundColor', '#f95e4d');
+        selectedEvent.setProp('borderColor', '#f95e4d');
+      }
+
+      info.event.setProp('backgroundColor', '#d94b3e');
+      info.event.setProp('borderColor', '#d94b3e');
+
+      selectedEvent = info.event;
     }
-
-    // 🗓️ Hàm định dạng ngày sang YYYY-MM-DD (để Laravel nhận diện)
-    function formatDateForLaravel(dateStr) {
-      const date = new Date(dateStr);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`; // 2025-11-10
-    }
-
-    // Hàm hiển thị cho người dùng (giữ nguyên dd/MM/yyyy)
-    function formatDateForDisplay(dateStr) {
-      const date = new Date(dateStr);
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`; // 10/11/2025
-    }
-    // Cập nhật ngày
-const ngayBatDau_Laravel = formatDateForLaravel(info.event.startStr);
-const ngayKetThuc_Laravel = formatDateForLaravel(props.ngayKetThuc);
-
-const ngayBatDau_Display = formatDateForDisplay(info.event.startStr);
-const ngayKetThuc_Display = formatDateForDisplay(props.ngayKetThuc);
-
-// Cập nhật input hidden (gửi lên server)
-document.querySelector('input[name="ngayBatDau"]').value = ngayBatDau_Laravel;
-document.querySelector('input[name="ngayKetThuc"]').value = ngayKetThuc_Laravel;
-
-// Cập nhật hiển thị cho người dùng
-const ngayBatDauEl = document.querySelector('.ngayBatDauDisplay');
-const ngayKetThucEl = document.querySelector('.ngayKetThucDisplay');
-if (ngayBatDauEl) ngayBatDauEl.textContent = ngayBatDau_Display;
-if (ngayKetThucEl) ngayKetThucEl.textContent = ngayKetThuc_Display;
-    // Cập nhật lại tổng tiền với giá mới
-    updateTotal();
-
-    // Highlight event đã chọn
-    if (selectedEvent) {
-      // Trả màu cam nhạt cho event trước
-      selectedEvent.setProp('backgroundColor', '#f95e4d');
-      selectedEvent.setProp('borderColor', '#f95e4d');
-    }
-
-    // Làm event đang chọn tối màu hơn
-    info.event.setProp('backgroundColor', '#d94b3e'); // cam đậm
-    info.event.setProp('borderColor', '#d94b3e');
-
-    selectedEvent = info.event;
-  
-  }
-
   });
 
   calendar.render();
 
-  // Xử lý nút + / - số lượng hành khách
-  document.querySelectorAll('.btn-plus, .btn-minus').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const target = this.getAttribute('data-target');
-      const change = this.classList.contains('btn-plus') ? 1 : -1;
+  // Nút + / -
+const slotInput = document.getElementById('so-slot-display');
 
-      if (counts[target] + change >= 0) {
-        counts[target] += change;
-        document.getElementById(target + '-count').textContent = counts[target];
-        updateTotal();
+document.querySelectorAll('.btn-plus, .btn-minus').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const target = this.getAttribute('data-target');
+    const isPlus = this.classList.contains('btn-plus');
+    let currentSlot = parseInt(slotInput.textContent) || 0;
+
+    // ⭐ TĂNG SỐ NGƯỜI
+    if (isPlus) {
+      if (currentSlot <= 0) {
+        document.getElementById('toastMessage').textContent =
+          "Bạn đã vượt quá số chỗ còn lại của chuyến đi."; 
+        var errorToast = new bootstrap.Toast(document.getElementById('errorToast')); 
+        errorToast.show(); 
+        return;
       }
-    });
-  });
 
-  // Khởi tạo tổng tiền lần đầu
-  updateTotal();
+      counts[target] += 1;
+      slotInput.textContent = currentSlot - 1; // TRỪ SLOT
+    }
+
+    // ⭐ GIẢM SỐ NGƯỜI
+    if (!isPlus) {
+      if (counts[target] <= 0) return;
+
+      counts[target] -= 1;
+      slotInput.textContent = currentSlot + 1; // CỘNG SLOT TRỞ LẠI
+    }
+
+    // Cập nhật UI
+    document.getElementById(target + '-count').textContent = counts[target];
+
+    if (typeof window.updateDisplay === "function") window.updateDisplay();
+    if (typeof window.refreshTotal === "function") window.refreshTotal();
+
+    updateTravelerList();
+  });
+});
+
+// =======================
+// ⭐ FORM DANH SÁCH HÀNH KHÁCH (UL / LI)
+// =======================
+
+const travelerList = document.getElementById("traveler-list");
+
+// Hàm cập nhật <ul>
+function updateTravelerList() {
+  if (!travelerList) return;
+
+  travelerList.innerHTML = ""; // Xóa tất cả
+
+  // Người lớn
+  for (let i = 1; i <= counts.adult; i++) {
+    addTravelerItem("adult", i);
+  }
+
+  // Trẻ em
+  for (let i = 1; i <= counts.child; i++) {
+    addTravelerItem("child", i);
+  }
+
+  // Em bé
+  for (let i = 1; i <= counts.baby; i++) {
+    addTravelerItem("baby", i);
+  }
+  if (typeof window.updateDisplay === "function") window.updateDisplay();
+
+}
+
+// Hàm thêm từng <li>
+function addTravelerItem(type, index) {
+  const tpl = document.getElementById(`tpl-${type}`);
+  if (!tpl) return;
+
+  const clone = tpl.content.cloneNode(true);
+
+  // Set title
+  const title = clone.querySelector(".traveler-title");
+  if (type === "adult") title.textContent = `Người lớn #${index}`;
+  if (type === "child") title.textContent = `Trẻ em #${index}`;
+  if (type === "baby") title.textContent = `Em bé #${index}`;
+
+  // Append trước
+  travelerList.appendChild(clone);
+
+  // GẮN SỰ KIỆN CHO CHECKBOX VỪA TẠO
+  const newItem = travelerList.querySelector(".traveler-item:last-child");
+  const checkbox = newItem.querySelector(".phong-don-checkbox");
+
+  if (checkbox) {
+    checkbox.addEventListener("change", function () {
+      window.updateDisplay();
+      if (typeof window.refreshTotal === "function") window.refreshTotal();
+    });
+  }
+}
+
+
+// =======================
+// ⭐ TÍCH HỢP VÀO NÚT + / –
+// =======================
+
+// Lần đầu tải trang → tạo ngay danh sách form
+updateTravelerList();
+
+  
 });

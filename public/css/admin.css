@@ -315,6 +315,26 @@ h3 {
     color: white;
 }
 
+.view-btn{
+    display: inline-block;
+    background-color: #1a14c6;
+    color: white;
+    padding: 8px 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.view-btn:hover {
+    background-color: #065025;
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: white;
+}
+
 /* Nút form them tour */
 
 .form-actions {
@@ -1233,3 +1253,12 @@ background-color: #5e7a02;
             display: inline-block;
             margin-left: 5px; /* Tạo khoảng cách giữa nút Sửa và Xóa */
         }
+    .pagination .page-link {
+        border-radius: 8px !important;
+        padding: 8px 14px;
+        font-size: 14px;
+    }
+    .pagination .page-item.active .page-link {
+        background: #667eea;
+        border-color: #667eea;
+    }

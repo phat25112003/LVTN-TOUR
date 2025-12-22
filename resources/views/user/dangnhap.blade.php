@@ -10,14 +10,8 @@
     <!-- Page Title -->
     <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
       <div class="container position-relative">
-        <h1>Starter Page</h1>
-        <p>Esse dolorum voluptatum ullam est sint nemo et est ipsa porro placeat quibusdam quia assumenda numquam molestias.</p>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="index.html">Home</a></li>
-            <li class="current">Starter Page</li>
-          </ol>
-        </nav>
+        <h1>Đăng nhập</h1>
+        <p>Đăng nhập để tiếp tục hành trình khám phá của bạn</p>
       </div>
     </div><!-- End Page Title -->
 <!-- Login Section -->
@@ -72,6 +66,18 @@
   </main>
 
 @include('layout.footer')
+<!-- Toast Notification -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+    <div id="errorToast" class="toast text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger text-white">
+            <strong class="me-auto">Thông báo</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            {{ session('error') }}
+        </div>
+    </div>
+</div>
 
   <!-- Scroll Top -->
 @include('layout.preloader')
@@ -79,7 +85,9 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     @if (session('error'))
-        alert("{{ session('error') }}");
+        const toastEl = document.getElementById('errorToast');
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
     @endif
 });
 </script>

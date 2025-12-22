@@ -50,12 +50,16 @@ class KhuyenMaiUserController extends Controller
             return response()->json($rs);
         }
 
+        // ⭐ QUAN TRỌNG: Trả về thêm thông tin loại khuyến mãi
         return response()->json([
             'success' => true,
             'giaGiam' => $rs['giaGiam'],
             'tongMoi' => $rs['tongMoi'],
             'tenKM'   => $rs['tenKM'],
-            'maKM'    => $km->maKM
+            'maKM'    => $km->maKM,
+            'type'    => $km->loaiKM, // 'percent' hoặc 'fixed'
+            'giaTri'  => $km->giaTri, // giá trị % hoặc số tiền cố định
+            'giaTriToiDa' => $km->giaTriToiDa ?? 0,
         ]);
     }
 }

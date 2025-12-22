@@ -9,6 +9,7 @@ use App\Models\DanhMuc;
 use App\Models\Tour;
 use App\Models\ChuyenTour;
 use App\Models\GiaTour;
+use App\Models\BinhLuan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -20,14 +21,30 @@ class TourController extends Controller
     public function index(Request $request)
     {
         $admin = auth()->guard('admin')->user();
-        $toursQuery = Tour::with('danhmuc');
-        $danhmucs = DanhMuc::all();
 
+        $toursQuery = Tour::with('danhmuc');
+
+        // 1. Lọc theo danh mục 
         if ($request->filled('maDanhMuc')) {
             $toursQuery->where('maDanhMuc', $request->maDanhMuc);
         }
 
-        $tours = $toursQuery->get();
+        // 2. Tìm kiếm theo từ khóa 
+        if ($request->filled('search')) {
+            $keyword = $request->search;
+
+            $toursQuery->where(function ($q) use ($keyword) {
+                $q->where('diemDen', 'LIKE', "%{$keyword}%")
+                ->orWhere('tieuDe', 'LIKE', "%{$keyword}%"); // tùy chọn
+            });
+        }
+
+        $tours = $toursQuery->orderBy('maTour', 'desc')
+                            ->paginate(15)
+                            ->withQueryString();
+        
+        $danhmucs = DanhMuc::all();
+
         return view('admin.tours.index', compact('tours', 'danhmucs', 'admin'));
     }
 
@@ -170,6 +187,8 @@ class TourController extends Controller
             Storage::disk('public')->delete($hinh->duongDanHinh);
             $hinh->delete();
         }
+
+        BinhLuan::where('maTour', $maTour)->delete();
 
         // 4. XÓA CÁC BẢNG KHÁC (nếu có)
         // DanhGia::where('maTour', $maTour)->delete();
@@ -467,14 +486,4 @@ class TourController extends Controller
             ->route('admin.tours.edit', $maTour)
             ->with('success', 'Cập nhật chuyến thành công!');
     }
-
-    // public static function parseSoNgayStatic($thoiGian)
-    // {
-    //     $thoiGian = Str::lower($thoiGian);
-    //     if (Str::contains($thoiGian, 'trong ngày')) return 1;
-    //     if (preg_match('/(\d+)\s*ngày/', $thoiGian, $matches)) {
-    //         return (int)$matches[1];
-    //     }
-    //     return 1;
-    // }
 }

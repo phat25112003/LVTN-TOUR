@@ -10,36 +10,21 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="{{ route('home') }}" class="active">Trang chủ</a></li>
-          <li class="dropdown"><a href="#"><span>Loại Du Lịch</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <li class="dropdown"><a href="#"><span>Điểm đến</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               @foreach($danhmucs as $loaiTour)
-                <li>
-                  <a href="{{ route('tour.list', ['query' => $loaiTour->tenDanhMuc]) }}">
-                    {{ $loaiTour->tenDanhMuc }}
-                  </a>
-                </li>
+              <li class="dropdown"><a href="{{ route('tour.list', ['query' => $loaiTour->tenDanhMuc]) }}"><span>{{ $loaiTour->tenDanhMuc }}</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                <ul>
+                  @foreach($loaiTour->diadiem as $diadiem)
+                    <li><a href="{{ route('tour.list' , ['query' => $diadiem->tenDiaDiem]) }}">{{ $diadiem->tenDiaDiem }}</a></li>
+                  @endforeach
+                </ul>
+              </li>
               @endforeach
             </ul>
           </li>
-              
-
-          <!-- <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
-            </ul>
-          </li> -->
+          <li><a href="{{ route('gioithieu') }}">Giới thiệu</a></li>
+          <li><a href="{{ route('lienhe') }}">Liên hệ</a></li>
           <li><a href="{{ route('user.thongtinuser') }}">Thông tin tài khoản</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>

@@ -3969,7 +3969,7 @@ section,
 .travel-tour-details .tour-hero .hero-image-wrapper .hero-overlay .hero-content .tour-type {
   display: inline-block;
   background: color-mix(in srgb, var(--contrast-color), transparent 80%);
-  color: var(--default-color);
+  color: var(--contrast-color);
   padding: 8px 20px;
   border-radius: 20px;
   font-size: 0.85rem;
@@ -7212,7 +7212,7 @@ section,
   color: var(--contrast-color);
   border-radius: 20px;
   padding: 40px 30px;
-  height: 680px;
+  height: 780px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
@@ -8200,4 +8200,356 @@ section,
 #baby-count-strong {
     color: #f95e4d;
     font-weight: 600;
+}
+
+        .comments-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .comments-header {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .comments-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .comments-header p {
+            opacity: 0.9;
+        }
+        
+        .comment-form {
+            padding: 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 120px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .rating-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        
+        .star-rating input {
+            display: none;
+        }
+        
+        .star-rating label {
+            font-size: 1.8rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #ffc107;
+        }
+        
+        select {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .submit-btn {
+            background: #f95e4d;
+            color: rgb(255, 255, 255);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+        
+        .comments-list {
+            padding: 25px;
+        }
+        
+        .comments-list h3 {
+            margin-bottom: 20px;
+            color: var(--dark-color);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .comments-list h3:before {
+            content: "💬";
+        }
+        
+        .comment-item {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background-color: var(--light-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .comment-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), #9b59b6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .rating-stars {
+            color: var(--warning-color);
+            font-size: 1.1rem;
+        }
+        
+        .comment-content {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .comment-date {
+            font-size: 0.85rem;
+            color: #777;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .comment-date:before {
+            content: "🕒";
+        }
+        
+        .no-comments {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+        
+        .no-comments p {
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 600px) {
+            .comment-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .rating-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+/*--------------------------------------------------------------*/
+/* ===== Khung từng khách tham gia ===== */
+.traveler-item {
+    background: #fff;
+    border: 1px solid #e4e4e4;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+}
+
+.traveler-item h5.traveler-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0d6efd;
+    margin-bottom: 12px;
+}
+
+/* ===== Input & Select ===== */
+.traveler-item .form-control {
+    border-radius: 8px;
+    font-size: 14px;
+    padding: 8px 10px;
+}
+
+.traveler-item select.form-control {
+    cursor: pointer;
+}
+
+/* =============================
+   TOGGLE SWITCH (Phòng đơn)
+   =============================*/
+
+.toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.toggle-wrapper span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Switch container */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 22px;
+}
+
+/* Hide default checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Slider background */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: .3s;
+}
+
+/* Circle */
+.slider::before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: .3s;
+}
+
+/* When checked */
+.switch input:checked + .slider {
+    background-color: #f95e4d; /* Màu đặc trưng Vietravel */
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(22px);
+}
+
+/* Rounded design */
+.slider.round {
+    border-radius: 34px;
+}
+.slider.round::before {
+    border-radius: 50%;
+}
+/*--------------------------------------------------------------*/
+.avatar-box {
+    width: 110px;
+    height: 110px;
+}
+
+.avatar-img {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border: 4px solid #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+.change-avatar-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #0d6efd;
+    color: #fff;
+    padding: 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
 }
