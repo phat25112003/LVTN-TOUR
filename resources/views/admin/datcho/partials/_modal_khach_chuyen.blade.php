@@ -1,6 +1,10 @@
 @php
+    // Load thêm quan hệ thanhtoan để lấy trạng thái thanh toán của từng đơn
     $tours = \App\Models\Tour::whereHas('chuyentour.datCho.khachThamGia')
-                 ->with(['chuyentour.datCho.khachThamGia'])
+                 ->with([
+                     'chuyentour.datCho.khachThamGia',
+                     'chuyentour.datCho.thanhtoan' // <<< QUAN TRỌNG: để lấy trạng thái thanh toán
+                 ])
                  ->get();
 @endphp
 
@@ -9,14 +13,8 @@
         @php
             $allKhach = $chuyen->datCho->pluck('khachThamGia')->flatten();
 
-            // Sắp xếp lại theo maKhach để thứ tự ổn định
-            $khachs = $allKhach->sortBy('maKhach');
-
-            // Hoặc nếu bạn muốn sắp xếp theo họ tên:
-            $khachs = $allKhach->sortBy('hoTenKhach');
-
-            // Quan trọng: reset key để $index bắt đầu từ 0 liên tục
-            $khachs = $khachs->values();
+            // Sắp xếp theo maKhach để thứ tự ổn định
+            $khachs = $allKhach->sortBy('maKhach')->values();
         @endphp
 
         <!-- Modal khách của chuyến -->
@@ -24,7 +22,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
 
-                    <!-- HEADER: Nút Xuất Excel nằm đúng chỗ -->
+                    <!-- HEADER -->
                     <div class="modal-header bg-info text-white d-flex justify-content-between align-items-center">
                         <h5 class="modal-title m-0">
                             Khách Tham Gia – Chuyến #00{{ $chuyen->maChuyen }}
@@ -52,18 +50,25 @@
                                 <table class="table table-striped table-hover">
                                     <thead class="table-light">
                                         <tr>
-                                            <th width="8%">STT</th>   <!-- Thêm cột STT -->
+                                            <th width="8%">STT</th>
                                             <th>Họ Tên</th>
                                             <th width="10%">Tuổi</th>
                                             <th width="12%">Giới Tính</th>
-                                            <th width="18%">Phòng</th>
-                                            <th width="15%">Mã Booking</th>
+                                            <th width="15%">Phòng</th>
+                                            <th width="12%">Mã Booking</th>
+                                            <th width="15%">Trạng thái thanh toán</th> <!-- CỘT MỚI -->
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($khachs as $index => $khach)
+                                            @php
+                                                // Lấy trạng thái thanh toán từ đơn đặt chỗ của khách này
+                                                $datChoCuaKhach = $chuyen->datCho->firstWhere('maDatCho', $khach->maDatCho);
+                                                $trangThaiTT = $datChoCuaKhach?->thanhtoan?->tinhTrangThanhToan ?? 'Chưa thanh toán';
+                                                $isDaThanhToan = $trangThaiTT === 'Đã thanh toán';
+                                            @endphp
                                             <tr>
-                                                <td class="text-center fw-bold">{{ $index + 1 }}</td>  <!-- STT tự động -->
+                                                <td class="text-center fw-bold">{{ $index + 1 }}</td>
                                                 <td class="fw-500">{{ $khach->hoTenKhach }}</td>
                                                 <td>{{ $khach->tuoi }}</td>
                                                 <td>
@@ -76,6 +81,11 @@
                                                     <a href="{{ route('admin.datcho.show', $khach->maDatCho) }}" class="text-decoration-none">
                                                         #{{ str_pad($khach->maDatCho, 6, '0', STR_PAD_LEFT) }}
                                                     </a>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge {{ $isDaThanhToan ? 'bg-success' : 'bg-warning text-dark' }}">
+                                                        {{ $trangThaiTT }}
+                                                    </span>
                                                 </td>
                                             </tr>
                                         @endforeach

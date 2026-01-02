@@ -43,7 +43,6 @@ class KhuyenMaiController extends Controller
             'giaTriToiDa'           => 'nullable|numeric|min:0|required_if:loaiKM,percent',
             'apDung'                => 'required|in:tat_ca,danh_muc,tour_cu_the,chuyen_cu_the',
             
-            // Chỉ yêu cầu khi chọn loại tương ứng
             'danhMucIDs'            => 'nullable|array|required_if:apDung,danh_muc',
             'danhMucIDs.*'          => 'exists:danhmuc,maDanhMuc',
             'tourIDs'               => 'nullable|array|required_if:apDung,tour_cu_the',
@@ -53,7 +52,6 @@ class KhuyenMaiController extends Controller
 
             'soTienToiThieu'        => 'nullable|numeric|min:0',
             'soLuongNguoiToiThieu'  => 'nullable|integer|min:1',
-            'chiApDungNguoiLon'     => 'boolean',
             'ngayBatDau'            => 'required|date',
             'ngayKetThuc'           => 'required|date|after_or_equal:ngayBatDau',
             'soLuotSuDungToiDa'     => 'nullable|integer|min:1',
@@ -63,15 +61,30 @@ class KhuyenMaiController extends Controller
 
         $data = $request->only([
             'code', 'tenKM', 'loaiKM', 'giaTri', 'giaTriToiDa', 'apDung',
-            'soTienToiThieu', 'soLuongNguoiToiThieu', 'chiApDungNguoiLon',
+            'soTienToiThieu', 'soLuongNguoiToiThieu',
             'ngayBatDau', 'ngayKetThuc', 'soLuotSuDungToiDa',
             'chiDungMoiNguoi1Lan', 'trangThai'
         ]);
 
-        // Xử lý JSON đúng cách
-        $data['danhMucIDs'] = $request->has('danhMucIDs') ? json_encode(array_map('intval', $request->danhMucIDs)) : null;
-        $data['tourIDs']    = $request->has('tourIDs')    ? json_encode(array_map('intval', $request->tourIDs))    : null;
-        $data['chuyenIDs']  = $request->has('chuyenIDs')  ? json_encode(array_map('intval', $request->chuyenIDs))  : null;
+        // XỬ LÝ CHÍNH: Làm sạch các trường ID theo apDung
+        if ($request->apDung === 'tat_ca') {
+            $data['danhMucIDs'] = null;
+            $data['tourIDs']    = null;
+            $data['chuyenIDs']  = null;
+        } else {
+            // Reset tất cả trước, rồi chỉ gán trường tương ứng
+            $data['danhMucIDs'] = null;
+            $data['tourIDs']    = null;
+            $data['chuyenIDs']  = null;
+
+            if ($request->apDung === 'danh_muc' && $request->has('danhMucIDs') && is_array($request->danhMucIDs)) {
+                $data['danhMucIDs'] = json_encode(array_map('intval', $request->danhMucIDs));
+            } elseif ($request->apDung === 'tour_cu_the' && $request->has('tourIDs') && is_array($request->tourIDs)) {
+                $data['tourIDs'] = json_encode(array_map('intval', $request->tourIDs));
+            } elseif ($request->apDung === 'chuyen_cu_the' && $request->has('chuyenIDs') && is_array($request->chuyenIDs)) {
+                $data['chuyenIDs'] = json_encode(array_map('intval', $request->chuyenIDs));
+            }
+        }
 
         KhuyenMai::create($data);
 
@@ -109,15 +122,16 @@ class KhuyenMaiController extends Controller
             'giaTri'                => 'required|numeric|min:0.01',
             'giaTriToiDa'           => 'nullable|numeric|min:0|required_if:loaiKM,percent',
             'apDung'                => 'required|in:tat_ca,danh_muc,tour_cu_the,chuyen_cu_the',
+            
             'danhMucIDs'            => 'nullable|array|required_if:apDung,danh_muc',
             'danhMucIDs.*'          => 'exists:danhmuc,maDanhMuc',
             'tourIDs'               => 'nullable|array|required_if:apDung,tour_cu_the',
             'tourIDs.*'             => 'exists:tour,maTour',
             'chuyenIDs'             => 'nullable|array|required_if:apDung,chuyen_cu_the',
             'chuyenIDs.*'           => 'exists:chuyentour,maChuyen',
+
             'soTienToiThieu'        => 'nullable|numeric|min:0',
             'soLuongNguoiToiThieu'  => 'nullable|integer|min:1',
-            'chiApDungNguoiLon'     => 'boolean',
             'ngayBatDau'            => 'required|date',
             'ngayKetThuc'           => 'required|date|after_or_equal:ngayBatDau',
             'soLuotSuDungToiDa'     => 'nullable|integer|min:1',
@@ -127,15 +141,30 @@ class KhuyenMaiController extends Controller
 
         $data = $request->only([
             'code', 'tenKM', 'loaiKM', 'giaTri', 'giaTriToiDa', 'apDung',
-            'soTienToiThieu', 'soLuongNguoiToiThieu', 'chiApDungNguoiLon',
+            'soTienToiThieu', 'soLuongNguoiToiThieu',
             'ngayBatDau', 'ngayKetThuc', 'soLuotSuDungToiDa',
             'chiDungMoiNguoi1Lan', 'trangThai'
         ]);
 
-        // Xử lý JSON an toàn
-        $data['danhMucIDs'] = $request->has('danhMucIDs') ? json_encode(array_map('intval', $request->danhMucIDs)) : null;
-        $data['tourIDs']    = $request->has('tourIDs')    ? json_encode(array_map('intval', $request->tourIDs))    : null;
-        $data['chuyenIDs']  = $request->has('chuyenIDs')  ? json_encode(array_map('intval', $request->chuyenIDs))  : null;
+        // XỬ LÝ CHÍNH: Làm sạch các trường ID theo apDung
+        if ($request->apDung === 'tat_ca') {
+            $data['danhMucIDs'] = null;
+            $data['tourIDs']    = null;
+            $data['chuyenIDs']  = null;
+        } else {
+            // Reset tất cả trước
+            $data['danhMucIDs'] = null;
+            $data['tourIDs']    = null;
+            $data['chuyenIDs']  = null;
+
+            if ($request->apDung === 'danh_muc' && $request->has('danhMucIDs') && is_array($request->danhMucIDs)) {
+                $data['danhMucIDs'] = json_encode(array_map('intval', $request->danhMucIDs));
+            } elseif ($request->apDung === 'tour_cu_the' && $request->has('tourIDs') && is_array($request->tourIDs)) {
+                $data['tourIDs'] = json_encode(array_map('intval', $request->tourIDs));
+            } elseif ($request->apDung === 'chuyen_cu_the' && $request->has('chuyenIDs') && is_array($request->chuyenIDs)) {
+                $data['chuyenIDs'] = json_encode(array_map('intval', $request->chuyenIDs));
+            }
+        }
 
         $khuyenMai->update($data);
 

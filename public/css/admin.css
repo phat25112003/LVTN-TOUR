@@ -1261,6 +1261,12 @@ background-color: #5e7a02;
     .pagination .page-item.active .page-link {
         background: #667eea;
         border-color: #667eea;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    }
+=======
+>>>>>>> origin/new-project
     }
 /* ==================== OVERRIDE MODAL BOOTSTRAP THÀNH TRẮNG-XÁM-ĐEN VUÔNG VỨC ==================== */
 
@@ -1398,3 +1404,7 @@ background-color: #5e7a02;
 .bg-success { background: #28a745 !important; }
 .bg-danger { background: #dc3545 !important; }
 .bg-light { background: #f0f0f0 !important; color: #333 !important; }
+<<<<<<< HEAD
+=======
+>>>>>>> 9e9ecd023a0dcae94eac91118bfdd672f2ff39fa
+>>>>>>> origin/new-project

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Giữ nguyên toàn bộ CSS như bạn đã có */
         body {margin:0;padding:0;font-family:'Inter',Arial,sans-serif;background:#f7f9fc;color:#333;line-height:1.6}
         .container {max-width:600px;margin:40px auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.05);border:1px solid #e0e0e0}
         .header {background:#1a1a1a;color:#fff;text-align:center;padding:30px 20px}
@@ -28,6 +29,8 @@
         .price-label {font-weight:400;color:#555}
         .price-amount {text-align:right;font-weight:500;color:#333}
         .total-original {background:#f0f0f0}
+        .single-room-row {background:#fffaf0;color:#c2410c}
+        .single-room-row .price-amount {color:#c2410c;font-weight:600}
         .discount-row {color:#d9534f;background:#fff5f5}
         .discount-row .price-amount {color:#d9534f;font-weight:600}
         .final-total {background:#63b3ed;color:#fff;font-weight:700;font-size:16px}
@@ -36,7 +39,7 @@
         .payment-status {font-size:18px;color:#1a1a1a;font-weight:700;margin-bottom:8px}
         .payment-method {display:inline-block;background:#1a1a1a;color:#fff;padding:8px 20px;border-radius:20px;font-size:13px}
         .footer {background:#1a1a1a;color:#aaa;text-align:center;padding:25px 20px;font-size:12px}
-        .footer h3 {color:#fff;margin:0 0 8px;font-size:16px;font-weight:600}
+        .footer h3 {color:#fff;margin:0 0 8px;font-size:16;font-weight:600}
         .footer a {color:#63b3ed;text-decoration:none}
         .text-center {text-align:center}
         @media (max-width:600px){
@@ -63,141 +66,84 @@
         <h2 class="section-title">Thông Tin Hành Trình</h2>
         <table class="info-grid-table">
             <tr>
-                <td>
-                    <div class="info-item">
-                        <div class="info-label">Tên Tour</div>
-                        <div class="info-value">{{ $datCho->tour->tieuDe ?? 'N/A' }}</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="info-item">
-                        <div class="info-label">Thời Gian</div>
-                        <div class="info-value">
-                            {{ $datCho->chuyentour?->ngayBatDau ? \Carbon\Carbon::parse($datCho->chuyentour->ngayBatDau)->format('d/m/Y') : '—' }}
-                            → 
-                            {{ $datCho->chuyentour?->ngayKetThuc ? \Carbon\Carbon::parse($datCho->chuyentour->ngayKetThuc)->format('d/m/Y') : '—' }}
-                        </div>
-                    </div>
-                </td>
+                <td><div class="info-item"><div class="info-label">Tên Tour</div><div class="info-value">{{ $datCho->tour->tieuDe ?? 'N/A' }}</div></div></td>
+                <td><div class="info-item"><div class="info-label">Thời Gian</div><div class="info-value">{{ $datCho->chuyentour?->ngayBatDau ? \Carbon\Carbon::parse($datCho->chuyentour->ngayBatDau)->format('d/m/Y') : '—' }} → {{ $datCho->chuyentour?->ngayKetThuc ? \Carbon\Carbon::parse($datCho->chuyentour->ngayKetThuc)->format('d/m/Y') : '—' }}</div></div></td>
             </tr>
             <tr>
-                <td>
-                    <div class="info-item">
-                        <div class="info-label">Điểm Khởi Hành</div>
-                        <div class="info-value">{{ $datCho->chuyentour?->diemKhoiHanh ?? 'TP. Hồ Chí Minh' }}</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="info-item">
-                        <div class="info-label">Ngày Đặt</div>
-                        <div class="info-value">{{ \Carbon\Carbon::parse($datCho->ngayDat)->format('d/m/Y H:i') }}</div>
-                    </div>
-                </td>
+                <td><div class="info-item"><div class="info-label">Điểm Khởi Hành</div><div class="info-value">{{ $datCho->chuyentour?->diemKhoiHanh ?? 'TP. Hồ Chí Minh' }}</div></div></td>
+                <td><div class="info-item"><div class="info-label">Ngày Đặt</div><div class="info-value">{{ \Carbon\Carbon::parse($datCho->ngayDat)->format('d/m/Y H:i') }}</div></div></td>
             </tr>
             @if($datCho->chuyentour?->huongdanvien)
-            <tr>
-                <td colspan="2">
-                    <div class="info-item">
-                        <div class="info-label">Hướng Dẫn Viên</div>
-                        <div class="info-value">
-                            <strong>{{ $datCho->chuyentour->huongdanvien->hoTen }}</strong>
-                            <small style="color:#666">({{ $datCho->chuyentour->huongdanvien->soDienThoai }})</small>
-                        </div>
-                    </div>
-                </td>
-            </tr>
+            <tr><td colspan="2"><div class="info-item"><div class="info-label">Hướng Dẫn Viên</div><div class="info-value"><strong>{{ $datCho->chuyentour->huongdanvien->hoTen }}</strong> <small style="color:#666">({{ $datCho->chuyentour->huongdanvien->soDienThoai }})</small></div></div></td></tr>
             @endif
         </table>
 
-        <!-- Bảng giá chi tiết -->
+        <!-- Chi tiết thanh toán -->
         <h2 class="section-title">Chi Tiết Thanh Toán</h2>
         <table class="price-table">
             <tbody>
-                <tr>
-                    <td class="price-label">Người lớn × {{ $datCho->soNguoiLon }}</td>
-                    <td class="price-amount">{{ number_format($datCho->chuyentour?->giatour?->nguoiLon ?? 0) }}₫</td>
-                </tr>
-                <tr>
-                    <td class="price-label">Trẻ em × {{ $datCho->soTreEm }}</td>
-                    <td class="price-amount">{{ number_format($datCho->chuyentour?->giatour?->treEm ?? 0) }}₫</td>
-                </tr>
-                <tr>
-                    <td class="price-label">Em bé × {{ $datCho->soEmBe }}</td>
-                    <td class="price-amount">{{ number_format($datCho->chuyentour?->giatour?->emBe ?? 0) }}₫</td>
-                </tr>
+                <tr><td class="price-label">Người lớn × {{ $datCho->soNguoiLon }}</td><td class="price-amount">{{ number_format($datCho->chuyentour?->giatour?->nguoiLon ?? 0) }}₫</td></tr>
+                <tr><td class="price-label">Trẻ em × {{ $datCho->soTreEm }}</td><td class="price-amount">{{ number_format($datCho->chuyentour?->giatour?->treEm ?? 0) }}₫</td></tr>
+                <tr><td class="price-label">Em bé × {{ $datCho->soEmBe }}</td><td class="price-amount">{{ number_format($datCho->chuyentour?->giatour?->emBe ?? 0) }}₫</td></tr>
 
-                <!-- Dùng trong bảng giá -->
-                <tr class="total-original">
-                    <td class="price-label">Tổng tiền gốc</td>
-                    <td class="price-amount">{{ number_format($tongGiaGoc) }}₫</td>
+                @php
+                    $soKhachPhongDon = $datCho->khachThamGia->where('luaChonPhong', 'PhongDon')->count();
+                    $phuPhiPhongDon = $soKhachPhongDon * ($datCho->tour->giaPhongDon ?? 0);
+                @endphp
+
+                @if($soKhachPhongDon > 0)
+                <tr class="single-room-row">
+                    <td class="price-label"><strong>Phụ phí phòng đơn × {{ $soKhachPhongDon }}</strong></td>
+                    <td class="price-amount">+{{ number_format($phuPhiPhongDon) }}₫</td>
                 </tr>
+                @endif
+
+                <tr class="total-original"><td class="price-label">Tổng tiền gốc</td><td class="price-amount">{{ number_format($tongGiaGoc) }}₫</td></tr>
 
                 @foreach($datCho->khuyenMaiDaDung as $km)
                 <tr class="discount-row">
-                    <td class="price-label">
-                        Ưu đãi • {{ $km->khuyenmai->code ?? 'KM#' . $km->maKM }}
-                        @if($km->khuyenmai)<small style="color:#999"> ({{ $km->khuyenmai->tenKM }})</small>@endif
-                    </td>
+                    <td class="price-label">Ưu đãi • {{ $km->khuyenmai->code ?? 'KM#' . $km->maKM }} @if($km->khuyenmai)<small style="color:#999"> ({{ $km->khuyenmai->tenKM }})</small>@endif</td>
                     <td class="price-amount">-{{ number_format($km->giaGiam) }}₫</td>
                 </tr>
                 @endforeach
 
-                <tr class="final-total">
-                    <td class="price-label">THÀNH TIỀN CUỐI CÙNG</td>
-                    <td class="price-amount">{{ number_format($thanhTien) }}₫</td>
-                </tr>
+                <tr class="final-total"><td class="price-label">THÀNH TIỀN CUỐI CÙNG</td><td class="price-amount">{{ number_format($thanhTien) }}₫</td></tr>
             </tbody>
         </table>
 
+        <!-- Danh sách khách -->
         <h2 class="section-title">Danh Sách Khách Tham Gia</h2>
-        
         @if($datCho->khachThamGia->count() > 0)
             <table style="width:100%; border-collapse:collapse; margin:20px 0; background:#f9f9f9; border:1px solid #eee; border-radius:6px; overflow:hidden;">
                 <thead>
                     <tr style="background:#63b3ed; color:#fff;">
-                        <th style="padding:12px 15px; text-align:left; font-size:14px;">STT</th>
-                        <th style="padding:12px 15px; text-align:left; font-size:14px;">Họ và tên</th>
-                        <th style="padding:12px 15px; text-align:center; font-size:14px;">Tuổi</th>
-                        <th style="padding:12px 15px; text-align:center; font-size:14px;">Giới tính</th>
-                        <th style="padding:12px 15px; text-align:center; font-size:14px;">Phòng</th>
+                        <th style="padding:12px 15px; text-align:left;">STT</th>
+                        <th style="padding:12px 15px; text-align:left;">Họ và tên</th>
+                        <th style="padding:12px 15px; text-align:center;">Tuổi</th>
+                        <th style="padding:12px 15px; text-align:center;">Giới tính</th>
+                        <th style="padding:12px 15px; text-align:center;">Phòng</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($datCho->khachThamGia->sortBy('maKhach') as $index => $khach)
                         <tr style="border-bottom:1px solid #e0e0e0;">
-                            <td style="padding:12px 15px; font-size:14px; color:#555;">{{ $index + 1 }}</td>
-                            <td style="padding:12px 15px; font-size:14px; font-weight:500; color:#333;">
-                                {{ $khach->hoTenKhach }}
-                            </td>
-                            <td style="padding:12px 15px; text-align:center; font-size:14px; color:#555;">
-                                {{ $khach->tuoi }}
-                            </td>
-                            <td style="padding:12px 15px; text-align:center; font-size:14px; color:#555;">
-                                {{ $khach->gioiTinh == 'Nam' ? 'Nam' : 'Nữ' }}
-                            </td>
-                            <td style="padding:12px 15px; text-align:center; font-size:14px; color:#555;">
-                                {{ $khach->luaChonPhong == 'PhongDon' ? 'Phòng đơn' : 'Ghép phòng' }}
-                            </td>
+                            <td style="padding:12px 15px; color:#555;">{{ $index + 1 }}</td>
+                            <td style="padding:12px 15px; font-weight:500;">{{ $khach->hoTenKhach }}</td>
+                            <td style="padding:12px 15px; text-align:center; color:#555;">{{ $khach->tuoi }}</td>
+                            <td style="padding:12px 15px; text-align:center; color:#555;">{{ $khach->gioiTinh == 'Nam' ? 'Nam' : 'Nữ' }}</td>
+                            <td style="padding:12px 15px; text-align:center; color:#555;">{{ $khach->luaChonPhong == 'PhongDon' ? 'Phòng đơn' : 'Ghép phòng' }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         @else
-            <p style="color:#888; font-style:italic; text-align:center; margin:20px 0;">
-                Chưa có thông tin chi tiết khách tham gia.
-            </p>
+            <p style="text-align:center; color:#888; font-style:italic;">Chưa có thông tin khách tham gia.</p>
         @endif
 
-        <!-- Trạng thái thanh toán -->
+        <!-- Thanh toán -->
         <div class="payment-box">
-            <div class="payment-status">
-                {{ $datCho->thanhtoan?->tinhTrangThanhToan === 'Đã thanh toán' ? 'THANH TOÁN ĐÃ ĐƯỢC XÁC NHẬN' : 'ĐANG CHỜ THANH TOÁN' }}
-            </div>
-            <div class="payment-method">
-                {{ $datCho->thanhtoan?->phuongThucThanhToan 
-                    ? ucwords(str_replace('_', ' ', $datCho->thanhtoan->phuongThucThanhToan)) 
-                    : 'Thanh toán tại văn phòng' }}
-            </div>
+            <div class="payment-status">{{ $datCho->thanhtoan->tinhTrangThanhToan === 'Đã thanh toán' ? 'THANH TOÁN ĐÃ ĐƯỢC XÁC NHẬN' : 'ĐANG CHỜ THANH TOÁN' }}</div>
+            <div class="payment-method">{{ $datCho->thanhtoan->phuongThucThanhToan ? ucwords(str_replace('_', ' ', $datCho->thanhtoan->phuongThucThanhToan)) : 'Thanh toán tại văn phòng' }}</div>
         </div>
 
         <div class="text-center" style="color:#555; font-size:13px;">
@@ -211,13 +157,8 @@
     <div class="footer">
         <h3>TravelTime Premium</h3>
         <p>Tầng 15, Tòa nhà Bitexco Financial Tower, Quận 1, TP.HCM</p>
-        <p>
-            Website: <a href="https://traveltime.com">traveltime.com</a> • 
-            Email: <a href="mailto:support@traveltime.com">support@traveltime.com</a>
-        </p>
-        <p style="margin-top:10px;color:#777;">
-            © {{ date('Y') }} TravelTime – Khởi tạo hành trình.
-        </p>
+        <p>Website: <a href="https://traveltime.com">traveltime.com</a> • Email: <a href="mailto:support@traveltime.com">support@traveltime.com</a></p>
+        <p style="margin-top:10px;color:#777;">© {{ date('Y') }} TravelTime – Khởi tạo hành trình.</p>
     </div>
 </div>
 </body>

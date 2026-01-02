@@ -98,7 +98,7 @@
                                 <p class="text-danger">Không tìm thấy thông tin chuyến đi</p>
                             @endif
                         </div>
-                      </div>
+                    </div>
 
                     <div class="section-divider"></div>
 
@@ -134,12 +134,24 @@
                                     <td class="text-right-cell">{{ number_format($slEB * $giaEmBe) }}₫</td>
                                 </tr>
 
+                                <!-- Dòng phụ phí phòng đơn - MỚI THÊM -->
+                                @if($soKhachPhongDon > 0)
+                                    <tr style="background:#fffaf0;">
+                                        <td><strong>Phụ phí phòng đơn</strong></td>
+                                        <td class="text-center-cell">{{ $soKhachPhongDon }}</td>
+                                        <td class="text-right-cell">{{ number_format($giaPhongDon) }}₫</td>
+                                        <td class="text-right-cell bold text-danger">
+                                            +{{ number_format($phuPhiPhongDon) }}₫
+                                        </td>
+                                    </tr>
+                                @endif
+
                                 <tr class="total-row">
                                     <td colspan="3" class="text-right-cell bold">TỔNG TIỀN GỐC:</td>
                                     <td class="text-right-cell bold">{{ number_format($tongGiaGoc) }}₫</td>
                                 </tr>
 
-                                <!-- Trong bảng giá -->
+                                <!-- Khuyến mãi -->
                                 @if($datCho->khuyenMaiDaDung->count() > 0)
                                     @foreach($datCho->khuyenMaiDaDung as $item)
                                         <tr style="background:#fff5f5;">
@@ -164,6 +176,8 @@
                         </table>
                     </div>
 
+                    <!-- Danh sách khách tham gia -->
+                    <div class="section-divider"></div>
                     <table class="invoice-table">
                         <thead>
                             <tr>
@@ -186,6 +200,7 @@
                             @endforeach
                         </tbody>
                     </table>
+
                     <div class="section-divider"></div>
 
                     <!-- Thanh toán & Gửi hóa đơn -->
@@ -283,8 +298,6 @@
         --border-radius: 4px;
     }
 
-    /* Toàn bộ CSS bạn cung cấp trước đó – giữ nguyên 100% */
-    /* (Đã tối ưu và gom lại, không thay đổi giao diện) */
     .mono-container{padding:calc(var(--spacing-base)*4);background:var(--color-main-bg)!important;min-height:100vh;font-family:Arial,sans-serif;color:var(--color-text-dark);font-size:14px}
     .main-content-wrapper{display:flex;justify-content:center}
     .content-panel{width:100%;max-width:950px}

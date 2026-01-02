@@ -149,30 +149,12 @@
             <small class="text-muted">Mặc định: 1 người</small>
         </div>
 
-        <!-- Chỉ áp dụng cho người lớn -->
-        <div>
-            <label>
-                <input type="checkbox" name="chiApDungNguoiLon" value="1" 
-                       {{ old('chiApDungNguoiLon', $khuyenMai->chiApDungNguoiLon) ? 'checked' : '' }}>
-                Chỉ áp dụng giảm giá cho người lớn
-            </label>
-        </div>
-
         <!-- Giới hạn lượt dùng -->
         <div>
             <label>Số lượt sử dụng tối đa</label>
             <input type="number" min="1" name="soLuotSuDungToiDa" 
                    value="{{ old('soLuotSuDungToiDa', $khuyenMai->soLuotSuDungToiDa) }}" 
                    placeholder="Để trống = không giới hạn">
-        </div>
-
-        <!-- Mỗi khách chỉ dùng 1 lần -->
-        <div>
-            <label>
-                <input type="checkbox" name="chiDungMoiNguoi1Lan" value="1" 
-                       {{ old('chiDungMoiNguoi1Lan', $khuyenMai->chiDungMoiNguoi1Lan) ? 'checked' : '' }}>
-                Mỗi khách hàng chỉ được dùng mã này 1 lần
-            </label>
         </div>
 
         <!-- Trạng thái -->
