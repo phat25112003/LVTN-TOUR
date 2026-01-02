@@ -151,9 +151,11 @@
                     <p><i class="bi bi-check-circle"></i>
                       <strong>Trạng thái xác nhận:</strong>
                       @if($dat->xacNhan == 1)
-                        <span class="text-success fw-bold">Đã xác nhận</span>
+                        <span class="text-success fw-bold">Đã thanh toán</span>
+                      @elseif($dat->xacNhan == -1)
+                        <span class="text-danger fw-bold">Hết hạn thanh toán</span>
                       @else
-                        <span class="text-warning fw-bold">Chưa xác nhận</span>
+                        <span class="text-warning fw-bold">Chưa thanh toán</span>
                       @endif
                     </p>
                     @if($dat->xacNhan == 0 && $dat->ngayhethan)
@@ -198,7 +200,7 @@
                     <script>
                         window.countdowns.push({
                             id: "{{ $dat->maDatCho }}",
-                            expire_at: "{{ $dat->ngayhethan }}"
+                            ngayhethan: "{{ $dat->ngayhethan }}"
                         });
                     </script>
                 @endif
@@ -244,7 +246,7 @@
                   </div>
 
                 </div>
-                <a href="#"><i class="bi bi-key-fill text-primary ms-3" data-bs-toggle="modal" data-bs-target="#changePasswordModal"></i></a>
+                <a href="#"><i class="bi bi-key-fill text-primary ms-3" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Đổi mật khẩu</i></a>
           
                 <div class="modal-footer">
                   <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>

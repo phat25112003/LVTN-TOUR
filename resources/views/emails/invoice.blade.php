@@ -149,6 +149,45 @@
             </tbody>
         </table>
 
+        <h2 class="section-title">Danh Sách Khách Tham Gia</h2>
+        
+        @if($datCho->khachThamGia->count() > 0)
+            <table style="width:100%; border-collapse:collapse; margin:20px 0; background:#f9f9f9; border:1px solid #eee; border-radius:6px; overflow:hidden;">
+                <thead>
+                    <tr style="background:#63b3ed; color:#fff;">
+                        <th style="padding:12px 15px; text-align:left; font-size:14px;">STT</th>
+                        <th style="padding:12px 15px; text-align:left; font-size:14px;">Họ và tên</th>
+                        <th style="padding:12px 15px; text-align:center; font-size:14px;">Tuổi</th>
+                        <th style="padding:12px 15px; text-align:center; font-size:14px;">Giới tính</th>
+                        <th style="padding:12px 15px; text-align:center; font-size:14px;">Phòng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($datCho->khachThamGia->sortBy('maKhach') as $index => $khach)
+                        <tr style="border-bottom:1px solid #e0e0e0;">
+                            <td style="padding:12px 15px; font-size:14px; color:#555;">{{ $index + 1 }}</td>
+                            <td style="padding:12px 15px; font-size:14px; font-weight:500; color:#333;">
+                                {{ $khach->hoTenKhach }}
+                            </td>
+                            <td style="padding:12px 15px; text-align:center; font-size:14px; color:#555;">
+                                {{ $khach->tuoi }}
+                            </td>
+                            <td style="padding:12px 15px; text-align:center; font-size:14px; color:#555;">
+                                {{ $khach->gioiTinh == 'Nam' ? 'Nam' : 'Nữ' }}
+                            </td>
+                            <td style="padding:12px 15px; text-align:center; font-size:14px; color:#555;">
+                                {{ $khach->luaChonPhong == 'PhongDon' ? 'Phòng đơn' : 'Ghép phòng' }}
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <p style="color:#888; font-style:italic; text-align:center; margin:20px 0;">
+                Chưa có thông tin chi tiết khách tham gia.
+            </p>
+        @endif
+
         <!-- Trạng thái thanh toán -->
         <div class="payment-box">
             <div class="payment-status">

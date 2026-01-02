@@ -20,6 +20,12 @@ class SuaTourDetailController extends Controller
 public function index($maDatCho)
 {
     $datcho = DatCho::with('khachThamGia')->findOrFail($maDatCho);
+    if ($datcho->xacNhan == -1) {
+        return redirect()
+            ->route('user.thongtinuser')
+            ->with('error', 'Tour này đã hết hạn, không thể chỉnh sửa.');
+    }
+
 
     $tour = Tour::with(['chuyentour.giatour', 'giaTour', 'hinhanh'])
                 ->find($datcho->maTour);
@@ -67,6 +73,7 @@ public function index($maDatCho)
     ));
 }
 
+
 public function update(Request $request, $maDatCho)
 {
     if (!Auth::guard('web')->check()) {
@@ -85,6 +92,12 @@ public function update(Request $request, $maDatCho)
 
     $user   = Auth::guard('web')->user();
     $datcho = DatCho::findOrFail($maDatCho);
+    if ($datcho->xacNhan == -1) {
+        return redirect()
+            ->route('user.thongtinuser')
+            ->with('error', 'Tour đã hết hạn, không thể cập nhật.');
+    }
+
 
     // Kiểm tra quyền sở hữu
     if ($datcho->maNguoiDung !== $user->maNguoiDung) {
@@ -164,5 +177,6 @@ public function update(Request $request, $maDatCho)
 
     return redirect()->route('user.thongtinuser')
         ->with('success', 'Cập nhật thông tin đặt tour thành công!');
-}
+    }
+
 }

@@ -401,6 +401,16 @@
                           <strong id="baby-total" class="text-primary">0 ₫</strong>
                       </span>
                   </div>
+                  <!-- Phòng đơn -->
+                  <div id="phong-don-price-row" class="price-row d-none">
+                    <span>Phòng đơn</span>
+                    <span>
+                      <span id="phong-don-unit-price"></span>
+                      <span id="phong-don-count-display"></span>
+                      =
+                      <strong id="phong-don-total" class="text-danger"></strong>
+                    </span>
+                  </div>
 
                   <!-- Tổng cộng -->
                   <div class="price-row fw-bold border-top pt-2 mt-2">

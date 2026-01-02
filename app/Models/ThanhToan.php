@@ -11,13 +11,13 @@ class ThanhToan extends Model
     use HasFactory;
 
     protected $table = 'thanhtoan';
-    protected $primaryKey = 'maThanhToan'; // Giả định
+    protected $primaryKey = 'maThanhToan'; 
     protected $fillable = [
         'maNguoiDung',
         'maDatCho',
         'phuongThucThanhToan',
         'soTien',
-        'tinhTrangThanhToan', // Cần cập nhật cột này
+        'tinhTrangThanhToan', 
         'maGiaoDich',
         'ngayThanhToan',
     ];

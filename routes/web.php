@@ -22,7 +22,6 @@ use App\Http\Controllers\User\KhuyenMaiUserController;
 use App\Http\Controllers\User\ThanhToanController;
 use App\Http\Controllers\User\BinhLuanController;
 use App\Http\Controllers\User\GioiThieuController;
-use App\Http\Controllers\User\LienHeController;
 
 // Route công khai
 use App\Http\Controllers\Admin\HuongDanVienController;
@@ -155,6 +154,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Doanh Thu
     Route::get('/bao-cao/doanh-thu', [TongQuatController::class, 'baoCaoDoanhThu'])->name('baocao.doanhthu');
     Route::post('/bao-cao/doanh-thu', [TongQuatController::class, 'xuatBaoCao'])->name('baocao.xuat');
+
+    Route::get('/datcho/export-khach-chuyen/{maChuyen}', [DatChoController::class, 'exportKhachChuyen'])
+     ->name('datcho.export.khachchuyen');
     
     
 });

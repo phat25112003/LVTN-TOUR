@@ -1,4 +1,4 @@
-// update_counter.js (PHIÊN BẢN FULL – ĐÃ TÍCH HỢP CALENDAR + AUTO JUMP TO FIRST EVENT)
+// update_counter.js 
 
 document.addEventListener('DOMContentLoaded', function () {
   
@@ -129,6 +129,30 @@ document.addEventListener('DOMContentLoaded', function () {
     if (typeof window.refreshTotal === 'function') {
       window.refreshTotal();
     }
+    // ==========================
+// ⭐ HIỂN THỊ PHÒNG ĐƠN
+// ==========================
+const phongDonRow = document.getElementById('phong-don-price-row');
+
+if (phongDonRow) {
+  if (soPhongDon > 0 && giaPhongDon > 0) {
+    phongDonRow.classList.remove('d-none');
+    phongDonRow.style.display = 'flex';
+
+    document.getElementById('phong-don-unit-price').textContent =
+      format(giaPhongDon);
+
+    document.getElementById('phong-don-count-display').textContent =
+      `× ${soPhongDon}`;
+
+    document.getElementById('phong-don-total').textContent =
+      format(soPhongDon * giaPhongDon);
+  } else {
+    phongDonRow.classList.add('d-none');
+    phongDonRow.style.display = 'none';
+  }
+}
+
   }
   // ===============================
 // ⭐ HÀM QUẢN LÝ FORM NHẬP THÔNG TIN KHÁCH
@@ -381,17 +405,17 @@ document.querySelectorAll('.btn-plus, .btn-minus').forEach(btn => {
   // ==========================
 //  LẮNG NGHE TOGGLE PHÒNG ĐƠN
 // ==========================
-document.addEventListener("change", function (e) {
-    if (!e.target.classList.contains("phong-don-checkbox")) return;
+// document.addEventListener("change", function (e) {
+//     if (!e.target.classList.contains("phong-don-checkbox")) return;
 
-    if (e.target.checked) {
-        soPhongDon++;
-    } else {
-        soPhongDon--;
-    }
+//     if (e.target.checked) {
+//         soPhongDon++;
+//     } else {
+//         soPhongDon--;
+//     }
 
-    updateDisplay();
-  });
+//     updateDisplay();
+//   });
 
 
   // ==========================

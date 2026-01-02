@@ -32,7 +32,7 @@
                 <a href="{{ route('admin.profile') }}" class="{{ request()->routeIs('admin.profile') ? 'active' : '' }}">
                     <i class="fa-solid fa-user"></i> Thông tin cá nhân</a>
             </li>
-                        <li><a href="{{ route('admin.tongquat.index') }}" class="{{ request()->routeIs('admin.tongquat.index') ? 'active' : '' }}"><i class="fa-solid fa-chart-line"></i> Tổng quan admin</a></li>
+            <li><a href="{{ route('admin.tongquat.index') }}" class="{{ request()->routeIs('admin.tongquat.index') ? 'active' : '' }}"><i class="fa-solid fa-chart-line"></i> Tổng quan admin</a></li>
             <li><a href="{{ route('admin.danhmuc.index') }}" class="{{ request()->routeIs('admin.danhmuc.index') ? 'active' : '' }}"><i class="fa-solid fa-list"></i> Quản lý Danh mục</a></li>
             <li><a href="{{ route('admin.tours.index') }}" class="{{ request()->routeIs('admin.tours.*') ? 'active' : '' }}"><i class="fa-solid fa-map-location-dot"></i> Quản lý Tour</a></li>
             <li>

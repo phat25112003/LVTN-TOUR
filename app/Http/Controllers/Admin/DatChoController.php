@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DatCho;
 use App\Models\HoaDon;
+use App\Models\KhachThamGia;
+use App\Exports\KhachThamGiaChuyenExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\ChuyenTour;
 use App\Models\KhuyenMai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -23,23 +27,39 @@ class DatChoController extends Controller
             'tour', 
             'chuyentour', 
             'thanhtoan',
-            // Eager load bảng trung gian khuyenmai_sudung và mối quan hệ KhuyenMai bên trong nó
             'khuyenMaiDaDung.khuyenmai' 
-        ])->get();
+        ])
+        ->orderByDesc('ngayDat')
+        ->get();
         
         return view('admin.datcho.index', compact('datChos','admin'));
     }
 public function show($maDatCho)
 {
     $admin = auth('admin')->user();
+
     $datCho = DatCho::with([
         'tour:maTour,tieuDe,thoiGian',
         'chuyentour:maChuyen,diemKhoiHanh,phuongTien,ngayBatDau,ngayKetThuc,soLuongToiDa,soLuongDaDat,maHDV',
         'chuyentour.huongdanvien:maHDV,hoTen,soDienThoai',
         'chuyentour.giatour',
-        'khuyenMaiDaDung',      // ← Đúng tên bạn muốn
+        'khuyenMaiDaDung',     
         'thanhtoan'
     ])->findOrFail($maDatCho);
+
+    // Load thêm khách tham gia thuộc đặt chỗ này
+    $khachThamGia = KhachThamGia::where('maDatCho', $maDatCho)
+                                ->orderBy('maKhach')
+                                ->get();
+
+    // (Tùy chọn) Nhóm khách theo loại để dễ hiển thị
+    // - Người lớn: tuổi >= 12 (hoặc theo quy tắc của bạn)
+    // - Trẻ em: 5 <= tuổi <= 11
+    // - Em bé: tuổi < 5
+    // Bạn có thể điều chỉnh điều kiện tuổi theo business của dự án
+    $khachNguoiLon = $khachThamGia->where('tuoi', '>=', 12);
+    $khachTreEm    = $khachThamGia->whereBetween('tuoi', [5, 11]);
+    $khachEmBe     = $khachThamGia->where('tuoi', '<', 5);
 
     $giaNguoiLon = $datCho->chuyentour?->giatour?->nguoiLon ?? 0;
     $giaTreEm    = $datCho->chuyentour?->giatour?->treEm ?? 0;
@@ -58,9 +78,14 @@ public function show($maDatCho)
 
     return view('admin.datcho.show', compact(
         'datCho',
+        'khachThamGia',          // Danh sách tất cả khách tham gia
+        'khachNguoiLon',         // (Tùy chọn) Khách người lớn
+        'khachTreEm',            // (Tùy chọn) Khách trẻ em
+        'khachEmBe',             // (Tùy chọn) Khách em bé
         'giaNguoiLon', 'giaTreEm', 'giaEmBe',
         'slNL', 'slTE', 'slEB',
-        'tongGiaGoc', 'giaGiam', 'tongGiaThucThu','admin'
+        'tongGiaGoc', 'giaGiam', 'tongGiaThucThu',
+        'admin'
     ));
 }
 
@@ -72,7 +97,7 @@ public function sendInvoice($maDatCho)
         'chuyentour:maChuyen,diemKhoiHanh,ngayBatDau,ngayKetThuc,maHDV',
         'chuyentour.giatour',
         'chuyentour.huongdanvien:maHDV,hoTen,soDienThoai',
-        'khuyenMaiDaDung.khuyenmai',   // ← Quan trọng: load nhiều mã KM + tên mã
+        'khuyenMaiDaDung.khuyenmai',   
         'thanhtoan',
         'hoadon'
     ])->findOrFail($maDatCho);
@@ -127,6 +152,19 @@ public function sendInvoice($maDatCho)
             return back()->with('error', 'Gửi email thất bại. Vui lòng thử lại sau.');
         }
 }
+
+public function exportKhachChuyen($maChuyen)
+{
+    $chuyen = ChuyenTour::with('tour')->findOrFail($maChuyen);
+
+    $tenTour = preg_replace('/[^A-Za-z0-9\-]/', '_', $chuyen->tour->tieuDe); // sạch ký tự đặc biệt
+
+    $fileName = $chuyen->tour->tieuDe . ' - Chuyến #00' . $chuyen->maChuyen . ' (' . 
+                \Carbon\Carbon::parse($chuyen->ngayBatDau)->format('d-m-Y') . ').xlsx';
+
+    return Excel::download(new KhachThamGiaChuyenExport($maChuyen), $fileName);
+}
+
 public function destroy($maDatCho)
 {
     $datCho = DatCho::findOrFail($maDatCho);
@@ -138,7 +176,9 @@ public function destroy($maDatCho)
         $datCho->chuyentour->save();
     }
 
-    // Xóa đặt chỗ (cascade sẽ xóa hoadon, thanhtoan, khuyenmai_sudung nếu có onDelete cascade)
+    $datCho->hoadon()->delete();
+    $datCho->khachthamgia()->delete();
+    $datCho->thanhtoan()->delete();
     $datCho->delete();
 
     return redirect()->route('admin.datcho.index')->with('success', 'Đã xóa đặt chỗ thành công.');

@@ -3,8 +3,11 @@
 
 @section('content')
 <div class="booking-container">
-    <h2 class="text-center mb-4 fw-bold text-primary">Danh Sách Booking</h2>
-
+        <h2 class="text-center mb-4 fw-bold text-primary">Danh Sách Booking</h2>
+        <!-- Nút mở modal danh sách chuyến tour -->
+        <button type="button" class="btn btn-success btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#modalDanhSachChuyen">
+            <i class="fas fa-bus me-2"></i> Xem Danh Sách Các Chuyến Tour
+        </button>
     {{-- THÔNG BÁO --}}
     @if (session('success'))
         <div class="notify notify-success">{{ session('success') }}</div>
@@ -42,12 +45,19 @@
                     // Thanh toán
                     $thanhToan = $datCho->thanhtoan;
                     $tinhTrang = $thanhToan->tinhTrangThanhToan ?? 'Chưa thanh toán';
-
-                    $statusClass = match ($tinhTrang) {
-                        'Đã thanh toán' => 'status-success',
-                        'Chưa thanh toán' => 'status-warning',
-                        default => 'status-muted',
+                    
+                    $badgeClass = match ($datCho->xacNhan) {
+                        1  => 'bg-success',
+                        0  => 'bg-warning text-dark',
+                        -1 => 'bg-danger',
                     };
+
+                    $label = match ($datCho->xacNhan) {
+                        1  => 'Đã thanh toán',
+                        0  => 'Chưa thanh toán',
+                        -1 => 'Hết hạn thanh toán',
+                    };
+                                    
                 @endphp
 
                 <tr>
@@ -127,8 +137,8 @@
 
                     {{-- Trạng thái thanh toán --}}
                     <td>
-                        <span class="status {{ $statusClass }}">
-                            {{ $tinhTrang }}
+                        <span class="badge {{ $badgeClass }}">
+                            {{ $label }}
                         </span>
                     </td>
 
@@ -160,4 +170,7 @@
         </table>
     </div>
 </div>
+{{-- Include các modal từ partials --}}
+@include('admin.datcho.partials._modal_chuyen_tour')
+@include('admin.datcho.partials._modal_khach_chuyen')
 @endsection

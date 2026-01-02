@@ -81,6 +81,24 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('adult-input').value = counts.adult;
     document.getElementById('child-input').value = counts.child;
     document.getElementById('baby-input').value = counts.baby;
+    const phongDonRow = document.getElementById('phong-don-price-row');
+const phongDonCount = document.querySelectorAll('.phong-don-checkbox:checked').length;
+const giaPhongDon = Number(window.initialPrices.phongDon);
+
+if (phongDonCount > 0) {
+  phongDonRow.classList.remove('d-none');
+
+  document.getElementById('phong-don-unit-price').textContent =
+    format(giaPhongDon);
+
+  document.getElementById('phong-don-count-display').textContent =
+    `× ${phongDonCount}`;
+
+  document.getElementById('phong-don-total').textContent =
+    format(phongDonCount * giaPhongDon);
+} else {
+  phongDonRow.classList.add('d-none');
+}
   };
 
   function formatCurrency(amount) {

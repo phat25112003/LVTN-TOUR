@@ -12,25 +12,40 @@ class ThanhToanController extends Controller
     public function thanhtoan(Request $request)
     {
         $phuongthuc = $request->phuongThuc;
-        $tongGia = $request->tongGia;
-        $maDatCho = $request->maDatCho;
+        $tongGia    = $request->tongGia;
+        $maDatCho   = $request->maDatCho;
 
-        session(['maDatCho' => $maDatCho]);
-        
-        if($phuongthuc === 'momo'){
-            return $this->momopayment($tongGia);
+
+        $datCho = DB::table('datcho')->where('maDatCho', $maDatCho)->first();
+
+        if (!$datCho) {
+            return redirect()->route('user.thongtinuser')
+                ->with('error', 'Đơn đặt chỗ không tồn tại.');
+        }
+
+        if (
+            $datCho->xacNhan == -1 ||
+            ($datCho->ngayhethan && now()->greaterThan($datCho->ngayhethan))
+        ) {
+            return redirect()->route('user.thongtinuser')
+                ->with('error', 'Đơn đặt tour này đã hết hạn, không thể thanh toán.');
         }
         
+        session(['maDatCho' => $maDatCho]);
+
+        if ($phuongthuc === 'momo') {
+            return $this->momopayment($tongGia);
+        }
+
         if ($phuongthuc === 'paypal') {
             return $this->thanhToanPaypal($tongGia, $maDatCho);
         }
 
         if ($phuongthuc === 'tại văn phòng') {
-            // Xử lý thanh toán tiền mặt tại đây
             return redirect()->route('lienhe');
-                             
         }
     }
+
 
     public function execPostRequest($url, $data)
     {
@@ -120,7 +135,7 @@ class ThanhToanController extends Controller
             ->where('maDatCho', $maDatCho)
             ->update([
                 'xacNhan'   => 1,
-                'expire_at' => null   
+                'ngayhethan' => null   
             ]);
 
 
