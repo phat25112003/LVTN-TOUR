@@ -244,7 +244,7 @@
                   </div>
 
                 </div>
-                <a href="#"><i class="bi bi-key-fill text-primary ms-3" data-bs-toggle="modal" data-bs-target="#changePasswordModal"></i></a>
+                <a href="#"><i class="bi bi-key-fill text-primary ms-3" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Đổi mật khẩu</i></a>
           
                 <div class="modal-footer">
                   <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>

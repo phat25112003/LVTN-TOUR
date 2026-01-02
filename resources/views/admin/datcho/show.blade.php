@@ -70,15 +70,15 @@
                             <div class="info-line"><strong>Mã Tour:</strong> #00TVT{{ $datCho->maTour }}</div>
                             <div class="info-line"><strong>Mã Chuyến:</strong> <span class="chip chip-highlight">#00{{ $datCho->maChuyen ?? '—' }}</span></div>
                             <div class="info-line"><strong>Điểm khởi hành:</strong> {{ $datCho->chuyentour?->diemKhoiHanh ?? 'N/A' }}</div>
-<div class="info-line">
-    <strong>Hướng dẫn viên:</strong>
-    @if($datCho->chuyentour?->huongdanvien)
-        <span class="bold">{{ $datCho->chuyentour->huongdanvien->hoTen }}</span>
-        <small class="muted-text">({{ $datCho->chuyentour->huongdanvien->soDienThoai }})</small>
-    @else
-        Chưa phân công
-    @endif
-</div>
+                            <div class="info-line">
+                                <strong>Hướng dẫn viên:</strong>
+                                @if($datCho->chuyentour?->huongdanvien)
+                                    <span class="bold">{{ $datCho->chuyentour->huongdanvien->hoTen }}</span>
+                                    <small class="muted-text">({{ $datCho->chuyentour->huongdanvien->soDienThoai }})</small>
+                                @else
+                                    Chưa phân công
+                                @endif
+                            </div>
                             <div class="info-line"><strong>Phương tiện:</strong> {{ $datCho->chuyentour?->phuongTien ?? 'N/A' }}</div>
                         </div>
 
@@ -114,55 +114,92 @@
                                     <th class="text-right-cell">Thành tiền</th>
                                 </tr>
                             </thead>
-<tbody>
-    <tr>
-        <td>Người lớn</td>
-        <td class="text-center-cell">{{ $slNL }}</td>
-        <td class="text-right-cell">{{ number_format($giaNguoiLon) }}₫</td>
-        <td class="text-right-cell">{{ number_format($slNL * $giaNguoiLon) }}₫</td>
-    </tr>
-    <tr>
-        <td>Trẻ em</td>
-        <td class="text-center-cell">{{ $slTE }}</td>
-        <td class="text-right-cell">{{ number_format($giaTreEm) }}₫</td>
-        <td class="text-right-cell">{{ number_format($slTE * $giaTreEm) }}₫</td>
-    </tr>
-    <tr>
-        <td>Em bé</td>
-        <td class="text-center-cell">{{ $slEB }}</td>
-        <td class="text-right-cell">{{ number_format($giaEmBe) }}₫</td>
-        <td class="text-right-cell">{{ number_format($slEB * $giaEmBe) }}₫</td>
-    </tr>
+                            <tbody>
+                                <tr>
+                                    <td>Người lớn</td>
+                                    <td class="text-center-cell">{{ $slNL }}</td>
+                                    <td class="text-right-cell">{{ number_format($giaNguoiLon) }}₫</td>
+                                    <td class="text-right-cell">{{ number_format($slNL * $giaNguoiLon) }}₫</td>
+                                </tr>
+                                <tr>
+                                    <td>Trẻ em</td>
+                                    <td class="text-center-cell">{{ $slTE }}</td>
+                                    <td class="text-right-cell">{{ number_format($giaTreEm) }}₫</td>
+                                    <td class="text-right-cell">{{ number_format($slTE * $giaTreEm) }}₫</td>
+                                </tr>
+                                <tr>
+                                    <td>Em bé</td>
+                                    <td class="text-center-cell">{{ $slEB }}</td>
+                                    <td class="text-right-cell">{{ number_format($giaEmBe) }}₫</td>
+                                    <td class="text-right-cell">{{ number_format($slEB * $giaEmBe) }}₫</td>
+                                </tr>
 
-    <tr class="total-row">
-        <td colspan="3" class="text-right-cell bold">TỔNG TIỀN GỐC:</td>
-        <td class="text-right-cell bold">{{ number_format($tongGiaGoc) }}₫</td>
-    </tr>
+                                <!-- Dòng phụ phí phòng đơn - MỚI THÊM -->
+                                @if($soKhachPhongDon > 0)
+                                    <tr style="background:#fffaf0;">
+                                        <td><strong>Phụ phí phòng đơn</strong></td>
+                                        <td class="text-center-cell">{{ $soKhachPhongDon }}</td>
+                                        <td class="text-right-cell">{{ number_format($giaPhongDon) }}₫</td>
+                                        <td class="text-right-cell bold text-danger">
+                                            +{{ number_format($phuPhiPhongDon) }}₫
+                                        </td>
+                                    </tr>
+                                @endif
 
-    <!-- Trong bảng giá -->
-    @if($datCho->khuyenMaiDaDung->count() > 0)
-        @foreach($datCho->khuyenMaiDaDung as $item)
-            <tr style="background:#fff5f5;">
-                <td colspan="3" class="text-right-cell text-danger">
-                    <strong>GIẢM GIÁ - {{ $item->khuyenmai->code ?? 'KM#'.$item->maKM }}</strong>
-                    <small class="muted-text">({{ $item->khuyenmai->tenKM ?? '' }})</small>
-                </td>
-                <td class="text-right-cell text-danger bold">
-                    -{{ number_format($item->giaGiam) }}₫
-                </td>
-            </tr>
-        @endforeach
-    @endif
+                                <tr class="total-row">
+                                    <td colspan="3" class="text-right-cell bold">TỔNG TIỀN GỐC:</td>
+                                    <td class="text-right-cell bold">{{ number_format($tongGiaGoc) }}₫</td>
+                                </tr>
 
-    <tr class="total-row" style="background:#e8f5e9; font-size:19px;">
-        <td colspan="3" class="text-right-cell bold">THÀNH TIỀN:</td>
-        <td class="text-right-cell bold text-success total-amount">
-            {{ number_format($tongGiaThucThu) }}₫
-        </td>
-    </tr>
-</tbody>
+                                <!-- Khuyến mãi -->
+                                @if($datCho->khuyenMaiDaDung->count() > 0)
+                                    @foreach($datCho->khuyenMaiDaDung as $item)
+                                        <tr style="background:#fff5f5;">
+                                            <td colspan="3" class="text-right-cell text-danger">
+                                                <strong>GIẢM GIÁ - {{ $item->khuyenmai->code ?? 'KM#'.$item->maKM }}</strong>
+                                                <small class="muted-text">({{ $item->khuyenmai->tenKM ?? '' }})</small>
+                                            </td>
+                                            <td class="text-right-cell text-danger bold">
+                                                -{{ number_format($item->giaGiam) }}₫
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+
+                                <tr class="total-row" style="background:#e8f5e9; font-size:19px;">
+                                    <td colspan="3" class="text-right-cell bold">THÀNH TIỀN:</td>
+                                    <td class="text-right-cell bold text-success total-amount">
+                                        {{ number_format($tongGiaThucThu) }}₫
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
+
+                    <!-- Danh sách khách tham gia -->
+                    <div class="section-divider"></div>
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Họ tên</th>
+                                <th>Tuổi</th>
+                                <th>Giới tính</th>
+                                <th>Lựa chọn phòng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($khachThamGia as $index => $khach)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $khach->hoTenKhach }}</td>
+                                    <td>{{ $khach->tuoi }}</td>
+                                    <td>{{ $khach->gioiTinh == 'Nam' ? 'Nam' : 'Nữ' }}</td>
+                                    <td>{{ $khach->luaChonPhong == 'PhongDon' ? 'Phòng đơn' : 'Ghép' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
                     <div class="section-divider"></div>
 
@@ -261,8 +298,6 @@
         --border-radius: 4px;
     }
 
-    /* Toàn bộ CSS bạn cung cấp trước đó – giữ nguyên 100% */
-    /* (Đã tối ưu và gom lại, không thay đổi giao diện) */
     .mono-container{padding:calc(var(--spacing-base)*4);background:var(--color-main-bg)!important;min-height:100vh;font-family:Arial,sans-serif;color:var(--color-text-dark);font-size:14px}
     .main-content-wrapper{display:flex;justify-content:center}
     .content-panel{width:100%;max-width:950px}

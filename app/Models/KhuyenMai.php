@@ -15,20 +15,21 @@ class KhuyenMai extends Model
     protected $fillable = [
         'code',
         'tenKM',
-        'loaiKM',           // 'percent' | 'fixed'
-        'giaTri',           // 15.00 hoặc 500000.00
-        'giaTriToiDa',      // NULL hoặc số tiền cap (ví dụ 2000000)
-        'apDung',           // tat_ca | danh_muc | tour_cu_the | chuyen_cu_the
-        'danhMucIDs',       // JSON: [1,5]
-        'tourIDs',          // JSON: [31,35]
-        'chuyenIDs',        // JSON: [1,23]
+        'loaiKM',
+        'giaTri',
+        'giaTriToiDa',
+        'apDung',
+        'danhMucIDs',
+        'tourIDs',
+        'chuyenIDs',
         'soTienToiThieu',
+        'soLuongNguoiToiThieu',       
         'ngayBatDau',
         'ngayKetThuc',
         'soLuotSuDungToiDa',
-        'soLuotDaDung',
-        'chiDungMoiNguoi1Lan', // 1 = true, 0 = false
-        'trangThai',        // dang_chay | tam_dung | ket_thuc
+        'soLuotDaDung',              
+        'chiDungMoiNguoi1Lan',
+        'trangThai',
     ];
 
     protected $casts = [

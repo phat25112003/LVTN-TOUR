@@ -35,7 +35,6 @@
             <select name="loaiKM" id="loaiKM" required>
                 <option value="percent" {{ old('loaiKM') === 'percent' ? 'selected' : '' }}>Giảm theo phần trăm (%)</option>
                 <option value="fixed" {{ old('loaiKM') === 'fixed' ? 'selected' : '' }}>Giảm cố định (số tiền)</option>
-                <option value="freeservice" {{ old('loaiKM') === 'freeservice' ? 'selected' : '' }}>Miễn phí dịch vụ</option>
             </select>
         </div>
 
@@ -132,30 +131,14 @@
         <!-- Số lượng người tối thiểu -->
         <div>
             <label>Số lượng người tối thiểu</label>
-            <input type="number" min="1" name="soLuongNguoiToiThieu" value="{{ old('soLuongNguoiToiThieu', 1) }}">
+            <input type="number" name="soLuongNguoiToiThieu" value="{{ old('soLuongNguoiToiThieu', $khuyenMai->soLuongNguoiToiThieu ?? 1) }}" min="1" class="form-control">
             <small class="text-muted">Mặc định: 1 người</small>
-        </div>
-
-        <!-- Chỉ áp dụng cho người lớn -->
-        <div>
-            <label>
-                <input type="checkbox" name="chiApDungNguoiLon" value="1" {{ old('chiApDungNguoiLon') ? 'checked' : '' }}>
-                Chỉ áp dụng giảm giá cho người lớn (không giảm trẻ em/em bé)
-            </label>
         </div>
 
         <!-- Giới hạn lượt dùng -->
         <div>
             <label>Số lượt sử dụng tối đa</label>
             <input type="number" min="1" name="soLuotSuDungToiDa" value="{{ old('soLuotSuDungToiDa') }}" placeholder="Để trống = không giới hạn">
-        </div>
-
-        <!-- Mỗi khách chỉ dùng 1 lần -->
-        <div>
-            <label>
-                <input type="checkbox" name="chiDungMoiNguoi1Lan" value="1" {{ old('chiDungMoiNguoi1Lan', 1) ? 'checked' : '' }}>
-                Mỗi khách hàng chỉ được dùng mã này 1 lần
-            </label>
         </div>
 
         <!-- Trạng thái -->

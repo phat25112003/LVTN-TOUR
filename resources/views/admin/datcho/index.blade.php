@@ -3,8 +3,11 @@
 
 @section('content')
 <div class="booking-container">
-    <h2 class="text-center mb-4 fw-bold text-primary">Danh Sách Booking</h2>
-
+        <h2 class="text-center mb-4 fw-bold text-primary">Danh Sách Booking</h2>
+        <!-- Nút mở modal danh sách chuyến tour -->
+        <button type="button" class="btn btn-success btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#modalDanhSachChuyen">
+            <i class="fas fa-bus me-2"></i> Xem Danh Sách Các Chuyến Tour
+        </button>
     {{-- THÔNG BÁO --}}
     @if (session('success'))
         <div class="notify notify-success">{{ session('success') }}</div>
@@ -160,4 +163,7 @@
         </table>
     </div>
 </div>
+{{-- Include các modal từ partials --}}
+@include('admin.datcho.partials._modal_chuyen_tour')
+@include('admin.datcho.partials._modal_khach_chuyen')
 @endsection
