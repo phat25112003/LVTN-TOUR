@@ -13,7 +13,7 @@ class ChuyenTour extends Model
     protected $fillable = [
         'maTour', 'ngayBatDau', 'ngayKetThuc', 'diemKhoiHanh',
         'maHDV', 'phuongTien', 'soLuongToiDa', 'soLuongDaDat',
-        'tinhTrangChuyen', 'ghiChu'
+        'tinhTrangChuyen', 'ghiChu', 'so_khach_toi_thieu',
     ];
 
     protected $casts = [
