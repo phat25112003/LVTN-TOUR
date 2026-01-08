@@ -158,6 +158,18 @@
                         <span class="text-warning fw-bold">Chưa thanh toán</span>
                       @endif
                     </p>
+                    <p><i class="bi bi-card-text"></i>
+                      <strong>Trạng thái chuyến đi:</strong>
+                      @if($dat->chuyenTour->tinhTrangChuyen == 'ChuaDuKhach')
+                        <span class="text-warning fw-bold">Chưa đủ khách</span>
+                      @elseif($dat->chuyenTour->tinhTrangChuyen == 'DuKhach')
+                        <span class="text-info fw-bold">Đã đủ khách</span>
+                      @elseif($dat->chuyenTour->tinhTrangChuyen == 'DaKhoiHanh')
+                        <span class="text-success fw-bold">Đã khởi hành</span>
+                      @else
+                        <span class="text-danger fw-bold">Đã kết thúc</span>
+                      @endif  
+                    </p>
                     @if($dat->xacNhan == 0 && $dat->ngayhethan)
                         <div class="countdown-box mt-2 bi bi-hourglass-split">
                             <strong>Thời gian còn lại để thanh toán:</strong>

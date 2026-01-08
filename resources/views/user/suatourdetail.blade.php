@@ -232,6 +232,30 @@
                       </div>   
                   </div>
                 </div>
+                <div class="booking-step" id="step-note">
+                  <div class="step-header">
+                    <h3>Ghi chú cho chuyến đi</h3>
+                    <p>Nhập các yêu cầu đặc biệt để chúng tôi hỗ trợ bạn tốt hơn (không bắt buộc)</p>
+                  </div>
+
+                    <div class="step-content">
+                      <div class="note-box">
+
+                        <textarea
+                          id="ghiChu"
+                          name="ghiChu"
+                          rows="4"
+                          maxlength="600"
+                          placeholder="Ví dụ: Gia đình có người lớn tuổi cần hỗ trợ, ăn chay..."
+                        >{{ $datcho->ghiChu }}</textarea>
+
+                        <div class="note-footer">
+                          <small>Lưu ý: Yêu cầu sẽ được hỗ trợ trong khả năng cho phép.</small>
+                        </div>
+
+                      </div>
+                  </div>
+                </div>
                 <div class="booking-step" id="step-4">
                   <div class="step-header">
                     <h3>Phương thức thanh toán</h3>
@@ -362,14 +386,6 @@
                   <div class="tour-info">
                     <h5>{{ $tour->tieuDe }}</h5>
                     <p>{{ $tour->thoiGian }}</p>
-                    <div class="tour-rating">
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-half"></i>
-                      <span>4.8 (324 reviews)</span>
-                    </div>
                   </div>
                 </div>
                 <div class="booking-details">
@@ -466,8 +482,8 @@
               </div>
 
               <div class="help-section">
-                <h6>Need Help?</h6>
-                <p>Our travel experts are here to assist you</p>
+                <h6>Cần tư vấn?</h6>
+                <p>Hãy liên hệ với chúng tôi qua</p>
                 <div class="contact-info">
                   <div class="contact-item">
                     <i class="bi bi-telephone"></i>

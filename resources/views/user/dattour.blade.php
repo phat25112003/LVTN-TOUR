@@ -224,9 +224,31 @@
                         </template>
                   </div>
                 </div>
+                <div class="booking-step d-none" id="step-note">
+                  <div class="step-header">
+                    <h3>Ghi chú cho chuyến đi</h3>
+                    <p>Nhập các yêu cầu đặc biệt để chúng tôi hỗ trợ bạn tốt hơn (không bắt buộc)</p>
+                  </div>
 
+                    <div class="step-content">
+                      <div class="note-box">
 
+                        <textarea
+                          id="ghiChu"
+                          name="ghiChu"
+                          rows="4"
+                          maxlength="600"
+                          
+                          placeholder="Ví dụ: Gia đình có người lớn tuổi cần hỗ trợ, ăn chay..."
+                        ></textarea>
 
+                        <div class="note-footer">
+                          <small>Lưu ý: Yêu cầu sẽ được hỗ trợ trong khả năng cho phép.</small>
+                        </div>
+
+                      </div>
+                  </div>
+                </div>
 
                 <div class="booking-step d-none" id="step-4">
                   <div class="step-header">
@@ -464,23 +486,31 @@
   <!-- Preloader -->
   @include('layout.preloader')
   <!-- ✅ Bootstrap Toast hiển thị thông báo -->
-<div class="toast-container position-fixed top-0 start-50 p-3 translate-middle-x" style="z-index: 1100;">
-  <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body" id="toastMessage">
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  @if(session('success') || session('error'))
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toastEl = document.getElementById('mainToast');
+    const toastMsg = document.getElementById('toastMessage');
+
+    toastMsg.innerText = @json(session('success') ?? session('error'));
+
+    new bootstrap.Toast(toastEl, { delay: 4000 }).show();
+});
+</script>
+@endif
+
+@if(session('success') || session('error'))
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index:1100">
+    <div id="mainToast"
+         class="toast text-white {{ session('success') ? 'bg-success' : 'bg-danger' }}"
+         role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage"></div>
+            <button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
     </div>
-  </div>
 </div>
-<div class="toast-container position-fixed top-0 start-50 p-3 translate-middle-x" style="z-index: 1100;">
-  <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body" id="successMessage"></div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-    </div>
-  </div>
-</div>
+@endif
 <script>
   // Truyền dữ liệu từ PHP sang JS toàn cục
   window.initialPrices = {
@@ -492,34 +522,76 @@
 
   window.tourId = '{{ $tour->maTour }}';
 </script>
+ <!-- Modal xác nhận trùng tour/chuyến -->
+@if(session('warning_trung_tour_chuyen'))
+<div class="modal fade" id="confirmTrungTourModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-danger">
 
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">
+          ⚠️ CẢNH BÁO TRÙNG TOUR – TRÙNG CHUYẾN
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-3">
+          {{ session('message_trung_tour_chuyen') }}
+        </p>
+
+        <p class="text-muted small">
+          Bạn có chắc chắn muốn tiếp tục không?
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <form method="POST" action="{{ route('dattour.store') }}">
+          @csrf
+
+          {{-- GIỮ TOÀN BỘ DỮ LIỆU CŨ --}}
+          @foreach(old() as $key => $value)
+            @if(is_array($value))
+              @foreach($value as $v)
+                <input type="hidden" name="{{ $key }}[]" value="{{ $v }}">
+              @endforeach
+            @else
+              <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+            @endif
+          @endforeach
+
+          {{-- FLAG XÁC NHẬN --}}
+          <input type="hidden" name="confirm_trung_tour_chuyen" value="1">
+
+          <button type="submit" class="btn btn-danger">
+            ✔️ Vẫn tiếp tục đặt
+          </button>
+        </form>
+
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          ❌ Không, quay lại
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+@endif
+@if(session('warning_trung_tour_chuyen'))
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
+    const el = document.getElementById('confirmTrungTourModal');
 
-      // --- Hiển thị lỗi (toast đỏ) ---
-      @if ($errors->any())
-          let errorMsg = `{!! implode('\n', $errors->all()) !!}`;
-          document.getElementById('toastMessage').textContent = errorMsg;
-          var errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
-          errorToast.show();
-      @endif
+    const modal = new bootstrap.Modal(el, {
+        backdrop: 'static', 
+        keyboard: false     
+    });
 
-      @if (session('error'))
-          document.getElementById('toastMessage').textContent = "{{ session('error') }}";
-          var errorToast2 = new bootstrap.Toast(document.getElementById('errorToast'));
-          errorToast2.show();
-      @endif
-
-
-      // --- Hiển thị thành công (toast xanh lá) ---
-      @if (session('success'))
-          document.getElementById('successMessage').textContent = "{{ session('success') }}";
-          var successToast = new bootstrap.Toast(document.getElementById('successToast'));
-          successToast.show();
-      @endif
-
-  });
+    modal.show();
+});
 </script>
+@endif
+
 
 <script src="{{ asset('assets/js/counter.js') }}"></script>
 <script src="{{ asset('assets/js/discount.js') }}"></script>

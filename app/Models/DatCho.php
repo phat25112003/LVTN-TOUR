@@ -27,7 +27,8 @@ class DatCho extends Model
         'xacNhan',
         'soNguoiLon',       
         'soTreEm',          
-        'soEmBe',           
+        'soEmBe',       
+        'ghiChu',    
     ];
 
     public $timestamps = false; 

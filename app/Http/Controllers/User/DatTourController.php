@@ -49,7 +49,7 @@ class DatTourController extends Controller
     {
         $chuyen = ChuyenTour::with('giatour')
             ->where('maTour', $maTour)
-            ->where('tinhTrangChuyen', 'HoatDong')
+            ->where('tinhTrangChuyen', 'ChuaDuKhach')
             ->select(
                 'maChuyen',
                 'ngayBatDau',
@@ -114,6 +114,8 @@ class DatTourController extends Controller
             'loaiKhach' => 'required|array',
             'loaiKhach.*' => 'required|string|in:adult,child,baby',
 
+            'ghiChu' => 'nullable|string|max:500',
+
 
         ]);
 
@@ -134,14 +136,25 @@ class DatTourController extends Controller
         $endMoi   = Carbon::parse($chuyenMoi->ngayKetThuc);
         // --- KIỂM TRA ĐẶT TRÙNG TOUR + TRÙNG CHUYẾN ---
         $daDatChuyenNay = DatCho::where('maNguoiDung', $user->maNguoiDung)
-            ->where('maTour', $validated['maTour'])
-            ->where('maChuyen', $validated['maChuyen'])
-            ->first();
+    ->where('maTour', $validated['maTour'])
+    ->where('maChuyen', $validated['maChuyen'])
+    ->first();
 
-        if ($daDatChuyenNay) {
-            return redirect()->back()
-                ->with('error', 'Bạn đã đặt tour này cho chuyến này rồi. Không thể đặt trùng!');
-        }
+/**
+ * TRÙNG TOUR + TRÙNG CHUYẾN
+ * → CHƯA CONFIRM → HIỂN THỊ CẢNH BÁO
+ * → ĐÃ CONFIRM → CHO ĐI TIẾP
+ */
+if ($daDatChuyenNay && !$request->has('confirm_trung_tour_chuyen')) {
+    return redirect()->back()
+        ->withInput()
+        ->with([
+            'warning_trung_tour_chuyen' => true,
+            'message_trung_tour_chuyen' =>
+                'Bạn đã đặt tour này cho đúng chuyến này rồi. Bạn có chắc chắn vẫn muốn tiếp tục đặt không?'
+        ]);
+}
+
 
         // === KIỂM TRA TRÙNG CHUYẾN ===
         $datChoDaDat = DB::table('datcho')
@@ -161,11 +174,17 @@ class DatTourController extends Controller
             }
         }
 
-        if (!empty($trungVoi)) {
-            $danhSach = implode(', ', $trungVoi);
-            return redirect()->back()
-                ->with('error', "Bạn đã đặt tour trùng thời gian với: $danhSach. Vui lòng chọn chuyến khác!");
-        }
+        if (!empty($trungVoi) && !$request->has('confirm_trung_chuyen')) {
+        $danhSach = implode(', ', $trungVoi);
+
+        return redirect()->back()
+            ->withInput()
+            ->with([
+                'warning_trung_chuyen' => true,
+                'message_trung_chuyen' =>
+                    "Bạn đã đặt tour trùng thời gian với: $danhSach. Bạn có muốn tiếp tục đặt không?"
+            ]);
+    }
 
         // === TÍNH GIÁ ===
         $gia = DB::table('giatour')->where('maChuyen', $maChuyenMoi)->first();
@@ -215,6 +234,7 @@ class DatTourController extends Controller
             'soNguoiLon' => $validated['nguoiLon'],
             'soTreEm' => $validated['treEm'],
             'soEmBe' => $validated['emBe'],
+            'ghiChu' => $request->ghiChu ?? null,
         ]);
         // === LƯU DANH SÁCH KHÁCH + TÍNH PHỤ THU PHÒNG ĐƠN ===
         $phuThuPhongDon = 0;

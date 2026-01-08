@@ -22,6 +22,7 @@ use App\Http\Controllers\User\KhuyenMaiUserController;
 use App\Http\Controllers\User\ThanhToanController;
 use App\Http\Controllers\User\BinhLuanController;
 use App\Http\Controllers\User\GioiThieuController;
+use App\Http\Controllers\User\LienHeController;
 
 // Route công khai
 use App\Http\Controllers\Admin\HuongDanVienController;

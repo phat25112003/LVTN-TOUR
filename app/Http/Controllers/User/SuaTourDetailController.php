@@ -58,6 +58,7 @@ public function index($maDatCho)
         ? \Carbon\Carbon::parse($chuyenHienTai->ngayKetThuc)->format('d/m/Y')
         : '--/--/----';
     $kmUsed = KhuyenMaiSuDung::where('maDatCho', $maDatCho)->with('khuyenmai')->first();
+    $ghiChu = $datcho->ghiChu;
     return view('user.suatourdetail', compact(
         'datcho',
         'tour',
@@ -69,7 +70,8 @@ public function index($maDatCho)
         'ngayKetThuc_Display',
         'kmUsed',
         'soChoConLai',
-        'khachthamgia'
+        'khachthamgia',
+        'ghiChu'
     ));
 }
 
@@ -88,6 +90,7 @@ public function update(Request $request, $maDatCho)
         'phone'    => 'required|string|max:20',
         'phuongThucThanhToan' => 'required|in:momo,paypal,tại văn phòng',
         'maChuyen' => 'required|exists:chuyentour,maChuyen',
+        'ghiChu'   => 'nullable|string|max:500',
     ]);
 
     $user   = Auth::guard('web')->user();
@@ -150,6 +153,7 @@ public function update(Request $request, $maDatCho)
             'soDienThoai'         => $request->phone,
             'phuongThucThanhToan' => $request->phuongThucThanhToan,
             'maChuyen'            => $maChuyenMoi,
+            'ghiChu'              => $request->ghiChu ?? null,
         ]);
     });
     // ================================

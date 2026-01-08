@@ -8553,3 +8553,46 @@ section,
     cursor: pointer;
     font-size: 14px;
 }
+.note-box {
+  max-width: 100%;
+}
+
+.note-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.note-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f5f7fa;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.note-box textarea {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+  resize: none;
+}
+
+.note-box textarea:focus {
+  outline: none;
+  border-color: #0d6efd;
+}
+
+.note-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #777;
+}

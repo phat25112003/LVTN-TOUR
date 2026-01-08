@@ -486,6 +486,31 @@
     </section><!-- /Travel Tour Details Section -->
 
   </main>
+  @if(session('success') || session('error'))
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toastEl = document.getElementById('mainToast');
+    const toastMsg = document.getElementById('toastMessage');
+
+    toastMsg.innerText = @json(session('success') ?? session('error'));
+
+    new bootstrap.Toast(toastEl, { delay: 4000 }).show();
+});
+</script>
+@endif
+
+@if(session('success') || session('error'))
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index:1100">
+    <div id="mainToast"
+         class="toast text-white {{ session('success') ? 'bg-success' : 'bg-danger' }}"
+         role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage"></div>
+            <button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+@endif
 
 @include('layout.footer')
 

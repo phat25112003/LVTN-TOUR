@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
+
 class KhuyenMaiUserController extends Controller
 {
     public function apply(Request $request)
@@ -25,7 +26,7 @@ class KhuyenMaiUserController extends Controller
         $tongTien    = $request->tongTien;
         $maTour      = $request->maTour;
         $maChuyen    = $request->maChuyen;
-        $maNguoiDung = $request->maNguoiDung;
+        $maNguoiDung = Auth::id();
 
         // 1. Tìm mã khuyến mãi còn hiệu lực
         $km = KhuyenMai::active()->where('code', $code)->first();
@@ -37,6 +38,7 @@ class KhuyenMaiUserController extends Controller
             ]);
         }
 
+        
         // 2. Gọi hàm xử lý trong Model
         $rs = $km->apDungChoDonHang(
             null,      // chưa tạo maDatCho

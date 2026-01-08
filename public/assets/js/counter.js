@@ -12,8 +12,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const step3 = document.getElementById("step-3");
   const step4 = document.getElementById("step-4");
   const step5 = document.getElementById("step-5");
+  const step6 = document.getElementById("step-note");
 
-  [step3, step4, step5].forEach(step => {
+  [step3, step4, step5, step6].forEach(step => {
     step.classList.add("d-none");
     step.style.opacity = 0;
     step.style.transition = "opacity 0.5s ease";
@@ -148,10 +149,9 @@ if (phongDonCount > 0) {
         baby: props.giaEmBe
       };
 
-      // ⭐ HIỆN STEP 3 – 5 VỚI FADE-IN + SCROLL
-      [step3, step4, step5].forEach(step => {
+      [step3, step4, step5, step6].forEach(step => {
         step.classList.remove("d-none");
-        setTimeout(() => { step.style.opacity = 1; }, 50); // fade-in
+        setTimeout(() => { step.style.opacity = 1; }, 50); 
       });
 
       step3.scrollIntoView({ behavior: "smooth", block: "start" });

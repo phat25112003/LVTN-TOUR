@@ -220,7 +220,7 @@
                     alt="Destination" 
                     class="img-fluid">
                   <div class="overlay">
-                    <div class="badge">Popular</div>
+                    <div class="badge">{{ $tour->loaidulich->tenLoai }}</div>
                   </div>
                 </div>
                 <div class="content">
@@ -251,7 +251,7 @@
               <p>Các tổng đài viên của chúng tôi sẽ giúp bạn tìm ra điểm đến hoàn hảo, phù hợp với sở thích, ngân sách và phong cách du lịch riêng của bạn.</p>
               <div class="cta-buttons">
                 <a href="{{ route('tour.list', ['query' => '']) }}" class="btn btn-primary">Xem tất cả các tour</a>
-                <a href="contact.html" class="btn btn-outline">Nhận tư vấn từ tổng đài viên</a>
+                <a href="{{ route('lienhe') }}" class="btn btn-outline">Nhận tư vấn từ tổng đài viên</a>
               </div>
             </div>
           </div>
@@ -282,7 +282,7 @@
                   <img src="{{ asset('storage/' . optional($tour->hinhanh->first())->duongDanHinh) }}"alt="{{ $tour->tieuDe }}"class="img-fluid">
                   <div class="card-overlay">
                     <div class="badge-container">
-                      <span class="featured-badge">Best Seller</span>
+                      <span class="featured-badge">{{ $tour->loaidulich->tenLoai }}</span>
                       <span class="price-tag">{{ number_format($nextTrip->giatour->nguoiLon, 0, ',', '.') }}₫</span>
                     </div>
                     <div class="card-details">

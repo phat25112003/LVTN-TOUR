@@ -26,7 +26,6 @@ class ThongTinUserController extends Controller
             return redirect()->route('user.login')->with('error', 'Vui lòng đăng nhập trước.');
         }
 
-        // Lấy tất cả đặt chỗ kèm tour và chuyến tour
         $datCho = $user->datCho()->with('tour', 'chuyenTour')->orderByDesc('ngayDat')->get();
         return view('user.thongtinuser', compact('user', 'datCho'));
     }

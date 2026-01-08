@@ -24,7 +24,7 @@
             </ul>
           </li>
           <li><a href="{{ route('gioithieu') }}">Giới thiệu</a></li>
-              
+          <li><a href="{{ route('lienhe') }}">Liên hệ</a></li>
 
           <!-- <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>

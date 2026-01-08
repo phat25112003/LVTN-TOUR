@@ -22,9 +22,9 @@ class NguoiDung extends Authenticatable implements AuthenticatableContract
     }
 
     // Mối quan hệ với bảng đánh giá (danhGia)
-    public function danhGia()
+    public function binhluan()
     {
-        return $this->hasMany(DanhGia::class, 'maNguoiDung');
+        return $this->hasMany(BinhLuan::class, 'maNguoiDung');
     }
 
     // Mối quan hệ với bảng đặt chỗ (datCho)

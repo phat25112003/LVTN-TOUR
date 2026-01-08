@@ -104,55 +104,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Exclusive Offers -->
-        <div class="row mb-5">
-          <div class="col-12">
-            <h3 class="section-subtitle">Limited-Time Offers</h3>
-            <div class="offers-container">
-              <div class="offer-card">
-                <div class="offer-image">
-                  <img src="assets/img/travel/showcase-12.webp" alt="Early Bird Special" class="img-fluid">
-                </div>
-                <div class="offer-content">
-                  <div class="offer-tag">Early Bird</div>
-                  <h4>Save 25% on Summer Departures</h4>
-                  <p>Book your 2024 European adventure before March 31st and enjoy significant savings on our most popular routes.</p>
-                  <div class="offer-validity">Valid until March 31, 2024</div>
-                  <a href="#" class="btn btn-accent">Claim Offer</a>
-                </div>
-              </div>
-
-              <div class="offer-card">
-                <div class="offer-image">
-                  <img src="assets/img/travel/showcase-6.webp" alt="Last Minute Deal" class="img-fluid">
-                </div>
-                <div class="offer-content">
-                  <div class="offer-tag">Last Minute</div>
-                  <h4>African Safari - 30% Off</h4>
-                  <p>Join our next departure to Tanzania and Kenya with luxury accommodations and expert guides.</p>
-                  <div class="offer-validity">Departure: February 20th</div>
-                  <a href="#" class="btn btn-accent">Book Now</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Expert Consultation CTA -->
-        <div class="row">
-          <div class="col-lg-8 mx-auto">
-            <div class="consultation-cta">
-              <h3>Can't Find What You're Looking For?</h3>
-              <p>Our travel designers craft bespoke journeys tailored to your unique preferences, schedule, and dreams.</p>
-              <div class="cta-actions">
-                <a href="#" class="btn btn-primary">Speak with an Expert</a>
-                <a href="#" class="btn btn-text">Browse Custom Tours</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
     </section><!-- /Travel Tours Section -->
