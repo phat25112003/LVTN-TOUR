@@ -317,7 +317,7 @@
         const template = document.getElementById('tripTemplate').content.cloneNode(true);
         const tripItem = template.querySelector('.trip-item');
 
-        tripItem.querySelector('.trip-number').textContent = Chuyến ${tripCount};
+        tripItem.querySelector('.trip-number').textContent = `Chuyến ${tripCount}`;
         tripItem.querySelector('input[name="maChuyen[]"]').value = '';
 
         const ngayBatDauInput = tripItem.querySelector('.ngayBatDau');
@@ -345,7 +345,7 @@
 
     function updateTripNumbers() {
         document.querySelectorAll('.trip-number').forEach((el, i) => {
-            el.textContent = Chuyến ${i + 1};
+            el.textContent = `Chuyến ${i + 1}`;
         });
     }
 
@@ -383,7 +383,7 @@
                 if (diffDays !== soNgayTour) {
                     hasError = true;
                     let errorEl = item.querySelector('.error-ngay');
-                    errorEl.textContent = Phải đúng ${soNgayTour} ngày!;
+                    errorEl.textContent = `Phải đúng ${soNgayTour} ngày!`;
                 }
             }
         });
@@ -408,3 +408,7 @@
 </style>
 @endpush
 @endsection
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+@endpush
