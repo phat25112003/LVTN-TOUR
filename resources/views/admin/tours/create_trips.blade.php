@@ -26,6 +26,11 @@
                                 <label>Ngày bắt đầu <span class="text-danger">*</span></label>
                                 <input type="date" name="ngayBatDau[]" class="form-control ngayBatDau" required>
                                 <small class="text-danger d-block mt-1 error-ngay"></small>
+                                @error('ngayBatDau.*')
+                                    <div class="text-danger small mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                             <div class="col-md-4">
                                 <label>Ngày kết thúc <span class="text-danger">*</span></label>
@@ -92,7 +97,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="text-danger fw-bold">Giá người lớn (VNĐ) <span class="text-danger">*</span></label>
-                                <input type="number" name="giaNguoiLon[]" class="form-control giaNguoiLon" min="0" step="10000" required>
+                                <input type="number" name="giaNguoiLon[]" class="form-control giaNguoiLon" min="0" step="1000" required>
                             </div>
                         </div>
 
@@ -125,6 +130,11 @@
                             <label>Ngày bắt đầu <span class="text-danger">*</span></label>
                             <input type="date" name="ngayBatDau[]" class="form-control ngayBatDau" required>
                             <small class="text-danger d-block mt-1 error-ngay"></small>
+                            @error('ngayBatDau.*')
+                                <div class="text-danger small mt-1">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
                         <div class="col-md-4">
                             <label>Ngày kết thúc <span class="text-danger">*</span></label>
@@ -191,7 +201,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="text-danger fw-bold">Giá người lớn (VNĐ) <span class="text-danger">*</span></label>
-                            <input type="number" name="giaNguoiLon[]" class="form-control giaNguoiLon" min="0" step="10000" required>
+                            <input type="number" name="giaNguoiLon[]" class="form-control giaNguoiLon" min="0" step="1000" required>
                         </div>
                     </div>
 

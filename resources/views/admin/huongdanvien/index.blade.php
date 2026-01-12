@@ -10,6 +10,21 @@
         @endif
 
         <a href="{{ route('admin.huongdanvien.create') }}" class="add-btn">+ Thêm HDV</a>
+        <!-- TÌM KIẾM THEO TÊN -->
+        <form action="{{ route('admin.huongdanvien.index') }}" method="GET" class="d-flex">
+            <div class="input-group" style="max-width: 350px;">
+                <input type="text" name="search" class="form-control" placeholder="Tìm theo họ tên..."
+                       value="{{ request('search') }}">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fa-solid fa-search"></i>
+                </button>
+            </div>
+            @if(request('search'))
+                <a href="{{ route('admin.huongdanvien.index') }}" class="btn btn-secondary ms-2">
+                    <i class="fa-solid fa-times"></i>
+                </a>
+            @endif
+        </form>
 
         <!-- BẢNG GIỐNG HỆT KHUYẾN MÃI -->
         <div class="admin-card">
@@ -73,14 +88,30 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
+            <!-- PHÂN TRANG ĐẸP, CĂN GIỮA (GIỐNG TRANG ĐỊA ĐIỂM) -->
+            <div class="d-flex justify-content-center mt-4">
+                <nav>
+                    <ul class="pagination pagination-sm">
+                        <!-- Nút Previous -->
+                        <li class="page-item {{ $hdvs->onFirstPage() ? 'disabled' : '' }}">
+                            <a class="page-link" href="{{ $hdvs->previousPageUrl() }}" tabindex="-1">‹</a>
+                        </li>
 
-        <!-- PHÂN TRANG GIỐNG HỆT -->
-        @if($hdvs->hasPages())
-            <div class="pagination-container">
-                {{ $hdvs->appends(request()->query())->links('pagination::simple-default') }}
+                        <!-- Các số trang -->
+                        @foreach($hdvs->getUrlRange(1, $hdvs->lastPage()) as $page => $url)
+                            <li class="page-item {{ $page == $hdvs->currentPage() ? 'active' : '' }}">
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            </li>
+                        @endforeach
+
+                        <!-- Nút Next -->
+                        <li class="page-item {{ $hdvs->hasMorePages() ? '' : 'disabled' }}">
+                            <a class="page-link" href="{{ $hdvs->nextPageUrl() }}">›</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
-        @endif
+        </div>
     </div>
 @endsection
 @push('styles')

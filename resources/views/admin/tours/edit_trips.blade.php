@@ -29,6 +29,11 @@
                                 <label>Ngày bắt đầu <span class="text-danger">*</span></label>
                                 <input type="date" name="ngayBatDau[]" class="form-control ngayBatDau" required>
                                 <small class="text-danger d-block mt-1 error-ngay"></small>
+                                @error('ngayBatDau.*')
+                                    <div class="text-danger small mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                             <div class="col-md-4">
                                 <label>Ngày kết thúc <span class="text-danger">*</span></label>
@@ -85,7 +90,7 @@
                         <div class="row g-3 mt-3 border-top pt-3 bg-light p-3 rounded">
                             <div class="col-md-4">
                                 <label class="text-danger fw-bold">Giá người lớn (VNĐ) <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control giaNguoiLon" min="0" step="10000" required>
+                                <input type="number" class="form-control giaNguoiLon" min="0" step="1000" required>
                                 <input type="hidden" name="giaNguoiLon[]" class="giaNguoiLonHidden">
                             </div>
                             <div class="col-md-4">
@@ -133,6 +138,11 @@
                                 <input type="date" name="ngayBatDau[]" class="form-control ngayBatDau" 
                                        value="{{ old('ngayBatDau.' . $index, $chuyen->ngayBatDau->format('Y-m-d')) }}" required>
                                 <small class="text-danger d-block mt-1 error-ngay"></small>
+                                @error('ngayBatDau.*')
+                                    <div class="text-danger small mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                             <div class="col-md-4">
                                 <label>Ngày kết thúc <span class="text-danger">*</span></label>
@@ -201,7 +211,7 @@
                         <div class="row g-3 mt-3 border-top pt-3 bg-light p-3 rounded">
                             <div class="col-md-4">
                                 <label class="text-danger fw-bold">Giá người lớn (VNĐ) <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control giaNguoiLon" min="0" step="10000" 
+                                <input type="number" class="form-control giaNguoiLon" min="0" step="1000" 
                                        value="{{ old('giaNguoiLon.' . $index, $chuyen->giaTour->nguoiLon ?? 0) }}" required>
                                 <input type="hidden" name="giaNguoiLon[]" class="giaNguoiLonHidden">
                             </div>

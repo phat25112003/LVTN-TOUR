@@ -45,11 +45,11 @@ class DatTourController extends Controller
      */
     // app/Http/Controllers/User/DatTourController.php
 
-    public function getTourDates($maTour)
+public function getTourDates($maTour)
     {
         $chuyen = ChuyenTour::with('giatour')
             ->where('maTour', $maTour)
-            ->where('tinhTrangChuyen', 'HoatDong')
+            ->where('tinhTrangChuyen', 'ChuaDuKhach')
             ->select(
                 'maChuyen',
                 'ngayBatDau',

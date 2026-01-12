@@ -17,18 +17,18 @@ class Tour extends Model
         'hinhAnh',
         'diemDen',
         'maDanhMuc',
+        'maLoai',
         'giaPhongDon',
     ];
 
     // === Relationships ===
+    public function loaidulich()
+    {
+        return $this->belongsTo(LoaiDuLich::class, 'maLoai');
+    }
     public function hinhAnh()
     {
         return $this->hasMany(HinhAnh::class, 'maTour', 'maTour');
-    }
-
-    public function danhGia()
-    {
-        return $this->hasMany(DanhGia::class, 'maTour', 'maTour');
     }
 
     public function datCho()

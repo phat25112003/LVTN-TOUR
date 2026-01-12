@@ -42,7 +42,7 @@
             </div>
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">Danh mục</label>
+                <label class="form-label">Khu vực</label>
                 <select name="maDanhMuc" class="form-select">
                     <option value="">Chưa chọn</option>
                     @foreach ($danhmucs ?? [] as $danhmuc)
@@ -54,10 +54,25 @@
             </div>
         </div>
 
-        <!-- THÊM TRƯỜNG GIÁ PHÒNG ĐƠN -->
+        <!-- THÊM TRƯỜNG CHỌN LOẠI DU LỊCH -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Loại du lịch</label>
+                <select name="maLoai" class="form-select">
+                    <option value="">Chưa chọn</option>
+                    @foreach ($loaiDuLichs ?? [] as $loai)
+                        <option value="{{ $loai->maLoai }}" {{ old('maLoai') == $loai->maLoai ? 'selected' : '' }}>
+                            {{ $loai->tenLoai }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <!-- TRƯỜNG GIÁ PHÒNG ĐƠN -->
         <div class="mb-3">
             <label class="form-label">Giá phụ thu phòng đơn (VNĐ) <span class="text-danger">*</span></label>
-            <input type="number" name="giaPhongDon" class="form-control" value="{{ old('giaPhongDon', 0) }}" min="0" step="10000" required>
+            <input type="number" name="giaPhongDon" class="form-control" value="{{ old('giaPhongDon', 0) }}" min="0" step="1000" required>
             <small class="text-muted">Phụ phí khi khách chọn phòng đơn (ví dụ: 2.000.000)</small>
         </div>
 
@@ -113,8 +128,6 @@
         border-radius: 8px;
     }
 </style>
-@endpush
-@push('styles')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 @endpush

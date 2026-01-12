@@ -12,10 +12,22 @@ use Illuminate\Validation\Rule;
 
 class KhuyenMaiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $admin = auth('admin')->user();
-        $khuyenMais = KhuyenMai::orderByDesc('created_at')->get();
+
+        $query = KhuyenMai::query();
+
+        // Tìm kiếm theo mã khuyến mãi
+        if ($request->filled('search')) {
+            $keyword = $request->search;
+            $query->where('code', 'LIKE', "%{$keyword}%");
+        }
+
+        // Sắp xếp theo mới nhất và phân trang
+        $khuyenMais = $query->orderByDesc('created_at')
+                            ->paginate(15)
+                            ->withQueryString(); // Giữ từ khóa tìm kiếm khi chuyển trang
 
         return view('admin.khuyenmai.index', compact('khuyenMais', 'admin'));
     }

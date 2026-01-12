@@ -254,7 +254,13 @@
             <p><strong>Thời gian:</strong> {{ $tour->thoiGian }}</p>
             <p><strong>Điểm đến:</strong> {{ $tour->diemDen }}</p>
             @if($tour->danhmuc)
-                <p><strong>Danh mục:</strong> {{ $tour->danhmuc->tenDanhMuc }}</p>
+                <p><strong>Khu vực:</strong> {{ $tour->danhmuc->tenDanhMuc }}</p>
+            @endif
+            <!-- THÊM LOẠI DU LỊCH -->
+            @if($tour->loaidulich)
+                <p><strong>Loại du lịch:</strong> {{ $tour->loaidulich->tenLoai }}</p>
+            @else
+                <p><strong>Loại du lịch:</strong> <em class="text-muted">Chưa chọn</em></p>
             @endif
             <p><strong>Phụ thu phòng đơn:</strong> {{ number_format($tour->giaPhongDon) }} VNĐ</p>
         </div>
@@ -394,10 +400,6 @@
 </div>
 @endsection
 
-@push('styles')
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-@endpush
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
