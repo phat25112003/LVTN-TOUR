@@ -266,10 +266,10 @@
                         </label>
                       </div>
                       <div class="payment-method">
-                        <input type="radio" name="phuongThucThanhToan" id="paypal" value="paypal">
-                        <label for="paypal">
+                        <input type="radio" name="phuongThucThanhToan" id="vnpay" value="vnpay">
+                        <label for="vnpay">
                           <i class="bi bi-paypal"></i>
-                          PayPal
+                          VNPAY
                         </label>
                       </div>
                       <div class="payment-method">

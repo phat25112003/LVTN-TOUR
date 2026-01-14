@@ -271,11 +271,11 @@
                           Momo
                         </label>
                       </div>
-                      <div class="payment-method {{ $datcho->phuongThucThanhToan == 'paypal' ? 'active' : '' }}">
-                        <input type="radio" name="phuongThucThanhToan" id="paypal" value="paypal">
-                        <label for="paypal">
+                      <div class="payment-method {{ $datcho->phuongThucThanhToan == 'vnpay' ? 'active' : '' }}">
+                        <input type="radio" name="phuongThucThanhToan" id="vnpay" value="vnpay">
+                        <label for="vnpay">
                           <i class="bi bi-paypal"></i>
-                          PayPal
+                          VNPAY
                         </label>
                       </div>
                       <div class="payment-method {{ $datcho->phuongThucThanhToan == 'tại văn phòng' ? 'active' : '' }}">

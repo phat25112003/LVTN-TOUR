@@ -88,7 +88,7 @@ public function update(Request $request, $maDatCho)
         'emBe'     => 'required|integer|min:0',
         'address'  => 'required|string|max:255',
         'phone'    => 'required|string|max:20',
-        'phuongThucThanhToan' => 'required|in:momo,paypal,tại văn phòng',
+        'phuongThucThanhToan' => 'required|in:momo,vnpay,tại văn phòng',
         'maChuyen' => 'required|exists:chuyentour,maChuyen',
         'ghiChu'   => 'nullable|string|max:500',
     ]);

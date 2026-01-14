@@ -62,7 +62,6 @@
         </div>
     </div>
 </div>
-        <!-- 4 Ô CHÍNH -->
         <div class="metric-row">
             <div class="stat-card" style="background: linear-gradient(135deg, #1cc88a, #17a673);">
                 <p>Tổng Doanh Thu</p>
@@ -82,7 +81,7 @@
             </div>
         </div>
 
-        <!-- 4 Ô NHỎ SIÊU CHUẨN -->
+        <!-- 4 Ô NHỎ SIÊU -->
         <div class="mini-stats">
             <!-- HÔM NAY -->
             <div class="mini-card today">
@@ -810,4 +809,8 @@
         }
         window.addEventListener('resize', () => slideGuides(0));
     </script>
+@endpush
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 @endpush

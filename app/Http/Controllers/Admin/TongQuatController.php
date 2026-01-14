@@ -23,7 +23,8 @@ class TongQuatController extends Controller
         $admin = auth()->guard('admin')->user();
         $totalTours = Tour::count();
         $totalBookings = DatCho::count();
-        $totalRevenue = ThanhToan::sum('soTien');
+        $totalRevenue = \App\Models\Thanhtoan::where('tinhTrangThanhToan', 'Đã thanh toán')
+                ->sum('soTien');
         $totalUsers = NguoiDung::count();
 
         $topBookedTours = Tour::select('tour.maTour', 'tour.tieuDe', 'tour.diemDen', DB::raw('COUNT(datcho.maDatCho) as total_bookings'))

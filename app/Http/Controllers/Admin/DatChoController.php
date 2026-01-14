@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\DB;
 
 class DatChoController extends Controller
 {
-// App\Http\Controllers\Admin\DatChoController.php
 
     public function index()
     {

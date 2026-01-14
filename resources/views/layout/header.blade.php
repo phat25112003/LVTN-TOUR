@@ -23,6 +23,13 @@
               @endforeach
             </ul>
           </li>
+          <li class="dropdown"><a href="#"><span>Loại du lịch</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              @foreach($loaidulichs as $loaiDuLich)
+                <li><a href="{{ route('tour.list', ['query' => $loaiDuLich->tenLoai, 'type' => 'loaidulich']) }}">{{ $loaiDuLich->tenLoai }}</a></li>
+              @endforeach
+            </ul>
+          </li>
           <li><a href="{{ route('gioithieu') }}">Giới thiệu</a></li>
           <li><a href="{{ route('lienhe') }}">Liên hệ</a></li>
 

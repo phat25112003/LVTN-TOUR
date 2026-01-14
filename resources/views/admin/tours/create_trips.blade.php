@@ -338,7 +338,11 @@
                 if (diffDays !== soNgayTour) {
                     hasError = true;
                     let errorEl = item.querySelector('.error-ngay');
+<<<<<<< HEAD
                     errorEl.textContent = Phải đúng ${soNgayTour} ngày!;
+=======
+                    errorEl.textContent = `Phải đúng ${soNgayTour} ngày!`;
+>>>>>>> 2c1a80dc8ce7df3d80a352e41e1d6849106c89bd
                 }
             }
         });

@@ -80,7 +80,7 @@
                             class="img-fluid">
                     @endif
 
-                    <div class="tour-availability">Limited spots</div>
+                    <div class="tour-availability">{{$tour->loaidulich->tenLoai }}</div>
                   </div>
                   <div class="tour-details">
                     <h4>{{ $tour->tieuDe }}</h4>

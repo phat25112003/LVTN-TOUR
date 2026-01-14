@@ -56,13 +56,12 @@
                                             <th width="12%">Giới Tính</th>
                                             <th width="15%">Phòng</th>
                                             <th width="12%">Mã Booking</th>
-                                            <th width="15%">Trạng thái thanh toán</th> <!-- CỘT MỚI -->
+                                            <th width="15%">Trạng thái thanh toán</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($khachs as $index => $khach)
                                             @php
-                                                // Lấy trạng thái thanh toán từ đơn đặt chỗ của khách này
                                                 $datChoCuaKhach = $chuyen->datCho->firstWhere('maDatCho', $khach->maDatCho);
                                                 $trangThaiTT = $datChoCuaKhach?->thanhtoan?->tinhTrangThanhToan ?? 'Chưa thanh toán';
                                                 $isDaThanhToan = $trangThaiTT === 'Đã thanh toán';
@@ -87,6 +86,7 @@
                                                         {{ $trangThaiTT }}
                                                     </span>
                                                 </td>
+                                                <td class="fw-500">{{ $khach->maVe }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>

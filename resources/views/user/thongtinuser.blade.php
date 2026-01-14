@@ -212,7 +212,7 @@
                     <script>
                         window.countdowns.push({
                             id: "{{ $dat->maDatCho }}",
-                            ngayhethan: "{{ $dat->ngayhethan }}"
+                            ngayhethan: {{ \Carbon\Carbon::parse($dat->ngayhethan)->timestamp * 1000 }},
                         });
                     </script>
                 @endif

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\KhuyenMaiController;
 use App\Http\Controllers\Admin\DanhMucController;
 use App\Http\Controllers\Admin\TongQuatController;
 use App\Http\Controllers\Admin\DiaDiemController;
+use App\Http\Controllers\Admin\KhachChuyenController;
 use App\Http\Controllers\User\TourDetailController;
 use App\Http\Controllers\User\TourUserController;
 use App\Http\Controllers\User\DatTourController;
@@ -158,11 +159,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/datcho/export-khach-chuyen/{maChuyen}', [DatChoController::class, 'exportKhachChuyen'])
      ->name('datcho.export.khachchuyen');
-    
-    
-});
-Route::get('/tours/{maTour}', [TourDetailController::class, 'show'])->name('tour.detail');
 
+
+    Route::controller(KhachChuyenController::class)
+    ->prefix('khach-chuyen')
+    ->name('khachchuyen.')
+    ->group(function () {
+        Route::post('/', 'store')->name('store');
+        Route::get('/', 'index')->name('index');
+        Route::put('/khach/{maKhach}', 'update')->name('update');     // Sửa khách
+        Route::delete('/khach/{maKhach}', 'destroy')->name('destroy'); // Xóa khách
+    });
+
+
+});
+
+
+
+Route::get('/tours/{maTour}', [TourDetailController::class, 'show'])->name('tour.detail');
 
 // Trang chủ
 Route::get('/', [TourUserController::class, 'index'])->name('home');
@@ -211,6 +225,10 @@ Route::post('/user/thanhtoan', [ThanhToanController::class, 'thanhtoan'])
      ->name('user.thanhtoan');
 Route::get('/user/momo-return', [ThanhToanController::class, 'momoReturn'])
      ->name('user.momo.return');
+//thanh toan vnpay
+Route::get('/user/vnpay-return', [ThanhToanController::class, 'vnpayReturn'])
+     ->name('user.vnpay.return');
+
 //binh luận tour
 Route::middleware(['auth'])->group(function () {
     Route::post('/tour/{tour}/binh-luan', [BinhLuanController::class, 'store'])->name('tour.binhluan.store');

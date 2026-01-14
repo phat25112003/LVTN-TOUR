@@ -8,15 +8,18 @@ class KhachThamGia extends Model
 {
     protected $table = 'khachthamgia';
     protected $primaryKey = 'maKhach';
-    public $timestamps = false;
+
     protected $fillable = [
         'hoTenKhach',
-        'gioiTinh',
         'tuoi',
+        'gioiTinh',
+        'luaChonPhong',
         'maDatCho',
-        'luaChonPhong'
+        'maVe',
     ];
-    public function datcho()
+    public $timestamps = false; // ✅ QUAN TRỌNG
+
+    public function datCho()
     {
         return $this->belongsTo(DatCho::class, 'maDatCho', 'maDatCho');
     }

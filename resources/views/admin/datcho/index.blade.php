@@ -5,9 +5,9 @@
 <div class="booking-container">
         <h2 class="text-center mb-4 fw-bold text-primary">Danh Sách Booking</h2>
         <!-- Nút mở modal danh sách chuyến tour -->
-        <button type="button" class="btn btn-success btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#modalDanhSachChuyen">
-            <i class="fas fa-bus me-2"></i> Xem Danh Sách Các Chuyến Tour
-        </button>
+<button type="button" class="btn btn-success btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#modalDanhSachChuyen">
+    <i class="fas fa-bus me-2"></i> Xem Danh Sách Các Chuyến Tour
+</button>
     {{-- THÔNG BÁO --}}
     @if (session('success'))
         <div class="notify notify-success">{{ session('success') }}</div>
@@ -174,3 +174,7 @@
 @include('admin.datcho.partials._modal_chuyen_tour')
 @include('admin.datcho.partials._modal_khach_chuyen')
 @endsection
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+@endpush

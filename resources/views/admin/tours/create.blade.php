@@ -32,7 +32,7 @@
 
         <div class="mb-3">
             <label class="form-label">Mô tả <span class="text-danger">*</span></label>
-            <textarea name="moTa" rows="4" class="form-control" required>{{ old('moTa') }}</textarea>
+            <textarea name="moTa" rows="6" class="form-control" required>{{ old('moTa') }}</textarea>
         </div>
 
         <div class="row">
@@ -54,87 +54,67 @@
             </div>
         </div>
 
+        <!-- THÊM TRƯỜNG GIÁ PHÒNG ĐƠN -->
+        <div class="mb-3">
+            <label class="form-label">Giá phụ thu phòng đơn (VNĐ) <span class="text-danger">*</span></label>
+            <input type="number" name="giaPhongDon" class="form-control" value="{{ old('giaPhongDon', 0) }}" min="0" step="10000" required>
+            <small class="text-muted">Phụ phí khi khách chọn phòng đơn (ví dụ: 2.000.000)</small>
+        </div>
+
         <div class="mb-3">
             <label class="form-label">Hình ảnh Tour (nhiều ảnh)</label>
             <input type="file" name="hinhAnh[]" multiple class="form-control" accept="image/*">
-            <small class="text-muted">Tối đa 5MB/ảnh, định dạng: jpg, png, webp</small>
+            <small class="text-muted">Tối đa 5MB/ảnh, định dạng: jpg, png, webp, gif</small>
         </div>
 
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-success btn-lg">
+        <div class="text-center mt-5">
+            <button type="submit" class="btn btn-success btn-lg px-5">
                 Lưu & Tiếp tục
             </button>
-            <a href="{{ route('admin.tours.index') }}" class="btn btn-secondary btn-lg">Hủy</a>
+            <a href="{{ route('admin.tours.index') }}" class="btn btn-secondary btn-lg px-5 ms-3">
+                Hủy
+            </a>
         </div>
     </form>
 </div>
 @endsection
 
 @push('styles')
-    <style>
-        .container-fluid {
-            padding: 20px;
-        }
-        h3 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .bg-white {
-            background-color: #fff;
-        }
-        .form-label {
-            font-weight: 500;
-        }
-        .form-control, .form-select {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .form-actions {
-            margin-top: 20px;
-        }
-        .btn-success {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .btn-success:hover {
-            background-color: #218838;
-        }
-        .btn-cancel {
-            padding: 10px 20px;
-            background-color: #dc3545;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-left: 10px;
-        }
-        .btn-cancel:hover {
-            background-color: #c82333;
-        }
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
-    </style>
 <style>
+    .container-fluid {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
     .form-control, .form-select {
         border-radius: 6px;
-        padding: 10px;
+        padding: 10px 12px;
+        border: 1px solid #ced4da;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
     }
     .btn-success {
         background: #28a745;
         border: none;
-        padding: 12px 30px;
         font-weight: 600;
     }
-    .btn-success:hover { background: #218838; }
-    .btn-secondary { padding: 12px 30px; }
+    .btn-success:hover {
+        background: #218838;
+    }
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+    }
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+    .alert-danger {
+        border-radius: 8px;
+    }
 </style>
+@endpush
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 @endpush

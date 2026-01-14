@@ -18,7 +18,10 @@ class Tour extends Model
         'diemDen',
         'maDanhMuc',
         'giaPhongDon',
-        'maLoai'
+        'maLoai',
+        'isdinhky',
+        'chuky',
+        'ngayapdung',
     ];
 
     // === Relationships ===

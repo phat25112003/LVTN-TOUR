@@ -10,3 +10,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command(ExpireDatCho::class)->everyMinute();
+Schedule::command(CapNhatTinhTrangChuyen::class )
+    ->dailyAt('00:01');
