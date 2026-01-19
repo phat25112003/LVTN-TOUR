@@ -14,13 +14,17 @@ class KhachThamGia extends Model
         'tuoi',
         'gioiTinh',
         'luaChonPhong',
-        'maDatCho',
-        'maVe',
+        'maChuyen',
+        'maDatCho'
     ];
     public $timestamps = false; // ✅ QUAN TRỌNG
 
     public function datCho()
     {
         return $this->belongsTo(DatCho::class, 'maDatCho', 'maDatCho');
+    }
+    public function chuyenTour()
+    {
+        return $this->belongsTo(ChuyenTour::class, 'maChuyen');
     }
 }

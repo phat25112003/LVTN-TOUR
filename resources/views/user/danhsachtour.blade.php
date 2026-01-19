@@ -10,7 +10,7 @@
   <main class="main">
 
     <!-- Page Title -->
-    <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
+    <div class="page-title dark-background" style="background-image: url('{{ asset('assets/img/travel/showcase-11.webp') }}');">
       <div class="container position-relative">
         <h1>Danh Sách Tour</h1>
         <p>Trải nghiệm du lịch được tuyển chọn kỹ lưỡng, biến hành trình thành những câu chuyện khó quên. Tìm theo sở thích của bạn và tìm kiếm chuyến đi hoàn hảo.</p>

@@ -12,10 +12,22 @@ use Illuminate\Validation\Rule;
 
 class KhuyenMaiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $admin = auth('admin')->user();
-        $khuyenMais = KhuyenMai::orderByDesc('created_at')->get();
+
+        $query = KhuyenMai::query();
+
+        // Tìm kiếm theo mã khuyến mãi
+        if ($request->filled('search')) {
+            $keyword = $request->search;
+            $query->where('code', 'LIKE', "%{$keyword}%");
+        }
+
+        // Sắp xếp theo mới nhất và phân trang
+        $khuyenMais = $query->orderByDesc('created_at')
+                            ->paginate(15)
+                            ->withQueryString(); // Giữ từ khóa tìm kiếm khi chuyển trang
 
         return view('admin.khuyenmai.index', compact('khuyenMais', 'admin'));
     }
@@ -51,7 +63,6 @@ class KhuyenMaiController extends Controller
             'chuyenIDs.*'           => 'exists:chuyentour,maChuyen',
 
             'soTienToiThieu'        => 'nullable|numeric|min:0',
-            'soLuongNguoiToiThieu'  => 'nullable|integer|min:1',
             'ngayBatDau'            => 'required|date',
             'ngayKetThuc'           => 'required|date|after_or_equal:ngayBatDau',
             'soLuotSuDungToiDa'     => 'nullable|integer|min:1',
@@ -61,7 +72,7 @@ class KhuyenMaiController extends Controller
 
         $data = $request->only([
             'code', 'tenKM', 'loaiKM', 'giaTri', 'giaTriToiDa', 'apDung',
-            'soTienToiThieu', 'soLuongNguoiToiThieu',
+            'soTienToiThieu', 
             'ngayBatDau', 'ngayKetThuc', 'soLuotSuDungToiDa',
             'chiDungMoiNguoi1Lan', 'trangThai'
         ]);
@@ -131,7 +142,6 @@ class KhuyenMaiController extends Controller
             'chuyenIDs.*'           => 'exists:chuyentour,maChuyen',
 
             'soTienToiThieu'        => 'nullable|numeric|min:0',
-            'soLuongNguoiToiThieu'  => 'nullable|integer|min:1',
             'ngayBatDau'            => 'required|date',
             'ngayKetThuc'           => 'required|date|after_or_equal:ngayBatDau',
             'soLuotSuDungToiDa'     => 'nullable|integer|min:1',
@@ -141,7 +151,7 @@ class KhuyenMaiController extends Controller
 
         $data = $request->only([
             'code', 'tenKM', 'loaiKM', 'giaTri', 'giaTriToiDa', 'apDung',
-            'soTienToiThieu', 'soLuongNguoiToiThieu',
+            'soTienToiThieu',
             'ngayBatDau', 'ngayKetThuc', 'soLuotSuDungToiDa',
             'chiDungMoiNguoi1Lan', 'trangThai'
         ]);

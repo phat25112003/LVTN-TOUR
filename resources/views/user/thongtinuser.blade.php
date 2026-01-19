@@ -8,7 +8,7 @@
   <main class="main">
 
     <!-- Page Title -->
-    <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
+    <div class="page-title dark-background" style="background-image: url('{{ asset('assets/img/travel/showcase-11.webp') }}');">
       <div class="container position-relative">
         <h1>Thông tin tài khoản</h1>
       </div>
@@ -176,10 +176,22 @@
                             <span id="countdown-{{ $dat->maDatCho }}" class="text-danger fw-bold"></span>
                         </div>
                     @endif
-                    <a href="{{ route('user.suatourdetail.index', ['maDatCho' => $dat->maDatCho]) }}" 
-                      class="btn btn-lg ">
-                      <i class="bi bi-gear"></i>
-                    </a>
+                    
+<a href="{{ route('user.suatourdetail.index', ['maDatCho' => $dat->maDatCho]) }}"
+   class="btn btn-lg"
+   onclick="return checkXacNhan({{ $dat->xacNhan }});">
+    <i class="bi bi-gear"></i>
+</a>
+<script>
+function checkXacNhan(xacNhan) {
+    if (xacNhan == 1) {
+        alert('Đơn đã thanh toán, không thể chỉnh sửa.');
+        return false; // ❌ không cho chuyển trang
+    }
+    return true; // ✔ cho đi tiếp
+}
+</script>
+
                     <form action="{{ route('user.thongtinuser.destroy', ['maDatCho' => $dat->maDatCho]) }}" method="POST" class="d-inline">
                       @csrf
                       @method('DELETE')

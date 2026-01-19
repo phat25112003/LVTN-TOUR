@@ -15,7 +15,7 @@ class CapNhatTinhTrangChuyen extends Command
 
     public function handle()
     {
-        ChuyenTourStatusService::capNhatTrangThaiTuDong();
+        ChuyenTourStatusService::capNhatTatCa();
 
         $this->info('Đã cập nhật trạng thái chuyến tour.');
     }

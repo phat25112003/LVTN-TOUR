@@ -4,79 +4,69 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\KhachThamGia;
+use App\Models\ChuyenTour;
 use App\Models\Tour;
 use App\Models\DatCho;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\KhachThamGiaChuyenExport;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class KhachChuyenController extends Controller
 {
-    /**
-     * Hiển thị trang danh sách chuyến tour có khách tham gia
-     */
-    public function index()
-    {
-        $admin = auth('admin')->user();
+public function index()
+{
+    $admin = auth('admin')->user();
 
-        // Load dữ liệu tour + chuyến + đặt chỗ + khách + thanh toán để view dùng
-        $tours = Tour::whereHas('chuyentour.datCho.khachThamGia')
-            ->with([
-                'chuyentour' => function ($query) {
-                    $query->with([
-                        'datCho' => function ($q) {
-                            $q->with(['khachThamGia', 'thanhtoan']);
-                        }
-                    ]);
-                }
-            ])
-            ->orderByDesc('maTour')
-            ->get();
-
-        return view('admin.khach-chuyen.index', compact('tours', 'admin'));
-    }
-
-    /**
-     * Thêm khách mới vào chuyến (dùng cho modal thêm khách)
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'maChuyen'     => 'required|exists:chuyentour,maChuyen',
-            'hoTenKhach'   => 'required|string|max:100',
-            'tuoi'         => 'required|integer|min:1|max:120',
-            'gioiTinh'     => ['required', Rule::in(['Nam', 'Nu'])],
-            'luaChonPhong' => ['required', Rule::in(['Ghep', 'PhongDon'])],
-            'maVe'         => 'required|string|max:255|unique:khachthamgia,maVe',
-        ], [
-            'maChuyen.exists'       => 'Chuyến tour không tồn tại.',
-            'hoTenKhach.required'   => 'Họ tên không được để trống.',
-            'tuoi.required'         => 'Tuổi không được để trống.',
-            'tuoi.min'              => 'Tuổi phải lớn hơn 0.',
-            'tuoi.max'              => 'Tuổi không hợp lý.',
-            'gioiTinh.in'           => 'Giới tính không hợp lệ.',
-            'luaChonPhong.in'       => 'Lựa chọn phòng không hợp lệ.',
-            'maVe.required'         => 'Mã vé không được để trống.',
-            'maVe.unique'           => 'Mã vé đã tồn tại.',
-        ]);
-
-        // Lấy một đặt chỗ bất kỳ của chuyến này để gán khách (có thể cải tiến sau)
-        $datCho = DatCho::where('maChuyen', $request->maChuyen)->first();
-
-        if (!$datCho) {
-            return back()->with('error', 'Không tìm thấy đặt chỗ nào cho chuyến này để thêm khách.');
+    $tours = Tour::with([
+        'chuyentour' => function ($query) {
+            $query->with([
+                'datCho' => function ($q) {
+                    $q->with(['khachThamGia', 'thanhtoan']);
+                },
+                'khachGhep' // ← load khách ghép riêng
+            ]);
         }
+    ])
+    ->whereHas('chuyentour', function ($q) {
+        $q->whereHas('datCho.khachThamGia') // có khách chính
+          ->orWhereHas('khachGhep'); // có khách ghép
+    })
+    ->orderByDesc('maTour')
+    ->get();
 
-        KhachThamGia::create([
-            'hoTenKhach'   => $request->hoTenKhach,
-            'tuoi'         => $request->tuoi,
-            'gioiTinh'     => $request->gioiTinh,
-            'luaChonPhong' => $request->luaChonPhong,
-            'maDatCho'     => $datCho->maDatCho,
-            'maVe'         => $request->maVe,
-        ]);
+    return view('admin.khach-chuyen.index', compact('tours', 'admin'));
+}
+/**
+ * Thêm khách ghép tour - maDatCho = NULL
+ */
+public function store(Request $request)
+{
+    $request->validate([
+        'maChuyen'     => 'required|exists:chuyentour,maChuyen',
+        'hoTenKhach'   => 'required|string|max:100',
+        'tuoi'         => 'required|integer|min:1|max:120',
+        'gioiTinh'     => ['required', Rule::in(['Nam', 'Nu'])],
+        'luaChonPhong' => ['required', Rule::in(['Ghep', 'PhongDon'])],
+    ]);
 
-        return back()->with('success', 'Thêm khách mới thành công!');
-    }
+    // Khách ghép: maDatCho = null, maChuyen = chuyến được chọn
+    KhachThamGia::create([
+        'hoTenKhach'   => $request->hoTenKhach,
+        'tuoi'         => $request->tuoi,
+        'gioiTinh'     => $request->gioiTinh,
+        'luaChonPhong' => $request->luaChonPhong,
+        'maDatCho'     => null, // Khách ghép
+        'maChuyen'     => $request->maChuyen, // Liên kết chuyến
+    ]);
+
+    // Tăng số lượng đã đặt
+    $chuyen = ChuyenTour::find($request->maChuyen);
+    $chuyen->increment('soLuongDaDat');
+
+    return back()->with('success', 'Thêm khách ghép tour thành công!');
+}
 
     /**
      * Cập nhật thông tin khách tham gia
@@ -88,7 +78,6 @@ class KhachChuyenController extends Controller
             'tuoi'         => 'required|integer|min:1|max:120',
             'gioiTinh'     => ['required', Rule::in(['Nam', 'Nu'])],
             'luaChonPhong' => ['required', Rule::in(['Ghep', 'PhongDon'])],
-            'maVe'         => 'required|string|max:255',
         ], [
             'hoTenKhach.required'   => 'Họ tên không được để trống.',
             'tuoi.required'         => 'Tuổi không được để trống.',
@@ -96,7 +85,6 @@ class KhachChuyenController extends Controller
             'tuoi.max'              => 'Tuổi không hợp lý.',
             'gioiTinh.in'           => 'Giới tính không hợp lệ.',
             'luaChonPhong.in'       => 'Lựa chọn phòng không hợp lệ.',
-            'maVe.required'         => 'Mã vé không được để trống.',
         ]);
 
         $khach = KhachThamGia::findOrFail($maKhach);
@@ -106,7 +94,6 @@ class KhachChuyenController extends Controller
             'tuoi',
             'gioiTinh',
             'luaChonPhong',
-            'maVe'
         ]));
 
         return redirect()->back()->with('success', 'Cập nhật thông tin khách thành công!');
@@ -115,18 +102,34 @@ class KhachChuyenController extends Controller
     /**
      * Xóa khách tham gia
      */
-    public function destroy($maKhach)
-    {
-        $khach = KhachThamGia::findOrFail($maKhach);
+public function destroy($maKhach)
+{
+    $khach = KhachThamGia::with('datCho.thanhtoan')->findOrFail($maKhach);
 
-        // Có thể thêm kiểm tra bổ sung nếu cần
-        // Ví dụ: không cho xóa nếu chuyến đã khởi hành
-        // if ($khach->datCho->chuyentour->ngayBatDau < now()) {
-        //     return back()->with('error', 'Không thể xóa khách khi chuyến đã khởi hành.');
-        // }
-
-        $khach->delete();
-
-        return redirect()->back()->with('success', 'Xóa khách thành công!');
+    // Chặn xóa nếu khách có mã đặt chỗ (thuộc đơn chính thức)
+    if ($khach->maDatCho) {
+        return back()->with('error', 'Không thể xóa khách này vì họ thuộc đơn đặt chỗ chính thức!');
     }
+
+    // Nếu là khách ghép (maDatCho = null) → cho xóa
+    $khach->delete();
+
+    // Giảm số lượng đã đặt nếu có maChuyen
+    if ($khach->maChuyen) {
+        ChuyenTour::where('maChuyen', $khach->maChuyen)->decrement('soLuongDaDat');
+    }
+
+    return back()->with('success', 'Xóa khách thành công!');
+}
+
+public function export($maChuyen)
+{
+    $chuyen = ChuyenTour::findOrFail($maChuyen);
+    $tour = Tour::find($chuyen->maTour);
+
+    // Tên file Việt hóa, có dấu, ngày giờ
+    $fileName = 'Danh_sach_khach_chuyen_' . '#000'.$maChuyen . '_' . Str::slug($tour->tieuDe) . '_' . now()->format('d-m-Y_H-i') . '.xlsx';
+
+    return Excel::download(new KhachThamGiaChuyenExport($maChuyen), $fileName);
+}
 }

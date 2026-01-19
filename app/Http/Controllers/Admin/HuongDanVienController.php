@@ -15,18 +15,26 @@ class HuongDanVienController extends Controller
 
         $query = HuongDanVien::query();
 
+        // Tìm kiếm theo họ tên hoặc số điện thoại
         if ($request->filled('search')) {
-            $query->where('hoTen', 'like', '%' . $request->search . '%')
-                  ->orWhere('soDienThoai', 'like', '%' . $request->search . '%');
+            $keyword = $request->search;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('hoTen', 'LIKE', "%{$keyword}%")
+                ->orWhere('soDienThoai', 'LIKE', "%{$keyword}%");
+            });
         }
 
+        // Lọc theo trạng thái
         if ($request->filled('trangThai')) {
             $query->where('trangThai', $request->trangThai);
         }
 
-        $hdvs = $query->orderBy('hoTen')->paginate(10);
+        // Sắp xếp theo họ tên và phân trang
+        $hdvs = $query->orderBy('hoTen')
+                    ->paginate(15)
+                    ->withQueryString(); // Giữ lại search + trangThai khi chuyển trang
 
-        return view('admin.huongdanvien.index', compact('hdvs','admin'));
+        return view('admin.huongdanvien.index', compact('hdvs', 'admin'));
     }
 
     public function show($maHDV)

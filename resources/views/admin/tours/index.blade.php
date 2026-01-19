@@ -4,9 +4,9 @@
 <div class="container-fluid mt-4">
     <h3 class="text-center mb-4 fw-bold text-primary">Danh sách Tour Du Lịch</h3>
 
-    @if (session('success'))
+    <!-- @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+    @endif -->
 
     <!-- Thanh chọn danh mục -->
     <form method="GET" action="{{ route('admin.tours.index') }}" class="mb-4">
@@ -36,6 +36,20 @@
         <!-- Dòng quan trọng này: giữ lại danh mục đã chọn khi tìm kiếm -->
         <input type="hidden" name="maDanhMuc" value="{{ request('maDanhMuc') }}">
     </form>
+
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
     <a href="{{ route('admin.tours.create') }}" class="add-btn">+ Thêm Tour</a>
 

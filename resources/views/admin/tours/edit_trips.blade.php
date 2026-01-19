@@ -29,6 +29,11 @@
                                 <label>Ngày bắt đầu <span class="text-danger">*</span></label>
                                 <input type="date" name="ngayBatDau[]" class="form-control ngayBatDau" required>
                                 <small class="text-danger d-block mt-1 error-ngay"></small>
+                                @error('ngayBatDau.*')
+                                    <div class="text-danger small mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                             <div class="col-md-4">
                                 <label>Ngày kết thúc <span class="text-danger">*</span></label>
@@ -85,7 +90,7 @@
                         <div class="row g-3 mt-3 border-top pt-3 bg-light p-3 rounded">
                             <div class="col-md-4">
                                 <label class="text-danger fw-bold">Giá người lớn (VNĐ) <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control giaNguoiLon" min="0" step="10000" required>
+                                <input type="number" class="form-control giaNguoiLon" min="0" step="1000" required>
                                 <input type="hidden" name="giaNguoiLon[]" class="giaNguoiLonHidden">
                             </div>
                             <div class="col-md-4">
@@ -118,10 +123,21 @@
 
             <!-- CHUYẾN HIỆN CÓ -->
             @foreach($chuyenTours as $index => $chuyen)
+                @php
+                    $khoaXoa = in_array($chuyen->tinhTrangChuyen, ['DuKhach', 'DaKhoiHanh']);
+                @endphp
+
                 <div class="card mb-3 border-primary trip-item">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <strong class="trip-number">Chuyến {{ $index + 1 }}</strong>
-                        <button type="button" class="btn btn-danger btn-sm remove-trip">Xóa</button>
+
+                        <button type="button"
+                                class="btn btn-danger btn-sm remove-trip {{ $khoaXoa ? 'disabled' : '' }}"
+                                data-status="{{ $chuyen->tinhTrangChuyen }}"
+                                {{ $khoaXoa ? 'disabled' : '' }}
+                                title="{{ $khoaXoa ? 'Không thể xóa chuyến đã đủ khách hoặc đã khởi hành' : 'Xóa chuyến' }}">
+                            Xóa
+                        </button>
                     </div>
                     <div class="card-body">
                         <input type="hidden" name="maChuyen[]" value="{{ $chuyen->maChuyen }}">
@@ -133,6 +149,11 @@
                                 <input type="date" name="ngayBatDau[]" class="form-control ngayBatDau" 
                                        value="{{ old('ngayBatDau.' . $index, $chuyen->ngayBatDau->format('Y-m-d')) }}" required>
                                 <small class="text-danger d-block mt-1 error-ngay"></small>
+                                @error('ngayBatDau.*')
+                                    <div class="text-danger small mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                             <div class="col-md-4">
                                 <label>Ngày kết thúc <span class="text-danger">*</span></label>
@@ -201,7 +222,7 @@
                         <div class="row g-3 mt-3 border-top pt-3 bg-light p-3 rounded">
                             <div class="col-md-4">
                                 <label class="text-danger fw-bold">Giá người lớn (VNĐ) <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control giaNguoiLon" min="0" step="10000" 
+                                <input type="number" class="form-control giaNguoiLon" min="0" step="1000" 
                                        value="{{ old('giaNguoiLon.' . $index, $chuyen->giaTour->nguoiLon ?? 0) }}" required>
                                 <input type="hidden" name="giaNguoiLon[]" class="giaNguoiLonHidden">
                             </div>
@@ -332,16 +353,28 @@
     });
 
     // Xóa chuyến
-    document.addEventListener('click', function (e) {
-        if (e.target && e.target.classList.contains('remove-trip')) {
-            if (document.querySelectorAll('.trip-item').length > 1) {
-                e.target.closest('.trip-item').remove();
-                tripCount--;
-                updateTripNumbers();
-                updateRemoveButtons();
-            }
-        }
-    });
+
+document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.remove-trip');
+    if (!btn) return;
+
+    const status = btn.dataset.status;
+
+    if (status === 'DuKhach' || status === 'DaKhoiHanh') {
+        alert('❌ Không thể xóa chuyến đã đủ khách hoặc đã khởi hành');
+        return;
+    }
+
+    const items = document.querySelectorAll('.trip-item');
+    if (items.length <= 1) return;
+
+    btn.closest('.trip-item').remove();
+    tripCount--;
+    updateTripNumbers();
+    updateRemoveButtons();
+});
+
+
 
     function updateTripNumbers() {
         document.querySelectorAll('.trip-number').forEach((el, i) => {

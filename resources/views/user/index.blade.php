@@ -232,7 +232,6 @@
                   </div>
                   <div class="card-footer">
                     <div class="tours-count">{{ $tour->thoiGian }}</div>
-                    <div class="tours-count">Số chỗ còn lại: {{ $tour->chuyenTour->first()->soLuongToiDa - $tour->chuyentour->first()->soLuongDaDat }}</div>
                     <a href="{{ route('tour.detail', $tour->maTour) }}" class="explore-btn">
                       Tìm hiểu ngay <i class="bi bi-arrow-right"></i>
                     </a>

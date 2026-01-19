@@ -12,11 +12,14 @@
 
 <div>
     <a href="{{ route('admin.danhmuc.create') }}" class="add-btn">
-        + Thêm Danh mục
+        + Thêm Khu Vực
     </a>
 
     <a href="{{ route('admin.diadiem.index') }}" class="view-btn">
-        Xem địa điểm
+        <i class="fa-solid fa-location-dot me-2"></i>Xem địa điểm
+    </a>
+    <a href="{{ route('admin.loaidulich.index') }}" class="view-btn">
+        <i class="fa-solid fa-tags me-2"></i> Quản Lý Loại Du Lịch
     </a>
 </div>
 
@@ -24,7 +27,7 @@
     <table class="category-admin-table">
         <thead>
             <tr>
-                <th>Tên Danh mục</th>
+                <th>Tên Khu Vực</th>
                 <th>Hành động</th>
             </tr>
         </thead>

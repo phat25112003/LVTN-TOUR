@@ -128,12 +128,6 @@
             <small class="text-muted">0 = không giới hạn</small>
         </div>
 
-        <!-- Số lượng người tối thiểu -->
-        <div>
-            <label>Số lượng người tối thiểu</label>
-            <input type="number" name="soLuongNguoiToiThieu" value="{{ old('soLuongNguoiToiThieu', $khuyenMai->soLuongNguoiToiThieu ?? 1) }}" min="1" class="form-control">
-            <small class="text-muted">Mặc định: 1 người</small>
-        </div>
 
         <!-- Giới hạn lượt dùng -->
         <div>

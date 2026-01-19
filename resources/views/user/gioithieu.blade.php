@@ -10,7 +10,7 @@
   <main class="main">
 
     <!-- Page Title -->
-    <div class="page-title dark-background" >
+    <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
       <div class="container position-relative">
         <h1>Giới thiệu</h1>
       </div>

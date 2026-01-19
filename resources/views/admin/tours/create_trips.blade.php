@@ -26,6 +26,11 @@
                                 <label>Ngày bắt đầu <span class="text-danger">*</span></label>
                                 <input type="date" name="ngayBatDau[]" class="form-control ngayBatDau" required>
                                 <small class="text-danger d-block mt-1 error-ngay"></small>
+                                @error('ngayBatDau.*')
+                                    <div class="text-danger small mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                             <div class="col-md-4">
                                 <label>Ngày kết thúc <span class="text-danger">*</span></label>
@@ -92,7 +97,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="text-danger fw-bold">Giá người lớn (VNĐ) <span class="text-danger">*</span></label>
-                                <input type="number" name="giaNguoiLon[]" class="form-control giaNguoiLon" min="0" step="10000" required>
+                                <input type="number" name="giaNguoiLon[]" class="form-control giaNguoiLon" min="0" step="1000" required>
                             </div>
                         </div>
 
@@ -125,6 +130,11 @@
                             <label>Ngày bắt đầu <span class="text-danger">*</span></label>
                             <input type="date" name="ngayBatDau[]" class="form-control ngayBatDau" required>
                             <small class="text-danger d-block mt-1 error-ngay"></small>
+                            @error('ngayBatDau.*')
+                                <div class="text-danger small mt-1">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
                         <div class="col-md-4">
                             <label>Ngày kết thúc <span class="text-danger">*</span></label>
@@ -191,7 +201,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="text-danger fw-bold">Giá người lớn (VNĐ) <span class="text-danger">*</span></label>
-                            <input type="number" name="giaNguoiLon[]" class="form-control giaNguoiLon" min="0" step="10000" required>
+                            <input type="number" name="giaNguoiLon[]" class="form-control giaNguoiLon" min="0" step="1000" required>
                         </div>
                     </div>
 
@@ -222,138 +232,86 @@
 
 @push('scripts')
 <script>
-    // Tính số ngày tour
-    const thoiGianStr = "{{ $tour->thoiGian }}".toLowerCase();
-    let soNgayTour = 1;
-    if (thoiGianStr.includes('trong ngày')) {
-        soNgayTour = 1;
-    } else {
-        const match = thoiGianStr.match(/(\d+)\s*ngày/);
-        soNgayTour = match ? parseInt(match[1]) : 1;
-    }
+const thoiGianStr = "{{ $tour->thoiGian }}".toLowerCase();
+let soNgayTour = 1;
 
-    let tripCount = 1;
+if (!thoiGianStr.includes('trong ngày')) {
+    const match = thoiGianStr.match(/(\d+)\s*ngày/);
+    soNgayTour = match ? parseInt(match[1]) : 1;
+}
 
-    // Hàm tính giá trẻ em
-    function capNhatGiaTreEm(tripItem) {
-        const giaNLInput = tripItem.querySelector('.giaNguoiLon');
-        const giaTEPreview = tripItem.querySelector('.giaTreEmPreview');
-        const giaTEHidden = tripItem.querySelector('.giaTreEmHidden');
+let tripCount = 1;
 
-        let giaNL = parseFloat(giaNLInput.value) || 0;
-        let giaTE = Math.round(giaNL * 0.7 / 10000) * 10000;
+// ===== GIÁ TRẺ EM =====
+function capNhatGiaTreEm(tripItem) {
+    const giaNL = parseFloat(tripItem.querySelector('.giaNguoiLon').value) || 0;
+    const giaTE = Math.round(giaNL * 0.7 / 10000) * 10000;
 
-        giaTEPreview.value = giaTE > 0 ? giaTE.toLocaleString('vi-VN') + ' VNĐ' : '';
-        giaTEHidden.value = giaTE;
-    }
+    tripItem.querySelector('.giaTreEmPreview').value =
+        giaTE ? giaTE.toLocaleString('vi-VN') + ' VNĐ' : '';
+    tripItem.querySelector('.giaTreEmHidden').value = giaTE;
+}
 
-    // Xử lý ngày bắt đầu
-    function handleNgayBatDau(e) {
-        const input = e.target;
-        const tripItem = input.closest('.trip-item');
-        const ngayBatDau = input.value;
-        const ngayKetThucInput = tripItem.querySelector('.ngayKetThuc');
-        let errorEl = tripItem.querySelector('.error-ngay');
+// ===== NGÀY =====
+function handleNgayBatDau(e) {
+    const tripItem = e.target.closest('.trip-item');
+    const errorEl = tripItem.querySelector('.error-ngay');
+    errorEl.textContent = '';
 
-        if (!errorEl) {
-            errorEl = document.createElement('small');
-            errorEl.className = 'text-danger d-block mt-1 error-ngay';
-            input.parentNode.appendChild(errorEl);
+    if (!e.target.value) return;
+
+    const start = new Date(e.target.value);
+    const end = new Date(start);
+    end.setDate(start.getDate() + soNgayTour - 1);
+
+    tripItem.querySelector('.ngayKetThuc').value =
+        end.toISOString().split('T')[0];
+}
+
+// ===== THÊM CHUYẾN =====
+document.getElementById('addTrip').addEventListener('click', () => {
+    tripCount++;
+    const tpl = document.getElementById('tripTemplate').content.cloneNode(true);
+    const item = tpl.querySelector('.trip-item');
+
+    item.querySelector('.trip-number').textContent = `Chuyến ${tripCount}`;
+    item.querySelector('.remove-trip').classList.remove('d-none');
+
+    item.querySelector('.ngayBatDau').addEventListener('change', handleNgayBatDau);
+    item.querySelector('.giaNguoiLon')
+        .addEventListener('input', () => capNhatGiaTreEm(item));
+
+    document.getElementById('tripContainer').appendChild(item);
+    updateUI();
+});
+
+// ===== XÓA =====
+document.addEventListener('click', e => {
+    if (e.target.classList.contains('remove-trip')) {
+        if (document.querySelectorAll('.trip-item').length > 1) {
+            e.target.closest('.trip-item').remove();
+            updateUI();
         }
-
-        errorEl.textContent = '';
-
-        if (!ngayBatDau) {
-            ngayKetThucInput.value = '';
-            return;
-        }
-
-        const start = new Date(ngayBatDau);
-        const end = new Date(start);
-        end.setDate(start.getDate() + soNgayTour - 1);
-        ngayKetThucInput.value = end.toISOString().split('T')[0];
     }
+});
 
-    // Thêm chuyến mới
-    document.getElementById('addTrip').addEventListener('click', function () {
-        tripCount++;
-        const template = document.getElementById('tripTemplate').content.cloneNode(true);
-        const tripItem = template.querySelector('.trip-item');
-
-        tripItem.querySelector('.trip-number').textContent = Chuyến ${tripCount};
-        tripItem.querySelector('.remove-trip').classList.remove('d-none');
-
-        // Gắn sự kiện
-        const ngayBatDauInput = tripItem.querySelector('.ngayBatDau');
-        ngayBatDauInput.addEventListener('change', handleNgayBatDau);
-
-        const giaNLInput = tripItem.querySelector('.giaNguoiLon');
-        giaNLInput.addEventListener('input', () => capNhatGiaTreEm(tripItem));
-
-        document.getElementById('tripContainer').appendChild(tripItem);
-        updateRemoveButtons();
+function updateUI() {
+    document.querySelectorAll('.trip-number').forEach((el, i) => {
+        el.textContent = `Chuyến ${i + 1}`;
     });
 
-    // Xóa chuyến
-    document.addEventListener('click', function (e) {
-        if (e.target && e.target.classList.contains('remove-trip')) {
-            if (document.querySelectorAll('.trip-item').length > 1) {
-                e.target.closest('.trip-item').remove();
-                tripCount--;
-                updateTripNumbers();
-                updateRemoveButtons();
-            }
-        }
-    });
+    const items = document.querySelectorAll('.trip-item');
+    items.forEach(item =>
+        item.querySelector('.remove-trip')
+            .classList.toggle('d-none', items.length === 1)
+    );
+}
 
-    function updateTripNumbers() {
-        document.querySelectorAll('.trip-number').forEach((el, i) => {
-            el.textContent = Chuyến ${i + 1};
-        });
-    }
-
-    function updateRemoveButtons() {
-        const items = document.querySelectorAll('.trip-item');
-        items.forEach((item, i) => {
-            const btn = item.querySelector('.remove-trip');
-            btn.classList.toggle('d-none', items.length === 1);
-        });
-    }
-
-    // Gắn sự kiện cho chuyến đầu tiên
-    document.querySelector('.ngayBatDau').addEventListener('change', handleNgayBatDau);
-    document.querySelector('.giaNguoiLon').addEventListener('input', function() {
-        capNhatGiaTreEm(this.closest('.trip-item'));
-    });
-
-    // Validate ngày trước submit
-    document.getElementById('tripForm').addEventListener('submit', function (e) {
-        let hasError = false;
-        document.querySelectorAll('.trip-item').forEach((item, index) => {
-            const ngayBatDau = item.querySelector('input[name="ngayBatDau[]"]').value;
-            const ngayKetThuc = item.querySelector('.ngayKetThuc').value;
-
-            if (ngayBatDau && ngayKetThuc) {
-                const diffDays = (new Date(ngayKetThuc) - new Date(ngayBatDau)) / (1000 * 60 * 60 * 24) + 1;
-                if (diffDays !== soNgayTour) {
-                    hasError = true;
-                    let errorEl = item.querySelector('.error-ngay');
-<<<<<<< HEAD
-                    errorEl.textContent = Phải đúng ${soNgayTour} ngày!;
-=======
-                    errorEl.textContent = `Phải đúng ${soNgayTour} ngày!`;
->>>>>>> 2c1a80dc8ce7df3d80a352e41e1d6849106c89bd
-                }
-            }
-        });
-
-        if (hasError) {
-            e.preventDefault();
-            alert('Vui lòng kiểm tra lại ngày của các chuyến!');
-        }
-    });
-
-    updateRemoveButtons();
+// ===== INIT =====
+document.querySelector('.ngayBatDau').addEventListener('change', handleNgayBatDau);
+document.querySelector('.giaNguoiLon').addEventListener('input', function () {
+    capNhatGiaTreEm(this.closest('.trip-item'));
+});
 </script>
 @endpush
 @push('styles')

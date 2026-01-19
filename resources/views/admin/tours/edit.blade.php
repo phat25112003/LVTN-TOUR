@@ -41,7 +41,7 @@
                 <input type="text" name="diemDen" class="form-control" value="{{ old('diemDen', $tour->diemDen) }}" required>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Danh mục</label>
+                <label class="form-label">Khu vực</label>
                 <select name="maDanhMuc" class="form-select">
                     <option value="">Chưa chọn</option>
                     @foreach ($danhmucs ?? [] as $danhmuc)
@@ -53,11 +53,24 @@
             </div>
         </div>
 
-        <!-- THÊM TRƯỜNG GIÁ PHÒNG ĐƠN -->
-        <div class="mt-3">
-            <label class="form-label">Giá phụ thu phòng đơn (VNĐ) <span class="text-danger">*</span></label>
-            <input type="number" name="giaPhongDon" class="form-control" value="{{ old('giaPhongDon', $tour->giaPhongDon) }}" min="0" step="10000" required>
-            <small class="text-muted">Phụ phí khi khách chọn phòng đơn (ví dụ: 2000000)</small>
+        <!-- THÊM HÀNG LOẠI DU LỊCH -->
+        <div class="row g-3 mt-3">
+            <div class="col-md-6">
+                <label class="form-label">Loại du lịch</label>
+                <select name="maLoai" class="form-select">
+                    <option value="">Chưa chọn</option>
+                    @foreach ($loaiDuLichs ?? [] as $loai)
+                        <option value="{{ $loai->maLoai }}" {{ old('maLoai', $tour->maLoai) == $loai->maLoai ? 'selected' : '' }}>
+                            {{ $loai->tenLoai }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Giá phụ thu phòng đơn (VNĐ) <span class="text-danger">*</span></label>
+                <input type="number" name="giaPhongDon" class="form-control" value="{{ old('giaPhongDon', $tour->giaPhongDon) }}" min="0" step="1000" required>
+                <small class="text-muted">Phụ phí khi khách chọn phòng đơn (ví dụ: 2000000)</small>
+            </div>
         </div>
 
         <!-- HÌNH ẢNH -->

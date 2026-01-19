@@ -19,26 +19,37 @@ use Illuminate\Support\Facades\DB;
 class DatChoController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $admin = auth('admin')->user();
-        $datChos = DatCho::with([
+
+        $query = DatCho::with([
             'tour', 
             'chuyentour', 
             'thanhtoan',
             'khuyenMaiDaDung.khuyenmai' 
-        ])
-        ->orderByDesc('ngayDat')
-        ->get();
-        
-        return view('admin.datcho.index', compact('datChos','admin'));
+        ]);
+
+        // Bộ lọc theo ngày đặt
+        if ($request->filled('from_date')) {
+            $query->whereDate('ngayDat', '>=', $request->from_date);
+        }
+
+        if ($request->filled('to_date')) {
+            $query->whereDate('ngayDat', '<=', $request->to_date);
+        }
+
+        // Phân trang và giữ query string (để giữ bộ lọc khi chuyển trang)
+        $datChos = $query->orderByDesc('ngayDat')->paginate(15)->withQueryString();
+
+        return view('admin.datcho.index', compact('datChos', 'admin'));
     }
 public function show($maDatCho)
 {
     $admin = auth('admin')->user();
 
     $datCho = DatCho::with([
-        'tour:maTour,tieuDe,thoiGian,giaPhongDon', // <<< THÊM giaPhongDon
+        'tour:maTour,tieuDe,thoiGian,giaPhongDon', 
         'chuyentour:maChuyen,diemKhoiHanh,phuongTien,ngayBatDau,ngayKetThuc,soLuongToiDa,soLuongDaDat,maHDV',
         'chuyentour.huongdanvien:maHDV,hoTen,soDienThoai',
         'chuyentour.giatour',
@@ -171,17 +182,17 @@ public function sendInvoice($maDatCho)
     }
 }
 
-public function exportKhachChuyen($maChuyen)
-{
-    $chuyen = ChuyenTour::with('tour')->findOrFail($maChuyen);
+// public function exportKhachChuyen($maChuyen)
+// {
+//     $chuyen = ChuyenTour::with('tour')->findOrFail($maChuyen);
 
-    $tenTour = preg_replace('/[^A-Za-z0-9\-]/', '_', $chuyen->tour->tieuDe); // sạch ký tự đặc biệt
+//     $tenTour = preg_replace('/[^A-Za-z0-9\-]/', '_', $chuyen->tour->tieuDe); // sạch ký tự đặc biệt
 
-    $fileName = $chuyen->tour->tieuDe . ' - Chuyến #00' . $chuyen->maChuyen . ' (' . 
-                \Carbon\Carbon::parse($chuyen->ngayBatDau)->format('d-m-Y') . ').xlsx';
+//     $fileName = $chuyen->tour->tieuDe . ' - Chuyến #00' . $chuyen->maChuyen . ' (' . 
+//                 \Carbon\Carbon::parse($chuyen->ngayBatDau)->format('d-m-Y') . ').xlsx';
 
-    return Excel::download(new KhachThamGiaChuyenExport($maChuyen), $fileName);
-}
+//     return Excel::download(new KhachThamGiaChuyenExport($maChuyen), $fileName);
+// }
 
 public function destroy($maDatCho)
 {

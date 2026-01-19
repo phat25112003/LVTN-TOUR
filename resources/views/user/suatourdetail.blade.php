@@ -10,7 +10,7 @@
   <main class="main">
 
     <!-- Page Title -->
-    <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
+    <div class="page-title dark-background" style="background-image: url('{{ asset('assets/img/travel/showcase-11.webp') }}');">
       <div class="container position-relative">
         <h1>Đặt Tour</h1>
         <p>Bắt đầu hành trình của bạn chỉ với vài bước đơn giản.</p>

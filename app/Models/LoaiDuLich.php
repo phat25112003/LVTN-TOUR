@@ -10,14 +10,10 @@ class LoaiDuLich extends Model
     protected $primaryKey = 'maLoai';
     public $timestamps = false;
 
-    protected $fillable = [
-        'tenLoai',
-        'moTa'
-    ];
+    protected $fillable = ['tenLoai', 'moTa'];
 
-    public function tour()
+    public function tours()
     {
-        return $this->hasMany(Tour::class, 'maLoai', 'maLoai');
+        return $this->hasMany(Tour::class, 'maLoai');
     }
-    
 }

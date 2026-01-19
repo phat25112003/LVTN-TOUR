@@ -17,6 +17,7 @@ class Tour extends Model
         'hinhAnh',
         'diemDen',
         'maDanhMuc',
+        'maLoai',
         'giaPhongDon',
         'maLoai',
         'isdinhky',
@@ -25,14 +26,13 @@ class Tour extends Model
     ];
 
     // === Relationships ===
+    public function loaidulich()
+    {
+        return $this->belongsTo(LoaiDuLich::class, 'maLoai');
+    }
     public function hinhAnh()
     {
         return $this->hasMany(HinhAnh::class, 'maTour', 'maTour');
-    }
-
-    public function danhGia()
-    {
-        return $this->hasMany(DanhGia::class, 'maTour', 'maTour');
     }
 
     public function datCho()
@@ -70,9 +70,5 @@ class Tour extends Model
     public function binhluan()
     {
         return $this->hasMany(BinhLuan::class, 'maTour', 'maTour');
-    }
-    public function loaidulich()
-    {
-        return $this->belongsTo(LoaiDuLich::class, 'maLoai', 'maLoai');
     }
 }

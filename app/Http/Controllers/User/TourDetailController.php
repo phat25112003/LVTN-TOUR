@@ -5,6 +5,8 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Tour;
+use Carbon\Carbon;
+use App\Models\ChuyenTour;
 class TourDetailController extends Controller
 {
     /**
@@ -36,8 +38,21 @@ class TourDetailController extends Controller
      */
     public function show($maTour)
     {
-        $tourdetail = Tour::with('lichtrinh','danhmuc','giatour','chuyentour')->findOrFail($maTour);
-        return view('user.tourdetail', compact('tourdetail'));
+        $tourdetail = Tour::with(['lichtrinh', 'danhmuc'])
+            ->findOrFail($maTour);
+
+        // ✅ Lấy chuyến đầu tiên còn nhận khách
+        $chuyenDauTien = ChuyenTour::with('giaTour')
+            ->where('maTour', $maTour)
+            ->whereDate('ngayBatDau', '>=', Carbon::today())
+            ->whereIn('tinhTrangChuyen', ['dukhach', 'chuadukhach'])
+            ->orderBy('ngayBatDau', 'asc')
+            ->first();
+
+        return view('user.tourdetail', compact(
+            'tourdetail',
+            'chuyenDauTien'
+        ));
     }
 
     /**

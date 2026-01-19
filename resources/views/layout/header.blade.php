@@ -30,6 +30,7 @@
               @endforeach
             </ul>
           </li>
+          <li><a href="{{ route('chinhsach') }}">Chính sách</a></li>
           <li><a href="{{ route('gioithieu') }}">Giới thiệu</a></li>
           <li><a href="{{ route('lienhe') }}">Liên hệ</a></li>
 

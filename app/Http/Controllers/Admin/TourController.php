@@ -10,6 +10,7 @@ use App\Models\Tour;
 use App\Models\ChuyenTour;
 use App\Models\GiaTour;
 use App\Models\BinhLuan;
+use App\Models\LoaiDuLich;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -52,7 +53,9 @@ class TourController extends Controller
     {
         $admin = auth()->guard('admin')->user();
         $danhmucs = DanhMuc::all();
-        return view('admin.tours.create', compact('danhmucs', 'admin'));
+        $loaiDuLichs = LoaiDuLich::orderBy('tenLoai')->get(); // Load loại du lịch
+
+        return view('admin.tours.create', compact('danhmucs', 'loaiDuLichs', 'admin'));
     }
 
     public function store(Request $request)
@@ -63,6 +66,7 @@ class TourController extends Controller
             'moTa' => 'required|string',
             'diemDen' => 'required|string|max:255',
             'maDanhMuc' => 'nullable|exists:danhmuc,maDanhMuc',
+            'maLoai' => 'nullable|exists:loaidulich,maLoai', 
             'giaPhongDon'  => 'required|numeric|min:0',
             'hinhAnh.*' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
@@ -74,19 +78,9 @@ class TourController extends Controller
             'diemDen' => $request->diemDen,
             'hinhAnh' => 0,
             'maDanhMuc' => $request->maDanhMuc,
+            'maLoai' => $request->maLoai, 
             'giaPhongDon' => $request->giaPhongDon,
         ]);
-
-        if ($request->hasFile('hinhAnh')) {
-            foreach ($request->file('hinhAnh') as $file) {
-                $path = $file->store('images/tours', 'public');
-                HinhAnh::create([
-                    'moTa' => 'Hình tour: ' . $tour->tieuDe,
-                    'duongDanHinh' => $path,
-                    'maTour' => $tour->maTour,
-                ]);
-            }
-        }
 
         $this->updateHinhAnhCount($tour->maTour);
 
@@ -101,7 +95,7 @@ class TourController extends Controller
     public function show($maTour)
     {
         $admin = auth()->guard('admin')->user();
-        $tour = Tour::findOrFail($maTour);
+        $tour = Tour::with(['danhmuc', 'loaidulich'])->findOrFail($maTour); // ← Thêm 'loaidulich'
         $hinhAnh = HinhAnh::where('maTour', $maTour)->get();
         $lichTrinh = LichTrinh::where('maTour', $maTour)->orderBy('ngay')->get();
         $chuyenTours = ChuyenTour::with('huongDanVien')
@@ -115,10 +109,12 @@ class TourController extends Controller
     public function edit($maTour)
     {
         $admin = auth()->guard('admin')->user();
-        $tour = Tour::with('danhmuc')->findOrFail($maTour);
+        $tour = Tour::with(['danhmuc', 'loaidulich'])->findOrFail($maTour); // ← Eager load loaidulich
         $danhmucs = DanhMuc::all();
+        $loaiDuLichs = LoaiDuLich::orderBy('tenLoai')->get(); // ← Load danh sách loại
         $hinhAnh = HinhAnh::where('maTour', $maTour)->get();
-        return view('admin.tours.edit', compact('tour', 'danhmucs', 'hinhAnh', 'admin'));
+
+        return view('admin.tours.edit', compact('tour', 'danhmucs', 'loaiDuLichs', 'hinhAnh', 'admin'));
     }
 
     public function update(Request $request, $maTour)
@@ -131,6 +127,7 @@ class TourController extends Controller
             'moTa' => 'required|string',
             'diemDen' => 'required|string|max:255',
             'maDanhMuc' => 'nullable|exists:danhmuc,maDanhMuc',
+            'maLoai' => 'nullable|exists:loaidulich,maLoai', 
             'giaPhongDon' => 'required|numeric|min:0',
             'hinhAnh.*' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:5120',
             'hinhAnhXoa.*' => 'nullable|exists:hinhanh,maHinhAnh',
@@ -142,6 +139,7 @@ class TourController extends Controller
             'moTa' => $request->moTa,
             'diemDen' => $request->diemDen,
             'maDanhMuc' => $request->maDanhMuc,
+            'maLoai' => $request->maLoai,
             'giaPhongDon' => $request->giaPhongDon,
         ]);
 
@@ -176,14 +174,23 @@ class TourController extends Controller
             ->with('success', 'Cập nhật tour thành công!');
     }
 
-    public function destroy($maTour)
+public function destroy($maTour)
     {
-        $tour = Tour::findOrFail($maTour);
+        $tour = Tour::with('chuyentour')->findOrFail($maTour);
 
+        // KIỂM TRA NẾU CÓ BẤT KỲ CHUYẾN NÀO ĐÃ CÓ KHÁCH ĐẶT CHỖ (dù đã chạy hay chưa)
+        $hasKhach = $tour->chuyentour->contains(function ($chuyen) {
+            return $chuyen->soLuongDaDat > 0;
+        });
 
+        if ($hasKhach) {
+            return redirect()
+                ->route('admin.tours.index')
+                ->with('error', 'Không thể xóa tour này vì đã có khách đặt chỗ trong một số chuyến!');
+        }
+
+        // Nếu an toàn (không có khách nào) → tiến hành xóa
         ChuyenTour::where('maTour', $maTour)->delete();
-
-
         LichTrinh::where('maTour', $maTour)->delete();
 
         $hinhAnh = HinhAnh::where('maTour', $maTour)->get();
@@ -194,12 +201,6 @@ class TourController extends Controller
 
         BinhLuan::where('maTour', $maTour)->delete();
 
-        // 4. XÓA CÁC BẢNG KHÁC (nếu có)
-        // DanhGia::where('maTour', $maTour)->delete();
-        // DatCho::where('maTour', $maTour)->delete();
-        // KhuyenMai::where('maTour', $maTour)->delete();
-
-        // 5. CUỐI CÙNG: XÓA TOUR
         $tour->delete();
 
         return redirect()
@@ -336,43 +337,65 @@ public function storeTrips(Request $request, $maTour)
 {
     $tour = Tour::findOrFail($maTour);
     $soNgayTour = $this->parseSoNgay($tour->thoiGian);
+    $today = \Carbon\Carbon::today();
 
-    // === VALIDATE (chỉ cần giá người lớn, bỏ validate giá trẻ em và em bé) ===
     $request->validate([
-        'ngayBatDau.*' => 'required|date|after_or_equal:today',
+        'ngayBatDau.*' => 'required|date',
         'ngayKetThuc.*' => 'required|date',
         'diemKhoiHanh.*' => 'required|string|max:255',
         'soLuongToiDa.*' => 'required|integer|min:1',
         'tinhTrangChuyen.*' => 'required|in:ChuaDuKhach,DuKhach,DaKhoiHanh,Huy',
         'maHDV.*' => 'nullable|exists:huongdanvien,maHDV',
-        'giaNguoiLon.*' => 'required|numeric|min:0', // Chỉ validate giá người lớn
+        'giaNguoiLon.*' => 'required|numeric|min:0',
         'so_khach_toi_thieu.*' => 'required|integer|min:1|lte:soLuongToiDa.*',
     ]);
 
-    foreach ($request->ngayBatDau as $i => $ngayBatDau) {
-        $ngayKetThuc = $request->ngayKetThuc[$i];
-        $start = \Carbon\Carbon::parse($ngayBatDau);
-        $endExpected = $start->copy()->addDays($soNgayTour - 1);
+    // Lấy tất cả ngày bắt đầu hiện có của tour này để kiểm tra trùng
+    $existingDates = ChuyenTour::where('maTour', $maTour)
+        ->pluck('ngayBatDau')
+        ->map(fn($date) => \Carbon\Carbon::parse($date)->format('Y-m-d'))
+        ->toArray();
 
+    foreach ($request->ngayBatDau as $i => $ngayBatDauStr) {
+        $startDate = \Carbon\Carbon::parse($ngayBatDauStr);
+
+        // 1. Không cho ngày bắt đầu trong quá khứ
+        if ($startDate->lt($today)) {
+            return back()->withErrors([
+                "ngayBatDau.{$i}" => "Chuyến " . ($i + 1) . ": Ngày bắt đầu không được trong quá khứ!"
+            ])->withInput();
+        }
+
+        // 2. Kiểm tra trùng ngày bắt đầu
+        $formattedDate = $startDate->format('Y-m-d');
+        if (in_array($formattedDate, $existingDates)) {
+            return back()->withErrors([
+                "ngayBatDau.{$i}" => "Chuyến " . ($i + 1) . ": Ngày bắt đầu đã trùng với một chuyến khác!"
+            ])->withInput();
+        }
+
+        // Thêm vào mảng để kiểm tra trùng trong cùng form (nếu thêm nhiều chuyến cùng lúc)
+        $existingDates[] = $formattedDate;
+
+        // Kiểm tra ngày kết thúc đúng với số ngày tour
+        $ngayKetThuc = $request->ngayKetThuc[$i];
+        $endExpected = $startDate->copy()->addDays($soNgayTour - 1);
         if (!\Carbon\Carbon::parse($ngayKetThuc)->equalTo($endExpected)) {
             return back()->withErrors([
                 "ngayKetThuc.{$i}" => "Chuyến " . ($i + 1) . ": Ngày kết thúc phải là " . $endExpected->format('d/m/Y')
             ])->withInput();
         }
 
-        $maHDV = $request->maHDV[$i] ?? null;
-
-        // === TỰ ĐỘNG TÍNH GIÁ ===
         $giaNguoiLon = $request->giaNguoiLon[$i];
-        $giaTreEm = round($giaNguoiLon * 0.7 / 10000) * 10000; // 70%, làm tròn hàng chục nghìn
-        $giaEmBe = 0; // Luôn miễn phí
+        $giaTreEm = round($giaNguoiLon * 0.7 / 10000) * 10000;
+        $giaEmBe = 0;
 
         $chuyen = ChuyenTour::create([
             'maTour' => $maTour,
-            'ngayBatDau' => $ngayBatDau,
+            'ngayBatDau' => $ngayBatDauStr,
             'ngayKetThuc' => $ngayKetThuc,
             'diemKhoiHanh' => $request->diemKhoiHanh[$i],
-            'maHDV' => $maHDV,
+            'maHDV' => $request->maHDV[$i] ?? null,
             'phuongTien' => $request->phuongTien[$i] ?? null,
             'soLuongToiDa' => $request->soLuongToiDa[$i],
             'soLuongDaDat' => 0,
@@ -383,15 +406,13 @@ public function storeTrips(Request $request, $maTour)
 
         GiaTour::create([
             'maChuyen' => $chuyen->maChuyen,
-            'emBe' => $giaEmBe,     // luôn 0
-            'treEm' => $giaTreEm,   // tự tính
+            'emBe' => $giaEmBe,
+            'treEm' => $giaTreEm,
             'nguoiLon' => $giaNguoiLon,
         ]);
     }
 
-    return redirect()
-        ->route('admin.tours.index')
-        ->with('success', 'Tạo chuyến thành công!');
+    return redirect()->route('admin.tours.index')->with('success', 'Tạo chuyến thành công!');
 }
 
     public function editTrips($maTour)
@@ -412,91 +433,139 @@ public function storeTrips(Request $request, $maTour)
         return view('admin.tours.edit_trips', compact('tour', 'chuyenTours', 'huongDanViens', 'admin'));
     }
 
-    public function updateTrips(Request $request, $maTour)
-    {
-        $tour = Tour::findOrFail($maTour);
-        $soNgayTour = $this->parseSoNgay($tour->thoiGian);
+public function updateTrips(Request $request, $maTour)
+{
+    $tour = Tour::findOrFail($maTour);
+    $soNgayTour = $this->parseSoNgay($tour->thoiGian);
+    $today = \Carbon\Carbon::today();
 
-        $request->validate([
-            'maChuyen.*' => 'nullable|exists:chuyentour,maChuyen',
-            'ngayBatDau.*' => 'required|date',
-            'ngayKetThuc.*' => 'required|date',
-            'diemKhoiHanh.*' => 'required|string|max:255',
-            'soLuongToiDa.*' => 'required|integer|min:1',
-            'maHDV.*' => 'nullable|exists:huongdanvien,maHDV',
-            'giaNguoiLon.*' => 'required|numeric|min:0',
-            'so_khach_toi_thieu.*' => 'required|integer|min:1|lte:soLuongToiDa.*',
-            'tinhTrangChuyen.*' => ['required', 'in:ChuaDuKhach,DuKhach,DaKhoiHanh,Huy'], // Thêm validate trạng thái
-        ]);
+    $request->validate([
+        'maChuyen.*' => 'nullable|exists:chuyentour,maChuyen',
+        'ngayBatDau.*' => 'required|date',
+        'ngayKetThuc.*' => 'required|date',
+        'diemKhoiHanh.*' => 'required|string|max:255',
+        'soLuongToiDa.*' => 'required|integer|min:1',
+        'maHDV.*' => 'nullable|exists:huongdanvien,maHDV',
+        'giaNguoiLon.*' => 'required|numeric|min:0',
+        'so_khach_toi_thieu.*' => 'required|integer|min:1|lte:soLuongToiDa.*',
+        'tinhTrangChuyen.*' => ['required', 'in:ChuaDuKhach,DuKhach,DaKhoiHanh,Huy'],
+    ]);
 
-        $existingIds = [];
+    $existingIds = [];
 
-        foreach ($request->ngayBatDau as $index => $ngayBatDau) {
-            $data = [
-                'ngayBatDau' => $ngayBatDau,
-                'ngayKetThuc' => $request->ngayKetThuc[$index],
-                'diemKhoiHanh' => $request->diemKhoiHanh[$index],
-                'maHDV' => $request->maHDV[$index] ?? null,
-                'phuongTien' => $request->phuongTien[$index] ?? null,
-                'soLuongToiDa' => $request->soLuongToiDa[$index],
-                'ghiChu' => $request->ghiChu[$index] ?? null,
-                'so_khach_toi_thieu' => $request->so_khach_toi_thieu[$index] ?? 10,
-                'tinhTrangChuyen' => $request->tinhTrangChuyen[$index] ?? 'ChuaDuKhach', // ← Thêm dòng này: lấy từ form hoặc mặc định
-            ];
+    // Lấy tất cả ngày bắt đầu hiện có (trừ các chuyến đang được sửa trong form)
+    $currentChuyenIds = array_filter($request->maChuyen ?? []);
+    $existingDates = ChuyenTour::where('maTour', $maTour)
+        ->whereNotIn('maChuyen', $currentChuyenIds)
+        ->pluck('ngayBatDau')
+        ->map(fn($date) => \Carbon\Carbon::parse($date)->format('Y-m-d'))
+        ->toArray();
 
-            $start = \Carbon\Carbon::parse($data['ngayBatDau']);
-            $endExpected = $start->copy()->addDays($soNgayTour - 1);
-            if (!\Carbon\Carbon::parse($data['ngayKetThuc'])->equalTo($endExpected)) {
-                return back()->withErrors([
-                    "ngayKetThuc.{$index}" => "Chuyến " . ($index + 1) . ": Ngày kết thúc phải là " . $endExpected->format('d/m/Y')
-                ])->withInput();
+    foreach ($request->ngayBatDau as $index => $ngayBatDauStr) {
+        $startDate = \Carbon\Carbon::parse($ngayBatDauStr);
+
+        // 1. Không cho ngày bắt đầu trong quá khứ
+        if (empty($request->maChuyen[$index]) && $startDate->lt($today)) {
+            return back()->withErrors([
+                "ngayBatDau.{$index}" => "Chuyến " . ($index + 1) . ": Ngày bắt đầu không được trong quá khứ!"
+            ])->withInput();
+        }
+
+        $formattedDate = $startDate->format('Y-m-d');
+
+        // Nếu là chuyến cũ → loại bỏ ngày cũ khỏi danh sách kiểm tra trùng
+        if (!empty($request->maChuyen[$index])) {
+            $oldDate = ChuyenTour::where('maChuyen', $request->maChuyen[$index])
+                ->value('ngayBatDau');
+            if ($oldDate) {
+                $oldFormatted = \Carbon\Carbon::parse($oldDate)->format('Y-m-d');
+                $existingDates = array_diff($existingDates, [$oldFormatted]);
+            }
+        }
+
+        // 2. Kiểm tra trùng ngày
+        if (in_array($formattedDate, $existingDates)) {
+            return back()->withErrors([
+                "ngayBatDau.{$index}" => "Chuyến " . ($index + 1) . ": Ngày bắt đầu đã trùng với chuyến khác!"
+            ])->withInput();
+        }
+
+        // Thêm vào để kiểm tra trùng trong cùng form
+        $existingDates[] = $formattedDate;
+
+        // Kiểm tra ngày kết thúc
+        $endExpected = $startDate->copy()->addDays($soNgayTour - 1);
+        if (!\Carbon\Carbon::parse($request->ngayKetThuc[$index])->equalTo($endExpected)) {
+            return back()->withErrors([
+                "ngayKetThuc.{$index}" => "Chuyến " . ($index + 1) . ": Ngày kết thúc phải là " . $endExpected->format('d/m/Y')
+            ])->withInput();
+        }
+
+        $data = [
+            'ngayBatDau' => $ngayBatDauStr,
+            'ngayKetThuc' => $request->ngayKetThuc[$index],
+            'diemKhoiHanh' => $request->diemKhoiHanh[$index],
+            'maHDV' => $request->maHDV[$index] ?? null,
+            'phuongTien' => $request->phuongTien[$index] ?? null,
+            'soLuongToiDa' => $request->soLuongToiDa[$index],
+            'ghiChu' => $request->ghiChu[$index] ?? null,
+            'so_khach_toi_thieu' => $request->so_khach_toi_thieu[$index] ?? 10,
+            'tinhTrangChuyen' => $request->tinhTrangChuyen[$index] ?? 'ChuaDuKhach',
+        ];
+
+        $giaNguoiLon = $request->giaNguoiLon[$index];
+        $giaTreEm = round($giaNguoiLon * 0.7 / 10000) * 10000;
+        $giaEmBe = 0;
+
+        if (!empty($request->maChuyen[$index])) {
+            $chuyen = ChuyenTour::findOrFail($request->maChuyen[$index]);
+
+            // ❌ KHÓA CHUYẾN ĐÃ KHỞI HÀNH
+            if ($chuyen->tinhTrangChuyen === 'DaKhoiHanh') {
+                // Bỏ qua hoàn toàn chuyến này
+                $existingIds[] = $chuyen->maChuyen;
+                continue;
             }
 
-            // Tính giá tự động
-            $giaNguoiLon = $request->giaNguoiLon[$index];
-            $giaTreEm = round($giaNguoiLon * 0.7 / 10000) * 10000;
-            $giaEmBe = 0;
-
-            if (isset($request->maChuyen[$index]) && $request->maChuyen[$index]) {
-                // Sửa chuyến cũ
-                $chuyen = ChuyenTour::find($request->maChuyen[$index]);
-                if ($chuyen && $chuyen->maTour == $maTour) {
-                    $chuyen->update($data);
-                    $existingIds[] = $chuyen->maChuyen;
-
-                    // Cập nhật giá
-                    $chuyen->giaTour()->update([
-                        'emBe' => $giaEmBe,
-                        'treEm' => $giaTreEm,
-                        'nguoiLon' => $giaNguoiLon,
+            if ($chuyen->maTour == $maTour) {
+                if ($chuyen->tinhTrangChuyen === 'DaKhoiHanh') {
+                    return back()->withErrors([
+                        'error' => 'Không thể chỉnh sửa chuyến đã khởi hành'
                     ]);
                 }
-            } else {
-                // Thêm chuyến mới
-                $newChuyen = ChuyenTour::create(array_merge($data, [
-                    'maTour' => $maTour,
-                    'soLuongDaDat' => 0,
-                ]));
-                $existingIds[] = $newChuyen->maChuyen;
+                $chuyen->update($data);
+                $existingIds[] = $chuyen->maChuyen;
 
-                GiaTour::create([
-                    'maChuyen' => $newChuyen->maChuyen,
+                $chuyen->giaTour()->update([
                     'emBe' => $giaEmBe,
                     'treEm' => $giaTreEm,
                     'nguoiLon' => $giaNguoiLon,
                 ]);
             }
         }
+        else {
+            $newChuyen = ChuyenTour::create(array_merge($data, [
+                'maTour' => $maTour,
+                'soLuongDaDat' => 0,
+            ]));
+            $existingIds[] = $newChuyen->maChuyen;
 
-        // Xóa các chuyến không còn trong form
-        ChuyenTour::where('maTour', $maTour)
-                ->whereNotIn('maChuyen', $existingIds)
-                ->delete();
-
-        return redirect()
-            ->route('admin.tours.edit', $maTour)
-            ->with('success', 'Cập nhật chuyến thành công!');
+            GiaTour::create([
+                'maChuyen' => $newChuyen->maChuyen,
+                'emBe' => $giaEmBe,
+                'treEm' => $giaTreEm,
+                'nguoiLon' => $giaNguoiLon,
+            ]);
+        }
     }
 
+    // Xóa chuyến bị bỏ khỏi form
+    ChuyenTour::where('maTour', $maTour)
+        ->whereNotIn('maChuyen', $existingIds)
+        ->where('tinhTrangChuyen', '!=', 'DaKhoiHanh')
+        ->delete();
 
+
+    return redirect()->route('admin.tours.edit', $maTour)->with('success', 'Cập nhật chuyến thành công!');
+}
 }

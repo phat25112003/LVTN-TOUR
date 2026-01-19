@@ -8,7 +8,7 @@
 
   <main class="main">
     <!-- Page Title -->
-    <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
+    <div class="page-title dark-background" style="background-image: url('{{ asset('assets/img/travel/showcase-11.webp') }}');">
       <div class="container position-relative">
         <h1>Đăng ký tài khoản</h1>
         <p>Tạo tài khoản để đặt tour và nhận nhiều ưu đãi hấp dẫn.</p>

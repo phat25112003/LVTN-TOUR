@@ -50,49 +50,49 @@ class DatTourController extends Controller
 
     public function getTourDates($maTour)
     {
-        $now = Carbon::now();
+        $now = Carbon::now(config('app.timezone'));
+
         $chuyen = ChuyenTour::with('giatour')
             ->where('maTour', $maTour)
             ->whereIn('tinhTrangChuyen', ['ChuaDuKhach', 'DuKhach'])
             ->get()
             ->filter(function ($c) use ($now) {
-                $thoiDiemDongBan = ChuyenTourStatusService::thoiDiemDongBan($c);
-
-                // ✅ CHỈ GIỮ LẠI CHUYẾN CHƯA ĐẾN HẠN ĐÓNG BÁN
-                return $now->lt($thoiDiemDongBan);
+                $dongBan = ChuyenTourStatusService::thoiDiemDongBan($c);
+                return $now->lessThan($dongBan);
             });
 
         $events = $chuyen->map(function ($c) {
-            $slot = max(0, $c->soLuongToiDa - $c->soLuongDaDat);
-            $gia = $c->giatour;               // quan hệ 1-1
-            $hetHanDatVe = ChuyenTourStatusService::thoiDiemDongBan($c);
+            $gia = $c->giatour;
+            $hetHan = ChuyenTourStatusService::thoiDiemDongBan($c);
+
             return [
-                'title' => number_format($gia?->nguoiLon, 0, ',', '.') . ' ₫',   // lấy tiêu đề tour
-                'start'        => $c->ngayBatDau,
-                'color'        => '#28a745',
+                'title' => number_format($gia?->nguoiLon, 0, ',', '.') . ' ₫',
+                'start' => Carbon::parse($c->ngayBatDau)
+                            ->timezone(config('app.timezone'))
+                            ->toIso8601String(),
+                'color' => '#28a745',
                 'extendedProps' => [
-                    'maChuyen'    => $c->maChuyen,
+                    'maChuyen' => $c->maChuyen,
                     'giaNguoiLon' => $gia->nguoiLon ?? 0,
-                    'giaTreEm'    => $gia->treEm   ?? 0,
-                    'giaEmBe'     => $gia->emBe    ?? 0,
-                    'ngayKetThuc' => $c->ngayKetThuc,
-                    'soChoConLai'=> $slot,
-                    'hetHanDatVe' => $hetHanDatVe->toIso8601String(),
+                    'giaTreEm' => $gia->treEm ?? 0,
+                    'giaEmBe' => $gia->emBe ?? 0,
+                    'ngayKetThuc' => Carbon::parse($c->ngayKetThuc)
+                                        ->timezone(config('app.timezone'))
+                                        ->toIso8601String(),
+                    'soChoConLai' => max(0, $c->soLuongToiDa - $c->soLuongDaDat),
+                    'hetHanDatVe' => $hetHan->toIso8601String(),
                 ],
             ];
         });
 
-        return response()->json($events);
+        return response()->json($events->values());
     }
+
 
     public function store(Request $request)
     {
-
-        if (!Auth::guard('web')->check()) {
-            return response()->json(['success' => false, 'message' => 'Vui lòng đăng nhập.'], 401);
-        }
-
-        $validated = $request->validate([
+                try {
+                    $validated = $request->validate([
             'maTour' => 'required|exists:tour,maTour',
             'maChuyen' => 'required|exists:chuyentour,maChuyen',
             'hoTen' => 'required|string|max:255',
@@ -126,6 +126,9 @@ class DatTourController extends Controller
 
         ]);
 
+        DB::beginTransaction();
+
+
         $user = Auth::guard('web')->user();
         $maChuyenMoi = $validated['maChuyen'];
 
@@ -136,7 +139,7 @@ class DatTourController extends Controller
             ->first();
 
         if (!$chuyenMoi) {
-            return redirect()->back()->with('error', 'Chuyến tour không tồn tại.');
+            throw new \Exception('Chuyến tour không tồn tại.');
         }
 
         $startMoi = Carbon::parse($chuyenMoi->ngayBatDau);
@@ -153,13 +156,7 @@ class DatTourController extends Controller
          * → ĐÃ CONFIRM → CHO ĐI TIẾP
          */
         if ($daDatChuyenNay && !$request->has('confirm_trung_tour_chuyen')) {
-            return redirect()->back()
-                ->withInput()
-                ->with([
-                    'warning_trung_tour_chuyen' => true,
-                    'message_trung_tour_chuyen' =>
-                        'Bạn đã đặt tour này cho đúng chuyến này rồi. Bạn có chắc chắn vẫn muốn tiếp tục đặt không?'
-                ]);
+            throw new \Exception('TRUNG_TOUR_CHUYEN');
         }
 
 
@@ -181,23 +178,19 @@ class DatTourController extends Controller
             }
         }
 
-        if (!empty($trungVoi) && !$request->has('confirm_trung_chuyen')) {
-            $danhSach = implode(', ', $trungVoi);
+$daXacNhanTrungThoiGian = $request->input('confirm_trung_thoi_gian') == 1;
 
-            return redirect()->back()
-                ->withInput()
-                ->with([
-                    'warning_trung_chuyen' => true,
-                    'message_trung_chuyen' =>
-                        "Bạn đã đặt tour trùng thời gian với: $danhSach. Bạn có muốn tiếp tục đặt không?"
-                ]);
-        }
+if (!empty($trungVoi) && !$daXacNhanTrungThoiGian) {
+    throw new \Exception('TRUNG_THOI_GIAN');
+}
+
 
         // === TÍNH GIÁ ===
         $gia = DB::table('giatour')->where('maChuyen', $maChuyenMoi)->first();
         if (!$gia) {
-            return response()->json(['success' => false, 'message' => 'Chưa có bảng giá.'], 400);
+            throw new \Exception('Chưa có bảng giá cho chuyến này');
         }
+
         
 
         $tongGiaGoc = 
@@ -262,6 +255,7 @@ class DatTourController extends Controller
                 'tuoi'           => $request->tuoi[$i],
                 'maDatCho'       => $datCho->maDatCho,
                 'luaChonPhong'   => $suDungPhongDon,
+                'maChuyen'       => $maChuyenMoi,
             ]);
 
             if ($suDungPhongDon === 'PhongDon') {
@@ -298,11 +292,54 @@ class DatTourController extends Controller
 
         // CẬP NHẬT TÌNH TRẠNG CHUYẾN TOUR
         $chuyen = ChuyenTour::find($maChuyenMoi);
-        ChuyenTourStatusService::capNhat($chuyen);
-
-        return redirect()
+        $chuyen->refresh();
+        ChuyenTourStatusService::capNhatChoMotChuyen($chuyen);
+        DB::commit();
+                return redirect()
                 ->route('user.thongtinuser')
                 ->with('success', 'Đặt tour thành công!');
+        }catch (\Throwable $e) {
+        DB::rollBack();
+
+        switch ($e->getMessage()) {
+
+            case 'TRUNG_TOUR_CHUYEN':
+                return redirect()->back()
+                    ->withInput()
+                    ->with([
+                        'warning_trung_tour_chuyen' => true,
+                        'message' => 'Bạn đã đặt tour này cho đúng chuyến này rồi. Bạn có chắc chắn muốn tiếp tục không?'
+                    ]);
+
+            case 'TRUNG_THOI_GIAN':
+                return redirect()->back()
+                    ->withInput()
+                    ->with([
+                        'warning_trung_thoi_gian' => true,
+                        'message' => 'Bạn đã đặt tour trùng thời gian với một tour khác. Bạn có muốn tiếp tục đặt không?'
+                    ]);
+
+            case 'VUOT_SO_LUONG_TOI_DA':
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Số lượng chỗ còn lại không đủ cho số khách bạn chọn.');
+
+            default:
+                Log::error('Lỗi đặt tour', [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]);
+
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', $e->getMessage());
+        }
+        }
+
+
+
+
     }
 }
 
