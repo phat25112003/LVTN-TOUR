@@ -19,19 +19,30 @@ use Illuminate\Support\Facades\DB;
 class DatChoController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $admin = auth('admin')->user();
-        $datChos = DatCho::with([
+
+        $query = DatCho::with([
             'tour', 
             'chuyentour', 
             'thanhtoan',
             'khuyenMaiDaDung.khuyenmai' 
-        ])
-        ->orderByDesc('ngayDat')
-        ->get();
-        
-        return view('admin.datcho.index', compact('datChos','admin'));
+        ]);
+
+        // Bộ lọc theo ngày đặt
+        if ($request->filled('from_date')) {
+            $query->whereDate('ngayDat', '>=', $request->from_date);
+        }
+
+        if ($request->filled('to_date')) {
+            $query->whereDate('ngayDat', '<=', $request->to_date);
+        }
+
+        // Phân trang và giữ query string (để giữ bộ lọc khi chuyển trang)
+        $datChos = $query->orderByDesc('ngayDat')->paginate(15)->withQueryString();
+
+        return view('admin.datcho.index', compact('datChos', 'admin'));
     }
 public function show($maDatCho)
 {

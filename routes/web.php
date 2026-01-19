@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\DanhMucController;
 use App\Http\Controllers\Admin\TongQuatController;
 use App\Http\Controllers\Admin\DiaDiemController;
 use App\Http\Controllers\Admin\KhachChuyenController;
+use App\Http\Controllers\Admin\LoaiDULichController;
 use App\Http\Controllers\User\TourDetailController;
 use App\Http\Controllers\User\TourUserController;
 use App\Http\Controllers\User\DatTourController;
@@ -24,7 +25,7 @@ use App\Http\Controllers\User\ThanhToanController;
 use App\Http\Controllers\User\BinhLuanController;
 use App\Http\Controllers\User\GioiThieuController;
 use App\Http\Controllers\User\LienHeController;
-
+use App\Http\Controllers\User\ChinhSachController;
 // Route công khai
 use App\Http\Controllers\Admin\HuongDanVienController;
 
@@ -160,6 +161,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/datcho/export-khach-chuyen/{maChuyen}', [DatChoController::class, 'exportKhachChuyen'])
      ->name('datcho.export.khachchuyen');
 
+    Route::get('khach-chuyen/export-khach-chuyen/{maChuyen}', [KhachChuyenController::class, 'export'])
+            ->name('khachchuyen.export.khachchuyen');
+
 
     Route::controller(KhachChuyenController::class)
     ->prefix('khach-chuyen')
@@ -171,8 +175,35 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/khach/{maKhach}', 'destroy')->name('destroy'); // Xóa khách
     });
 
-
+    Route::controller(LoaiDULichController::class)
+    ->prefix('loaidulich')
+    ->name('loaidulich.')
+    ->group(function () {
+        Route::get('/', 'index')->name('index');                    // Danh sách
+        Route::get('/create', 'create')->name('create');            // Form thêm
+        Route::post('/', 'store')->name('store');                   // Lưu thêm
+        Route::get('/{maLoai}/edit', 'edit')->name('edit');         // Form sửa
+        Route::put('/{maLoai}', 'update')->name('update');          // Lưu sửa
+        Route::delete('/{maLoai}', 'destroy')->name('destroy');     // Xóa
+    });
 });
+
+
+
+Route::get('/tours/{maTour}', [TourDetailController::class, 'show'])->name('tour.detail');
+
+    Route::controller(KhachChuyenController::class)
+    ->prefix('khach-chuyen')
+    ->name('khachchuyen.')
+    ->group(function () {
+        Route::post('/', 'store')->name('store');
+        Route::get('/', 'index')->name('index');
+        Route::put('/khach/{maKhach}', 'update')->name('update');     // Sửa khách
+        Route::delete('/khach/{maKhach}', 'destroy')->name('destroy'); // Xóa khách
+});
+
+
+
 
 
 
@@ -235,5 +266,8 @@ Route::middleware(['auth'])->group(function () {
 });
 //gioi thieu
 Route::get('/gioithieu', [GioiThieuController::class, 'index'])->name('gioithieu');
-//lien he
+// lien he
 Route::get('/lienhe', [LienHeController::class, 'index'])->name('lienhe');
+
+//chinh sach
+Route::get('/chinhsach', [ChinhSachController::class, 'index'])->name('chinhsach');

@@ -8,7 +8,7 @@
   <main class="main">
 
     <!-- Page Title -->
-    <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
+    <div class="page-title dark-background" style="background-image: url('{{ asset('assets/img/travel/showcase-11.webp') }}');">
       <div class="container position-relative">
         <h1>Đặt Tour</h1>
         <p>Bắt đầu hành trình của bạn chỉ với vài bước đơn giản.</p>
@@ -499,18 +499,25 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 @endif
 
-@if(session('success') || session('error'))
-<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index:1100">
-    <div id="mainToast"
-         class="toast text-white {{ session('success') ? 'bg-success' : 'bg-danger' }}"
-         role="alert">
-        <div class="d-flex">
-            <div class="toast-body" id="toastMessage"></div>
-            <button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-    </div>
-</div>
+@if(session('success') || session('error') || session('warning') || session('message'))
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toastEl = document.getElementById('mainToast');
+    const toastMsg = document.getElementById('toastMessage');
+
+    toastMsg.innerText = @json(
+        session('success')
+        ?? session('error')
+        ?? session('warning')
+        ?? session('message')
+        ?? 'Something went wrong.'
+    );
+
+    new bootstrap.Toast(toastEl, { delay: 4000 }).show();
+});
+</script>
 @endif
+
 <script>
   // Truyền dữ liệu từ PHP sang JS toàn cục
   window.initialPrices = {
@@ -524,32 +531,104 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
  <!-- Modal xác nhận trùng tour/chuyến -->
 @if(session('warning_trung_tour_chuyen'))
-<div class="modal fade" id="confirmTrungTourModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-danger">
+  <div class="modal fade" id="confirmTrungTourModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-danger">
 
-      <div class="modal-header bg-danger text-white">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">
+            ⚠️ CẢNH BÁO TRÙNG TOUR – TRÙNG CHUYẾN
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <p class="mb-3">
+            {{ session('message') }}
+          </p>
+
+          <p class="text-muted small">
+            Bạn có chắc chắn muốn tiếp tục không?
+          </p>
+        </div>
+
+        <div class="modal-footer">
+          <form method="POST" action="{{ route('dattour.store') }}">
+            @csrf
+
+            {{-- GIỮ TOÀN BỘ DỮ LIỆU CŨ --}}
+            @foreach(old() as $key => $value)
+              @if(is_array($value))
+                @foreach($value as $v)
+                  <input type="hidden" name="{{ $key }}[]" value="{{ $v }}">
+                @endforeach
+              @else
+                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+              @endif
+            @endforeach
+
+            {{-- FLAG XÁC NHẬN --}}
+            <input type="hidden" name="confirm_trung_tour_chuyen" value="1">
+
+            <button type="submit" class="btn btn-danger">
+              ✔️ Vẫn tiếp tục đặt
+            </button>
+          </form>
+
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            ❌ Không, quay lại
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+@endif
+@if(session('warning_trung_tour_chuyen'))
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+      const el = document.getElementById('confirmTrungTourModal');
+
+      const modal = new bootstrap.Modal(el, {
+          backdrop: 'static', 
+          keyboard: false     
+      });
+
+      modal.show();
+  });
+  </script>
+@endif
+
+<!-- Modal xác nhận trùng thời gian -->
+@if(session('warning_trung_thoi_gian'))
+<div class="modal fade" id="confirmTrungThoiGianModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-warning">
+
+      <div class="modal-header bg-warning text-dark">
         <h5 class="modal-title">
-          ⚠️ CẢNH BÁO TRÙNG TOUR – TRÙNG CHUYẾN
+          ⏰ TOUR TIME CONFLICT DETECTED
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
       <div class="modal-body">
         <p class="mb-3">
-          {{ session('message_trung_tour_chuyen') }}
+          {{ session('message') }}
         </p>
 
         <p class="text-muted small">
-          Bạn có chắc chắn muốn tiếp tục không?
+          Do you still want to continue booking this tour?
         </p>
       </div>
 
       <div class="modal-footer">
+
+        <!-- FORM CONTINUE -->
         <form method="POST" action="{{ route('dattour.store') }}">
           @csrf
 
-          {{-- GIỮ TOÀN BỘ DỮ LIỆU CŨ --}}
+          {{-- GIỮ TOÀN BỘ DỮ LIỆU FORM --}}
           @foreach(old() as $key => $value)
             @if(is_array($value))
               @foreach($value as $v)
@@ -561,32 +640,30 @@ document.addEventListener('DOMContentLoaded', function () {
           @endforeach
 
           {{-- FLAG XÁC NHẬN --}}
-          <input type="hidden" name="confirm_trung_tour_chuyen" value="1">
+          <input type="hidden" name="confirm_trung_thoi_gian" value="1">
 
-          <button type="submit" class="btn btn-danger">
-            ✔️ Vẫn tiếp tục đặt
+          <button type="submit" class="btn btn-warning">
+            ✔️ Continue Booking
           </button>
         </form>
 
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          ❌ Không, quay lại
+          ❌ Cancel
         </button>
-      </div>
 
+      </div>
     </div>
   </div>
 </div>
 @endif
-@if(session('warning_trung_tour_chuyen'))
+@if(session('warning_trung_thoi_gian'))
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const el = document.getElementById('confirmTrungTourModal');
-
-    const modal = new bootstrap.Modal(el, {
-        backdrop: 'static', 
-        keyboard: false     
+    const modalEl = document.getElementById('confirmTrungThoiGianModal');
+    const modal = new bootstrap.Modal(modalEl, {
+        backdrop: 'static',
+        keyboard: false
     });
-
     modal.show();
 });
 </script>

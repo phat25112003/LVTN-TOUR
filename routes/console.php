@@ -9,6 +9,9 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command(ExpireDatCho::class)->everyMinute();
-Schedule::command(CapNhatTinhTrangChuyen::class )
+Schedule::command('expire-dat-cho')
+    ->everyMinute();
+
+// 🔄 Cập nhật trạng thái chuyến tour
+Schedule::command('chuyen:cap-nhat-trang-thai')
     ->dailyAt('00:01');

@@ -41,4 +41,15 @@ class ChuyenTour extends Model
     {
         return $this->hasMany(DatCho::class, 'maChuyen', 'maChuyen');
     }
+    // public function khachThamGia()
+    // {
+    //     return $this->hasMany(KhachThamGia::class, 'maDatCho', 'maDatCho')
+    //                 ->orWhereNull('maDatCho'); // trick để load cả khách ghép
+    // }
+    // Trong model ChuyenTour.php
+    public function khachGhep()
+    {
+        return $this->hasMany(KhachThamGia::class, 'maChuyen')
+                    ->whereNull('maDatCho');
+    }
 }

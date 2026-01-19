@@ -24,23 +24,101 @@
                 <a href="tours.html" class="btn btn-outline-light">View Tours</a> -->
               </div>
 
-              <form action="{{ route('tour.list') }}" method="GET">
-              @method('GET')
-                <section id="travel-tours" class="travel-tours section">
-                  <div class="row justify-content-center mb-5">
-                    <div class="col-lg-10">
-                      <div class="search-container">
-                        <div class="search-bar">
-                          <input type="text" name="query" class="form-control" placeholder="Tìm kiếm tour..." required>
-                          <button class="search-btn" type="submit">
-                            <i class="bi bi-search"></i>
-                          </button>
-                        </div>
+            <form action="{{ route('tour.list') }}" method="GET">
+              <section id="travel-tours" class="travel-tours section">
+                <div class="row justify-content-center mb-4">
+                  <div class="col-lg-10">
+
+                    {{-- 🔍 SEARCH --}}
+                    <div class="search-container mb-3">
+                      <div class="search-bar d-flex">
+                        <input type="text"
+                              name="query"
+                              class="form-control"
+                              placeholder="Tìm kiếm tour..."
+                              value="{{ request('query') }}">
+                        <button class="search-btn" type="submit">
+                          <i class="bi bi-search"></i>
+                        </button>
                       </div>
                     </div>
+
+                    {{-- 🎯 FILTER --}}
+                    <div class="row g-2">
+
+                      {{-- 📍 Địa điểm --}}
+                    <div class="col-md-3">
+                      <select name="maDiaDiem" class="form-select">
+                        <option value="">Chọn địa điểm</option>
+
+                        @foreach($diaDiems as $tenDanhMuc => $items)
+                          <optgroup label="{{ $tenDanhMuc }}">
+                            @foreach($items as $dd)
+                              <option value="{{ $dd->maDiaDiem }}"
+                                {{ request('maDiaDiem') == $dd->maDiaDiem ? 'selected' : '' }}>
+                                {{ $dd->tenDiaDiem }}
+                              </option>
+                            @endforeach
+                          </optgroup>
+                        @endforeach
+
+                      </select>
+                    </div>
+
+                      {{-- 🧭 Loại du lịch --}}
+                      <div class="col-md-3">
+                        <select name="maLoai" class="form-select">
+                          <option value="">Loại du lịch</option>
+                          @foreach($loaidulichs as $loai)
+                            <option value="{{ $loai->maLoai }}" {{ request('maLoai')==$loai->maLoai?'selected':'' }}>{{ $loai->tenLoai }}</option>
+                          @endforeach
+                        </select>
+                      </div>
+                      {{-- ⏱ Số ngày --}}
+                      <div class="col-md-2">
+                        <select name="soNgay" class="form-select">
+                          <option value="">Số ngày</option>
+                          <option value="1-2" {{ request('soNgay')=='1-2'?'selected':'' }}>1 – 2 ngày</option>
+                          <option value="3-4" {{ request('soNgay')=='3-4'?'selected':'' }}>3 – 4 ngày</option>
+                          <option value="5-7" {{ request('soNgay')=='5-7'?'selected':'' }}>5 – 7 ngày</option>
+                          <option value="8+"  {{ request('soNgay')=='8+'?'selected':'' }}>Trên 7 ngày</option>
+                        </select>
+                      </div>
+
+                      {{-- 💰 Giá trung bình --}}
+                      <div class="col-md-3">
+                        <select name="giaTB" class="form-select">
+                          <option value="">Giá trung bình</option>
+                          <option value="1" {{ request('giaTB')=='1'?'selected':'' }}>
+                            Dưới 1.000.000
+                          </option>
+                          <option value="2" {{ request('giaTB')=='2'?'selected':'' }}>
+                            1.000.000 – 1.500.000
+                          </option>
+                          <option value="3" {{ request('giaTB')=='3'?'selected':'' }}>
+                            1.500.000 – 2.500.000
+                          </option>
+                          <option value="4" {{ request('giaTB')=='4'?'selected':'' }}>
+                            Trên 2.500.000
+                          </option>
+                        </select>
+                      </div>
+
+
+                      {{-- 🔘 BUTTON --}}
+                      <div class="col-md-3 d-flex gap-2">
+                        <button class="btn btn-primary " type="submit">
+                          Lọc tour
+                        </button>
+                        </a>
+                      </div>
+
+                    </div>
                   </div>
-                </section>
-              </form>
+                </div>
+              </section>
+            </form>
+
             </div>
           </div>
 
@@ -232,7 +310,6 @@
                   </div>
                   <div class="card-footer">
                     <div class="tours-count">{{ $tour->thoiGian }}</div>
-                    <div class="tours-count">Số chỗ còn lại: {{ $tour->chuyenTour->first()->soLuongToiDa - $tour->chuyentour->first()->soLuongDaDat }}</div>
                     <a href="{{ route('tour.detail', $tour->maTour) }}" class="explore-btn">
                       Tìm hiểu ngay <i class="bi bi-arrow-right"></i>
                     </a>

@@ -10,7 +10,7 @@
   <main class="main">
 
     <!-- Page Title -->
-    <div class="page-title dark-background" style="background-image: url(assets/img/travel/showcase-11.webp);">
+    <div class="page-title dark-background" style="background-image: url('{{ asset('assets/img/travel/showcase-11.webp') }}');">
       <div class="container position-relative">
         <h1>Danh Sách Tour</h1>
         <p>Trải nghiệm du lịch được tuyển chọn kỹ lưỡng, biến hành trình thành những câu chuyện khó quên. Tìm theo sở thích của bạn và tìm kiếm chuyến đi hoàn hảo.</p>
@@ -89,11 +89,7 @@
                       <span><i class="bi bi-clock"></i> {{ $tour->thoiGian }}</span>
                       <span><i class="bi bi-star-fill"></i> 4.7</span>
                     </div>
-                    <div class="tour-pricing">
-                      <span class="price">{{ number_format($tour->giatour->first()->nguoiLon, 0, ',', '.') }}₫</span>
-                      <span class="per">/người</span>
-                      
-                    </div>
+
                     <a href="{{ route('tour.detail', $tour->maTour) }}" class="explore-btn">
                     Tìm hiểu ngay <i class="bi bi-arrow-right"></i></a>
                   </div>

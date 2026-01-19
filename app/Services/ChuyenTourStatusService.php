@@ -7,44 +7,56 @@ use Carbon\Carbon;
 
 class ChuyenTourStatusService
 {
-    public static function capNhatTrangThaiTuDong(): void
+    /**
+     * Cập nhật trạng thái cho MỘT chuyến
+     */
+    public static function capNhatChoMotChuyen(ChuyenTour $chuyen): void
     {
-        $today = Carbon::today();
-        $now   = Carbon::now();
+        $now = Carbon::now(config('app.timezone'));
+        $today = Carbon::today(config('app.timezone'));
 
-        $chuyens = ChuyenTour::whereNotIn('tinhTrangChuyen', [
-            'Huy',
-            'DaKhoiHanh'
-        ])->get();
+        $dongBan = self::thoiDiemDongBan($chuyen);
+        $ngayBatDau = Carbon::parse($chuyen->ngayBatDau);
 
-        foreach ($chuyens as $chuyen) {
+        // 1️⃣ ĐỦ CHỖ → DU KHÁCH
+        if (
+            $chuyen->so_khach_toi_thieu !== null &&
+            $chuyen->soLuongDaDat >= $chuyen->so_khach_toi_thieu &&
+            !in_array($chuyen->tinhTrangChuyen, ['DuKhach', 'Huy', 'DaKhoiHanh'])
+        ) {
+            $chuyen->update(['tinhTrangChuyen' => 'DuKhach']);
+            return;
+        }
 
-            $ngayBatDau = Carbon::parse($chuyen->ngayBatDau);
-            $thoiDiemDongBan = self::thoiDiemDongBan($chuyen);
+        // 2️⃣ HẾT HẠN BÁN – CHƯA ĐỦ → HỦY
+        if ($now->gte($dongBan) && $chuyen->tinhTrangChuyen === 'ChuaDuKhach') {
+            $chuyen->update(['tinhTrangChuyen' => 'Huy']);
+            return;
+        }
 
-            // ❌ HẾT HẠN BÁN – CHƯA ĐỦ KHÁCH → HUỶ
-            if ($now->gte($thoiDiemDongBan) && $chuyen->tinhTrangChuyen === 'ChuaDuKhach') {
-                $chuyen->update(['tinhTrangChuyen' => 'Huy']);
-                continue;
-            }
-
-            // 🚍 ĐẾN NGÀY KHỞI HÀNH – ĐỦ KHÁCH → KHỞI HÀNH
-            if ($ngayBatDau->equalTo($today) && $chuyen->tinhTrangChuyen === 'DuKhach') {
-                $chuyen->update(['tinhTrangChuyen' => 'DaKhoiHanh']);
-                continue;
-            }
-
-            // ❌ PHÒNG NGỪA: ĐẾN NGÀY KHỞI HÀNH MÀ CHƯA ĐỦ KHÁCH
-            if ($ngayBatDau->equalTo($today) && $chuyen->tinhTrangChuyen === 'ChuaDuKhach') {
-                $chuyen->update(['tinhTrangChuyen' => 'Huy']);
-            }
+        // 3️⃣ ĐẾN NGÀY ĐI – ĐỦ → KHỞI HÀNH
+        if ($ngayBatDau->isSameDay($today) && $chuyen->tinhTrangChuyen === 'DuKhach') {
+            $chuyen->update(['tinhTrangChuyen' => 'DaKhoiHanh']);
         }
     }
 
-    public static function thoiDiemDongBan(ChuyenTour $chuyen)
+    /**
+     * 🧹 Cập nhật TẤT CẢ chuyến (dùng cho cron)
+     */
+    public static function capNhatTatCa(): void
     {
-        return \Carbon\Carbon::parse($chuyen->ngayBatDau)
+        ChuyenTour::whereNotIn('tinhTrangChuyen', ['Huy', 'DaKhoiHanh'])
+            ->get()
+            ->each(fn ($chuyen) => self::capNhatChoMotChuyen($chuyen));
+    }
+
+    /**
+     * ⏰ Thời điểm đóng bán: 23:59 hôm trước ngày đi
+     */
+    public static function thoiDiemDongBan(ChuyenTour $chuyen): Carbon
+    {
+        return Carbon::parse($chuyen->ngayBatDau)
             ->subDay()
-            ->startOfDay();
+            ->endOfDay(); // 23:59:59
     }
 }

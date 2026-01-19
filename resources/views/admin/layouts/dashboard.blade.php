@@ -59,7 +59,7 @@
             <li>
                 <a href="{{ route('admin.khachchuyen.index') }}" 
                    class="{{ request()->routeIs('admin.khachchuyen.*') ? 'active' : '' }}">
-                    <i class="fa-solid fa-users-gear"></i> Quản lý Khách 
+                    <i class="fa-solid fa-users-gear"></i> Quản lý ghép tour
                 </a>
             </li>
 

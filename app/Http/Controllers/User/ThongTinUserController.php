@@ -8,6 +8,7 @@ use App\Models\NguoiDung;
 use App\Models\DatCho;
 use App\Models\Tour;
 use App\Models\ChuyenTour;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -31,6 +32,7 @@ class ThongTinUserController extends Controller
     }
     public function update(Request $request)
     {
+        
         $user = Auth::user();  
 
         $request->validate([
@@ -108,35 +110,66 @@ class ThongTinUserController extends Controller
 
     public function destroy($maDatCho)
     {
-        $datcho = Auth::user()->datCho()->with('chuyenTour')->findOrFail($maDatCho);
+        $user = Auth::user();
 
-        // Tính lại số người đã đặt
-        $tongNguoi = 
-            ($datcho->soNguoiLon ?? 0) +
-            ($datcho->soTreEm ?? 0) +
-            ($datcho->soEmBe ?? 0);
+        // Lấy đặt chỗ của chính user, kèm chuyến tour
+        $datcho = $user->datCho()
+            ->with(['chuyenTour', 'thanhToan', 'khachThamGia'])
+            ->where('maDatCho', $maDatCho)
+            ->firstOrFail();
 
-        // Giảm số lượng đã đặt trong chuyến tour
-        if ($datcho->chuyenTour) {
-            $datcho->chuyenTour->soLuongDaDat = max(
-                0,
-                $datcho->chuyenTour->soLuongDaDat - $tongNguoi
-            );
-            $datcho->chuyenTour->save();
+        // Không cho xóa nếu đã xác nhận
+        if ($datcho->xacNhan == 1) {
+            return back()->with('error', 'Đơn đã xác nhận, không thể xóa.');
         }
 
-        // Xoá bản ghi thanh toán nếu có
-        if ($datcho->thanhToan) {
-            $datcho->thanhToan()->delete();
+        \DB::beginTransaction();
+
+        try {
+            // Tính tổng số người đã đặt
+            $tongNguoi =
+                ($datcho->soNguoiLon ?? 0) +
+                ($datcho->soTreEm ?? 0) +
+                ($datcho->soEmBe ?? 0);
+
+            // Giảm số lượng đã đặt của chuyến tour
+            if ($datcho->chuyenTour) {
+                $datcho->chuyenTour->soLuongDaDat = max(
+                    0,
+                    $datcho->chuyenTour->soLuongDaDat - $tongNguoi
+                );
+                $datcho->chuyenTour->save();
+            }
+            // Xóa khuyến mãi đã sử dụng nếu có
+            if ($datcho->khuyenMaiSuDung) {
+            $datcho->khuyenMaiSuDung()->delete();
+            }
+            // Xóa thanh toán nếu có
+            if ($datcho->thanhToan) {
+                $datcho->thanhToan()->delete();
+            }
+
+            // Xóa khách tham gia
+            $datcho->khachThamGia()->delete();
+
+            // Xóa đặt chỗ
+            $datcho->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->route('user.thongtinuser')
+                ->with('success', 'Xóa tour thành công!');
+        } catch (\Throwable $e) {
+            \DB::rollBack();
+
+            \Log::error('Lỗi xóa đặt chỗ', [
+                'maDatCho' => $maDatCho,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Có lỗi xảy ra, vui lòng thử lại.');
         }
-
-        // Xoá đặt chỗ
-        $datcho->khachThamGia()->delete();
-        $datcho->delete();
-
-        return redirect()->route('user.thongtinuser')
-                        ->with('success', 'Xóa tour thành công!');
     }
-
 
 }
